@@ -7,9 +7,10 @@ import android.inputmethodservice.Keyboard
 import android.view.View
 import android.view.KeyEvent
 import android.text.TextUtils
+import android.widget.FrameLayout
 import android.view.inputmethod.InputConnection
 
-class MyInputMethodService : InputMethodService(), KeyboardView.OnKeyboardActionListener {
+class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardActionListener {
 
     private var keyboardView: KeyboardView? = null
     private var keyboard: Keyboard? = null
@@ -17,12 +18,19 @@ class MyInputMethodService : InputMethodService(), KeyboardView.OnKeyboardAction
     private var caps = false
 
     override fun onCreateInputView(): View {
-        val kv = layoutInflater.inflate(R.layout.keyboard_view, null) as KeyboardView
+        //println("hello")
+        val layout = layoutInflater.inflate(R.layout.sample_nug_keyboard_view, null) as FrameLayout
+        val kv: NugKeyboardView = layout.findViewById(R.id.KeyboardView)
+        kv.onKeyboardActionListener = this
+
+        //kv.exampleString = "asd"
+        /*val kv = layoutInflater.inflate(R.layout.keyboard_view, null) as KeyboardView
         keyboardView = kv
         keyboard = Keyboard(this, R.xml.keys_layout)
         kv!!.keyboard = keyboard
         kv!!.setOnKeyboardActionListener(this)
-        return kv
+        */
+        return layout
     }
 
     override fun onPress(i: Int) {
@@ -37,7 +45,7 @@ class MyInputMethodService : InputMethodService(), KeyboardView.OnKeyboardAction
     override fun onKey(primaryCode: Int, keyCodes: IntArray) {
         val inputConnection = currentInputConnection
         if (inputConnection != null) {
-            when (primaryCode) {
+            /*when (primaryCode) {
                 Keyboard.KEYCODE_DELETE -> {
                     val selectedText = inputConnection.getSelectedText(0)
 
@@ -68,7 +76,7 @@ class MyInputMethodService : InputMethodService(), KeyboardView.OnKeyboardAction
                     }
                     inputConnection.commitText(code.toString(), 1)
                 }
-            }
+            }*/
         }
     }
 

@@ -1,9 +1,49 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".MainActivity"
+        tools:showIn="@layout/activity_main">
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="0"
+            android:text="Button"
+            app:layout_constraintEnd_toStartOf="@+id/button3"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:layout_editor_absoluteY="37dp" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:text="Button"
+            tools:layout_editor_absoluteX="181dp"
+            tools:layout_editor_absoluteY="37dp" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="28dp"
+            android:text="Button"
+            app:layout_constraintStart_toEndOf="@+id/button3"
+            tools:layout_editor_absoluteY="37dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    -->
+
     <com.d87.nugkeyboard.NugKeyboardView
+        android:id="@+id/KeyboardView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:background="#ccc"

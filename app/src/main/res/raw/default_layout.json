@@ -1,0 +1,70 @@
+{
+    "keyConfig": [
+        {
+            "type": "Rect",
+            "x": 0,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "divisions": 3,
+            "bindings": [
+                "A",
+                "B",
+                "C"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0.25,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "divisions": 4,
+            "bindings": [
+                "D",
+                "E",
+                "F",
+                "G"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0.5,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "divisions": 3,
+            "bindings": [
+                "A",
+                "B",
+                "C"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0.75,
+            "y": 0,
+            "width": 0.25,
+            "height": 0.25,
+            "divisions": 3,
+            "bindings": [
+                "A",
+                "B",
+                "C"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0.25,
+            "y": 0.25,
+            "width": 0.25,
+            "height": 0.25,
+            "divisions": 3,
+            "bindings": [
+                "A",
+                "B",
+                "C"
+            ]
+        }
+    ]
+}

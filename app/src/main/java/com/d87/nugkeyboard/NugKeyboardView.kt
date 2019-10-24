@@ -1,18 +1,100 @@
 package com.d87.nugkeyboard
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import android.view.MotionEvent
+import android.view.Display
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.util.DisplayMetrics
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
+
+
+
+
+
+
+
+//import android.inputmethodservice.KeyboardView;
 
 /**
  * TODO: document your custom view class.
  */
 class NugKeyboardView : View {
+
+    interface OnKeyboardActionListener {
+        /**
+         * Called when the user presses a key. This is sent before the [.onKey] is called.
+         * For keys that repeat, this is only called once.
+         * @param primaryCode the unicode of the key being pressed. If the touch is not on a valid
+         * key, the value will be zero.
+         */
+        fun onPress(primaryCode: Int)
+
+        /**
+         * Called when the user releases a key. This is sent after the [.onKey] is called.
+         * For keys that repeat, this is only called once.
+         * @param primaryCode the code of the key that was released
+         */
+        fun onRelease(primaryCode: Int)
+
+        /**
+         * Send a key press to the listener.
+         * @param primaryCode this is the key that was pressed
+         * @param keyCodes the codes for all the possible alternative keys
+         * with the primary code being the first. If the primary key code is
+         * a single character such as an alphabet or number or symbol, the alternatives
+         * will include other characters that may be on the same key or adjacent keys.
+         * These codes are useful to correct for accidental presses of a key adjacent to
+         * the intended key.
+         */
+        fun onKey(primaryCode: Int, keyCodes: IntArray)
+
+        /**
+         * Sends a sequence of characters to the listener.
+         * @param text the sequence of characters to be displayed.
+         */
+        fun onText(text: CharSequence)
+
+        /**
+         * Called when the user quickly moves the finger from right to left.
+         */
+        fun swipeLeft()
+
+        /**
+         * Called when the user quickly moves the finger from left to right.
+         */
+        fun swipeRight()
+
+        /**
+         * Called when the user quickly moves the finger from up to down.
+         */
+        fun swipeDown()
+
+        /**
+         * Called when the user quickly moves the finger from down to up.
+         */
+        fun swipeUp()
+    }
+
+    var onKeyboardActionListener: OnKeyboardActionListener? = null
+    private var _OldPointerCount = 1
+    private var _OldPointerX: Float = 0.toFloat()
+    private var _OldPointerY: Float = 0.toFloat()
+
+    private var _VerticalCorrection: Int = 0
+
+    //private var _keys: ArrayList<SwipeButton> = arrayListOf()
+    var activeLayout: KeyboardLayout? = null
+
+    private var _KeyBackground: Drawable? = null
 
     private var _exampleString: String? = null // TODO: use a default from R.string...
     private var _exampleColor: Int = Color.RED // TODO: use a default from R.color...
@@ -21,6 +103,9 @@ class NugKeyboardView : View {
     private var textPaint: TextPaint? = null
     private var textWidth: Float = 0f
     private var textHeight: Float = 0f
+
+    var redPaint: Paint = Paint()
+    val backgroundPaint = Paint()
 
     /**
      * The text to draw
@@ -79,6 +164,13 @@ class NugKeyboardView : View {
             attrs, R.styleable.NugKeyboardView, defStyle, 0
         )
 
+        val kLayout = KeyboardLayout()
+        val layoutJson = resources.openRawResource(R.raw.default_layout)
+            .bufferedReader().use { it.readText() }
+        kLayout.importJSON(layoutJson)
+        kLayout.makeKeys(this)
+        activeLayout = kLayout
+
         _exampleString = a.getString(
             R.styleable.NugKeyboardView_exampleString
         )
@@ -108,6 +200,13 @@ class NugKeyboardView : View {
             textAlign = Paint.Align.LEFT
         }
 
+        redPaint.setColor(Color.GRAY)
+        redPaint.style = Paint.Style.STROKE
+        redPaint.isAntiAlias = true
+
+        backgroundPaint.setColor(Color.BLACK)
+        backgroundPaint.style = Paint.Style.FILL_AND_STROKE
+
         // Update TextPaint and text measurements from attributes
         invalidateTextPaintAndMeasurements()
     }
@@ -119,6 +218,43 @@ class NugKeyboardView : View {
             textWidth = it.measureText(exampleString)
             textHeight = it.fontMetrics.bottom
         }
+    }
+
+    override  fun onSizeChanged(neww: Int, newh: Int, oldw: Int, oldh: Int) {
+        val paddingLeft = paddingLeft
+        val paddingTop = paddingTop
+        val paddingRight = paddingRight
+        val paddingBottom = paddingBottom
+
+        val contentWidth = width - paddingLeft - paddingRight
+        val contentHeight = height - paddingTop - paddingBottom
+
+        val density = resources.displayMetrics.density
+        val dpHeight = resources.displayMetrics.heightPixels / density
+        val dpWidth = resources.displayMetrics.widthPixels / density
+
+        val keyWidth = (width / 4).toFloat()
+        val keyHeight = (height / 4).toFloat()
+
+        activeLayout?.let{
+            it.resize(contentWidth.toFloat(), contentHeight.toFloat(), density)
+        }
+        /*var x = 0f
+        var y = 0f
+        for (i in 0 until 4) {
+            for (j in 0 until 4) {
+                val index = (i*4)+j
+                val newKey = _keys[index]
+                newKey.x = x
+                newKey.y = y
+                newKey.height = keyHeight
+                newKey.width = keyWidth
+
+                x += keyWidth
+            }
+            x = 0f
+            y += keyHeight
+        }*/
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -134,6 +270,18 @@ class NugKeyboardView : View {
         val contentWidth = width - paddingLeft - paddingRight
         val contentHeight = height - paddingTop - paddingBottom
 
+        val density = resources.displayMetrics.density
+        val dpHeight = resources.displayMetrics.heightPixels / density
+        val dpWidth = resources.displayMetrics.widthPixels / density
+
+        val keyWidth = (contentWidth / 4).toFloat()
+        val keyHeight = (contentHeight / 4).toFloat()
+
+
+        //canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
+        //canvas.drawColor(0x00000000, PorterDuff.Mode.SRC)
+        canvas.drawPaint(backgroundPaint)
+
         exampleString?.let {
             // Draw the text.
             canvas.drawText(
@@ -144,13 +292,286 @@ class NugKeyboardView : View {
             )
         }
 
+        activeLayout?.let {
+            for (key: SwipeButton in it.keys) {
+                key.draw(canvas)
+            }
+        }
+
+
+
+
+
+        //val rect = Rect(0,0, 30, 30)
+
+        canvas.drawLine(0f,0f, width.toFloat(), height.toFloat(), redPaint)
+        canvas.drawLine(0.toFloat(), height.toFloat()/2, paddingRight.toFloat(), height.toFloat()/2, redPaint)
+
+
+
         // Draw the example drawable on top of the text.
-        exampleDrawable?.let {
+        /*exampleDrawable?.let {
             it.setBounds(
                 paddingLeft, paddingTop,
                 paddingLeft + contentWidth, paddingTop + contentHeight
             )
             it.draw(canvas)
+        }*/
+    }
+
+    override fun onTouchEvent(me: MotionEvent): Boolean {
+        // Convert multi-pointer up/down events to single up/down events to
+        // deal with the typical multi-pointer behavior of two-thumb typing
+        val pointerCount = me.pointerCount
+        val action = me.action
+        var result = false
+        val now = me.eventTime
+        if (pointerCount != _OldPointerCount) {
+            if (pointerCount == 1) {
+                // Send a down event for the latest pointer
+                val down = MotionEvent.obtain(
+                    now, now, MotionEvent.ACTION_DOWN,
+                    me.x, me.y, me.metaState
+                )
+                result = onModifiedTouchEvent(down, false)
+                down.recycle()
+                // If it's an up action, then deliver the up as well.
+                if (action == MotionEvent.ACTION_UP) {
+                    result = onModifiedTouchEvent(me, true)
+                }
+            } else {
+                // Send an up event for the last pointer
+                val up = MotionEvent.obtain(
+                    now, now, MotionEvent.ACTION_UP,
+                    _OldPointerX, _OldPointerY, me.metaState
+                )
+                result = onModifiedTouchEvent(up, true)
+                up.recycle()
+            }
+        } else {
+            if (pointerCount == 1) {
+                result = onModifiedTouchEvent(me, false)
+                _OldPointerX = me.x
+                _OldPointerY = me.y
+            } else {
+                // Don't do anything when 2 pointers are down and moving.
+                result = true
+            }
+        }
+        _OldPointerCount = pointerCount
+        return result
+    }
+
+    fun getKeyFromCoords(touchX: Int, touchY: Int): SwipeButton? {
+        for (key in activeLayout.keys) {
+            if (key.isInside(touchX, touchY))
+                return key
         }
     }
+
+    private fun onModifiedTouchEvent(me: MotionEvent, possiblePoly: Boolean): Boolean {
+        var touchX = me.x.toInt() - paddingBottom
+        var touchY = me.y.toInt() - paddingTop
+        if (touchY >= _VerticalCorrection)
+            touchY += _VerticalCorrection
+        val action = me.action
+        val eventTime = me.eventTime
+        val key = getKeyFromCoords(touchX, touchY)    //--------- <----- Where keys get recognized
+        key ?: return false
+
+        if (action == MotionEvent.ACTION_DOWN) {
+            activeLayout?.let {
+                it.keys[0].startHIghlight()
+            }
+        }
+        //mPossiblePoly = possiblePoly
+
+        // Track the last few movements to look for spurious swipes.
+        if (action == MotionEvent.ACTION_DOWN) mSwipeTracker.clear()
+        mSwipeTracker.addMovement(me)
+
+        // Ignore all motion events until a DOWN.
+        if (mAbortKey
+            && action != MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL
+        ) {
+            return true
+        }
+        if (mGestureDetector!!.onTouchEvent(me)) {
+            showPreview(NOT_A_KEY)
+            mHandler!!.removeMessages(MSG_REPEAT)
+            mHandler!!.removeMessages(MSG_LONGPRESS)
+            return true
+        }
+        // Needs to be called after the gesture detector gets a turn, as it may have
+        // displayed the mini keyboard
+        if (mMiniKeyboardOnScreen && action != MotionEvent.ACTION_CANCEL) {
+            return true
+        }
+        /*
+        when (action) {
+            MotionEvent.ACTION_DOWN -> {
+                mAbortKey = false
+                mStartX = touchX
+                mStartY = touchY
+                mLastCodeX = touchX
+                mLastCodeY = touchY
+                mLastKeyTime = 0
+                mCurrentKeyTime = 0
+                mLastKey = NOT_A_KEY
+                mCurrentKey = keyIndex
+                mDownKey = keyIndex
+                mDownTime = me.eventTime
+                mLastMoveTime = mDownTime
+                checkMultiTap(eventTime, keyIndex)
+                onKeyboardActionListener!!.onPress(
+                    if (keyIndex != NOT_A_KEY)
+                        mKeys!![keyIndex].codes[0]
+                    else
+                        0
+                )
+                if (mCurrentKey >= 0 && mKeys!![mCurrentKey].repeatable) {
+                    mRepeatKeyIndex = mCurrentKey
+                    val msg = mHandler!!.obtainMessage(MSG_REPEAT)
+                    mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY.toLong())
+                    repeatKey()
+                    // Delivering the key could have caused an abort
+                    if (mAbortKey) {
+                        mRepeatKeyIndex = NOT_A_KEY
+                        break
+                    }
+                }
+                if (mCurrentKey != NOT_A_KEY) {
+                    val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
+                    mHandler!!.sendMessageDelayed(msg, LONGPRESS_TIMEOUT.toLong())
+                }
+                showPreview(keyIndex)
+            }
+            MotionEvent.ACTION_MOVE -> {
+                var continueLongPress = false
+                if (keyIndex != NOT_A_KEY) {
+                    if (mCurrentKey == NOT_A_KEY) {
+                        mCurrentKey = keyIndex
+                        mCurrentKeyTime = eventTime - mDownTime
+                    } else {
+                        if (keyIndex == mCurrentKey) {
+                            mCurrentKeyTime += eventTime - mLastMoveTime
+                            continueLongPress = true
+                        } else if (mRepeatKeyIndex == NOT_A_KEY) {
+                            resetMultiTap()
+                            mLastKey = mCurrentKey
+                            mLastCodeX = mLastX
+                            mLastCodeY = mLastY
+                            mLastKeyTime = mCurrentKeyTime + eventTime - mLastMoveTime
+                            mCurrentKey = keyIndex
+                            mCurrentKeyTime = 0
+                        }
+                    }
+                }
+                if (!continueLongPress) {
+                    // Cancel old longpress
+                    mHandler!!.removeMessages(MSG_LONGPRESS)
+                    // Start new longpress if key has changed
+                    if (keyIndex != NOT_A_KEY) {
+                        val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
+                        mHandler!!.sendMessageDelayed(msg, LONGPRESS_TIMEOUT.toLong())
+                    }
+                }
+                showPreview(mCurrentKey)
+                mLastMoveTime = eventTime
+            }
+            MotionEvent.ACTION_UP -> {
+                removeMessages()
+                if (keyIndex == mCurrentKey) {
+                    mCurrentKeyTime += eventTime - mLastMoveTime
+                } else {
+                    resetMultiTap()
+                    mLastKey = mCurrentKey
+                    mLastKeyTime = mCurrentKeyTime + eventTime - mLastMoveTime
+                    mCurrentKey = keyIndex
+                    mCurrentKeyTime = 0
+                }
+                if (mCurrentKeyTime < mLastKeyTime && mCurrentKeyTime < DEBOUNCE_TIME
+                    && mLastKey != NOT_A_KEY
+                ) {
+                    mCurrentKey = mLastKey
+                    touchX = mLastCodeX
+                    touchY = mLastCodeY
+                }
+                showPreview(NOT_A_KEY)
+                Arrays.fill(mKeyIndices, NOT_A_KEY)
+                // If we're not on a repeating key (which sends on a DOWN event)
+                if (mRepeatKeyIndex == NOT_A_KEY && !mMiniKeyboardOnScreen && !mAbortKey) {
+                    detectAndSendKey(mCurrentKey, touchX, touchY, eventTime)
+                }
+                invalidateKey(keyIndex)
+                mRepeatKeyIndex = NOT_A_KEY
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                removeMessages()
+                dismissPopupKeyboard()
+                mAbortKey = true
+                showPreview(NOT_A_KEY)
+                invalidateKey(mCurrentKey)
+            }
+        }
+        mLastX = touchX
+        mLastY = touchY
+        return true
+        */
+    }
+
+    /*
+    private fun getKeyIndices(x: Int, y: Int, allKeys: IntArray?): Int {
+        val keys = activeLayout!!.keys
+        //var primaryIndex = NOT_A_KEY
+        //var closestKey = NOT_A_KEY
+        var closestKeyDist = mProximityThreshold + 1
+        java.util.Arrays.fill(mDistances, Integer.MAX_VALUE)
+        val nearestKeyIndices = keyboard!!.getNearestKeys(x, y)
+        val keyCount = nearestKeyIndices.size
+        for (i in 0 until keyCount) {
+            val key = keys!![nearestKeyIndices[i]]
+            var dist = 0
+            val isInside = key.isInside(x, y)
+            if (isInside) {
+                primaryIndex = nearestKeyIndices[i]
+            }
+            if ((isProximityCorrectionEnabled && (dist = key.squaredDistanceFrom(
+                    x,
+                    y
+                )) < mProximityThreshold || isInside) && key.codes[0] > 32
+            ) {
+                // Find insertion point
+                val nCodes = key.codes.size
+                if (dist < closestKeyDist) {
+                    closestKeyDist = dist
+                    closestKey = nearestKeyIndices[i]
+                }
+                if (allKeys == null) continue
+                for (j in mDistances.indices) {
+                    if (mDistances[j] > dist) {
+                        // Make space for nCodes codes
+                        System.arraycopy(
+                            mDistances, j, mDistances, j + nCodes,
+                            mDistances.size - j - nCodes
+                        )
+                        System.arraycopy(
+                            allKeys, j, allKeys, j + nCodes,
+                            allKeys.size - j - nCodes
+                        )
+                        for (c in 0 until nCodes) {
+                            allKeys[j + c] = key.codes[c]
+                            mDistances[j + c] = dist
+                        }
+                        break
+                    }
+                }
+            }
+        }
+        if (primaryIndex == NOT_A_KEY) {
+            primaryIndex = closestKey
+        }
+        return primaryIndex
+    }*/
+
 }
