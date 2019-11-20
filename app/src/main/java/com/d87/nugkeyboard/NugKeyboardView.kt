@@ -13,13 +13,11 @@ import android.util.DisplayMetrics
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
-
-
-
-
-
+import android.os.Handler
+import android.os.Message
+import android.util.Log
+import android.widget.FrameLayout
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 
 
 //import android.inputmethodservice.KeyboardView;
@@ -55,7 +53,7 @@ class NugKeyboardView : View {
          * These codes are useful to correct for accidental presses of a key adjacent to
          * the intended key.
          */
-        fun onKey(primaryCode: Int, keyCodes: IntArray)
+        fun onKey(primaryCode: Int)
 
         /**
          * Sends a sequence of characters to the listener.
@@ -89,10 +87,23 @@ class NugKeyboardView : View {
     private var _OldPointerX: Float = 0.toFloat()
     private var _OldPointerY: Float = 0.toFloat()
 
+    // TODO: Dynamically expand array or something
+    private var _swipeTrackers: ArrayList<SwipeTracker> = arrayListOf(SwipeTracker(), SwipeTracker(), SwipeTracker())
+
     private var _VerticalCorrection: Int = 0
 
     //private var _keys: ArrayList<SwipeButton> = arrayListOf()
     var activeLayout: KeyboardLayout? = null
+    init {
+        val kLayout = KeyboardLayout(this)
+
+        val layoutJson = resources.openRawResource(R.raw.default_layout)
+            .bufferedReader().use { it.readText() }
+
+        kLayout.importJSON(layoutJson)
+        kLayout.makeKeys()
+        activeLayout = kLayout
+    }
 
     private var _KeyBackground: Drawable? = null
 
@@ -164,12 +175,6 @@ class NugKeyboardView : View {
             attrs, R.styleable.NugKeyboardView, defStyle, 0
         )
 
-        val kLayout = KeyboardLayout()
-        val layoutJson = resources.openRawResource(R.raw.default_layout)
-            .bufferedReader().use { it.readText() }
-        kLayout.importJSON(layoutJson)
-        kLayout.makeKeys(this)
-        activeLayout = kLayout
 
         _exampleString = a.getString(
             R.styleable.NugKeyboardView_exampleString
@@ -221,40 +226,24 @@ class NugKeyboardView : View {
     }
 
     override  fun onSizeChanged(neww: Int, newh: Int, oldw: Int, oldh: Int) {
-        val paddingLeft = paddingLeft
-        val paddingTop = paddingTop
-        val paddingRight = paddingRight
-        val paddingBottom = paddingBottom
+        //val paddingLeft = paddingLeft
+        //val paddingTop = paddingTop
+        //val paddingRight = paddingRight
+        //val paddingBottom = paddingBottom
 
-        val contentWidth = width - paddingLeft - paddingRight
-        val contentHeight = height - paddingTop - paddingBottom
+        //val contentWidth = width - paddingLeft - paddingRight
+        //val contentHeight = height - paddingTop - paddingBottom
 
         val density = resources.displayMetrics.density
-        val dpHeight = resources.displayMetrics.heightPixels / density
-        val dpWidth = resources.displayMetrics.widthPixels / density
+        //val dpHeight = resources.displayMetrics.heightPixels / density
+        //val dpWidth = resources.displayMetrics.widthPixels / density
 
-        val keyWidth = (width / 4).toFloat()
-        val keyHeight = (height / 4).toFloat()
+        //val keyWidth = (width / 4).toFloat()
+        //val keyHeight = (height / 4).toFloat()
 
         activeLayout?.let{
-            it.resize(contentWidth.toFloat(), contentHeight.toFloat(), density)
+            it.resize(neww.toFloat(), newh.toFloat(), density)
         }
-        /*var x = 0f
-        var y = 0f
-        for (i in 0 until 4) {
-            for (j in 0 until 4) {
-                val index = (i*4)+j
-                val newKey = _keys[index]
-                newKey.x = x
-                newKey.y = y
-                newKey.height = keyHeight
-                newKey.width = keyWidth
-
-                x += keyWidth
-            }
-            x = 0f
-            y += keyHeight
-        }*/
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -282,7 +271,7 @@ class NugKeyboardView : View {
         //canvas.drawColor(0x00000000, PorterDuff.Mode.SRC)
         canvas.drawPaint(backgroundPaint)
 
-        exampleString?.let {
+        /*exampleString?.let {
             // Draw the text.
             canvas.drawText(
                 it,
@@ -290,7 +279,7 @@ class NugKeyboardView : View {
                 paddingTop + (contentHeight + textHeight) / 2,
                 textPaint as Paint
             )
-        }
+        }*/
 
         activeLayout?.let {
             for (key: SwipeButton in it.keys) {
@@ -304,8 +293,8 @@ class NugKeyboardView : View {
 
         //val rect = Rect(0,0, 30, 30)
 
-        canvas.drawLine(0f,0f, width.toFloat(), height.toFloat(), redPaint)
-        canvas.drawLine(0.toFloat(), height.toFloat()/2, paddingRight.toFloat(), height.toFloat()/2, redPaint)
+        //canvas.drawLine(0f,0f, width.toFloat(), height.toFloat(), redPaint)
+        //canvas.drawLine(0.toFloat(), height.toFloat()/2, paddingRight.toFloat(), height.toFloat()/2, redPaint)
 
 
 
@@ -323,9 +312,40 @@ class NugKeyboardView : View {
         // Convert multi-pointer up/down events to single up/down events to
         // deal with the typical multi-pointer behavior of two-thumb typing
         val pointerCount = me.pointerCount
-        val action = me.action
+        val actionMasked = me.actionMasked
         var result = false
         val now = me.eventTime
+
+        var pointerID = 0
+
+        Log.d("MOTION", me.toString() )
+
+        // If you have more than 1 active pointer, then ACTION_POINTER_DOWN/UP events are coming in
+        // instead of a normal ACTION_DOWN/UP, these events carry pointerIndex inside of them
+        // That's why actionMasked is used instead of normal action, otherwise ACTION_POINTER_DOWN
+        // wouldn't register.
+        // ACTION_DOWN/UP only comes for the first/last pointer remaining, so their's pointerIndex is always 0
+        // ACTION_MOVE events at all times carry positions of all active pointers,
+        // without specifying which one changed
+        when(actionMasked) {
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                //Log.d("NEW POINTER", me.toString())
+                pointerID = me.getPointerId(me.actionIndex)
+                me.action = MotionEvent.ACTION_DOWN
+            }
+            MotionEvent.ACTION_POINTER_UP -> {
+                //Log.d("LOST POINTER", me.toString())
+                pointerID = me.getPointerId(me.actionIndex)
+                me.action = MotionEvent.ACTION_UP
+            }
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP -> {
+                pointerID = me.getPointerId(0)
+            }
+        }
+
+        return onModifiedTouchEvent(me, pointerID)
+
+        /*
         if (pointerCount != _OldPointerCount) {
             if (pointerCount == 1) {
                 // Send a down event for the latest pointer
@@ -359,33 +379,119 @@ class NugKeyboardView : View {
             }
         }
         _OldPointerCount = pointerCount
-        return result
+        */
+        //return result
     }
 
-    fun getKeyFromCoords(touchX: Int, touchY: Int): SwipeButton? {
-        for (key in activeLayout.keys) {
+    fun getKeyFromCoords(touchX: Float, touchY: Float): SwipeButton? {
+        for (key in activeLayout!!.keys) {
             if (key.isInside(touchX, touchY))
                 return key
         }
+        return null
     }
 
-    private fun onModifiedTouchEvent(me: MotionEvent, possiblePoly: Boolean): Boolean {
-        var touchX = me.x.toInt() - paddingBottom
-        var touchY = me.y.toInt() - paddingTop
-        if (touchY >= _VerticalCorrection)
-            touchY += _VerticalCorrection
-        val action = me.action
-        val eventTime = me.eventTime
-        val key = getKeyFromCoords(touchX, touchY)    //--------- <----- Where keys get recognized
-        key ?: return false
-
-        if (action == MotionEvent.ACTION_DOWN) {
-            activeLayout?.let {
-                it.keys[0].startHIghlight()
+    class InternalHandler : Handler() {
+        override fun handleMessage(msg: Message) {
+            //super.handleMessage(msg)
+            Log.d("MESSAGE", msg.toString())
+            when (msg.what) {
+                LONG_PRESS -> {
+                    Log.d("LONG_PRESS", msg.arg1.toString())
+                }
             }
         }
-        //mPossiblePoly = possiblePoly
+    }
+    private var _uiHandler = InternalHandler()
 
+    //private fun onModifiedTouchEvent(me: MotionEvent, possiblePoly: Boolean): Boolean {
+    private fun onModifiedTouchEvent(me: MotionEvent, pointerID: Int): Boolean {
+        // var touchX = me.x.toInt() - paddingBottom
+        // var touchY = me.y.toInt() - paddingTop
+        // if (touchY >= _VerticalCorrection)
+        //     touchY += _VerticalCorrection
+        val action = me.action
+        val eventTime = me.eventTime
+        //val key = getKeyFromCoords(touchX, touchY)    //--------- <----- Where keys get recognized
+        //key ?: return false
+
+        val swipeTracker = try {
+             _swipeTrackers[pointerID]
+        } catch ( e: ArrayIndexOutOfBoundsException) {
+            val newTracker = SwipeTracker()
+            _swipeTrackers.add(newTracker)
+            if (_swipeTrackers.size-1 != pointerID ) throw e
+            newTracker
+        }
+
+        when (me.action) {
+            MotionEvent.ACTION_DOWN -> {
+                swipeTracker.start(me, pointerID)
+
+                // Start LONG_PRESS countdown, swipeTracker here is passsed as "obj" to message
+                // to later identify this message for this pointer id
+                val msg = _uiHandler.obtainMessage(LONG_PRESS, pointerID, 0, swipeTracker)
+                _uiHandler.sendMessageDelayed(msg, 1500)
+
+                var (x,y) = swipeTracker.getOrigin()
+                // x -= paddingBottom
+                // y -= paddingTop
+                val key = getKeyFromCoords(x, y)
+                key?.let{
+                    it.highlightFadeIn()
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                swipeTracker.addMovement(me, pointerID)
+            }
+            MotionEvent.ACTION_UP -> {
+                _uiHandler.removeMessages(LONG_PRESS, swipeTracker)
+                if (swipeTracker.isSwiping()) {
+                    val angle = swipeTracker.getSwipeAngle()
+                    Log.d("SWIPE_ANGLE", angle.toString() )
+                    val (x,y) = swipeTracker.getOrigin()
+                    val key = getKeyFromCoords(x, y)
+                    key ?: return true
+
+                    key!!.highlightFadeOut()
+
+                    val action = key.getBindingByAngle(angle)
+                    action?.let{
+                        val c: Char = it.action[0]
+                        val code: Int = c.toInt()
+                        val keyCode = code
+                        onKeyboardActionListener!!.onKey(keyCode)
+                    }
+                } else {
+                    Log.d( "KEYPRESS", pointerID.toString())
+                    val (x,y) = swipeTracker.getOrigin()
+                    val key = getKeyFromCoords(x, y)
+                    key ?: return true
+
+                    val action = key.config.mainKey
+                    action?.let {
+                        val c: Char = it.action[0]
+                        val code: Int = c.toInt()
+                        val keyCode = code
+                        onKeyboardActionListener!!.onKey(keyCode)
+                    }
+                }
+            }
+        }
+
+
+        // mSwipeTracker.addMovement(me)
+
+        // if (mGestureDetector!!.onTouchEvent(me)) {
+        //     showPreview(NOT_A_KEY)
+        //     mHandler!!.removeMessages(MSG_REPEAT)
+        //     mHandler!!.removeMessages(MSG_LONGPRESS)
+        //     return true
+        // }
+
+        return true
+        //mPossiblePoly = possiblePoly
+        /*
         // Track the last few movements to look for spurious swipes.
         if (action == MotionEvent.ACTION_DOWN) mSwipeTracker.clear()
         mSwipeTracker.addMovement(me)
@@ -518,7 +624,7 @@ class NugKeyboardView : View {
         mLastY = touchY
         return true
         */
-    }
+    }*/
 
     /*
     private fun getKeyIndices(x: Int, y: Int, allKeys: IntArray?): Int {
@@ -572,6 +678,12 @@ class NugKeyboardView : View {
             primaryIndex = closestKey
         }
         return primaryIndex
-    }*/
+
+     */
+    }
+
+    companion object {
+        const val LONG_PRESS = 12
+    }
 
 }

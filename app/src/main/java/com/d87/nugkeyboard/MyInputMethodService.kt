@@ -2,25 +2,48 @@ package com.d87.nugkeyboard
 
 //import android.inputmethodservice;
 import android.inputmethodservice.InputMethodService
-import android.inputmethodservice.KeyboardView
 import android.inputmethodservice.Keyboard
 import android.view.View
 import android.view.KeyEvent
 import android.text.TextUtils
+import android.util.Log
 import android.widget.FrameLayout
 import android.view.inputmethod.InputConnection
 
 class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardActionListener {
 
-    private var keyboardView: KeyboardView? = null
-    private var keyboard: Keyboard? = null
+    //private var keyboardView: KeyboardView? = null
+    //private var keyboard: Keyboard? = null
 
     private var caps = false
 
     override fun onCreateInputView(): View {
-        //println("hello")
         val layout = layoutInflater.inflate(R.layout.sample_nug_keyboard_view, null) as FrameLayout
         val kv: NugKeyboardView = layout.findViewById(R.id.KeyboardView)
+
+
+        // TODO: load keyboard profile/layout here to change keyboard size?
+        val keyboardLayoutAspectRatio = kv.activeLayout!!.layoutWidth/kv.activeLayout!!.layoutHeight
+        val density = resources.displayMetrics.density
+        val dpHeight = resources.displayMetrics.heightPixels / density
+        val dpWidth = resources.displayMetrics.widthPixels / density
+
+        val displayWidth = resources.displayMetrics.widthPixels
+        val displayHeight = resources.displayMetrics.heightPixels
+        var kbHeight = 0
+        var kbWidth = 0
+        if (keyboardLayoutAspectRatio >= 1) {
+            kbWidth = displayWidth
+            kbHeight = (displayWidth / keyboardLayoutAspectRatio).toInt()
+        } else {
+            kbWidth = (displayWidth * keyboardLayoutAspectRatio).toInt()
+            kbHeight = displayWidth
+        }
+
+        kv.layoutParams.width = kbWidth
+        kv.layoutParams.height = kbHeight
+        kv.requestLayout()
+
         kv.onKeyboardActionListener = this
 
         //kv.exampleString = "asd"
@@ -42,11 +65,11 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
     }
 
 
-    override fun onKey(primaryCode: Int, keyCodes: IntArray) {
+    override fun onKey(primaryCode: Int) {
         val inputConnection = currentInputConnection
         if (inputConnection != null) {
-            /*when (primaryCode) {
-                Keyboard.KEYCODE_DELETE -> {
+            when (primaryCode) {
+                /*Keyboard.KEYCODE_DELETE -> {
                     val selectedText = inputConnection.getSelectedText(0)
 
                     if (TextUtils.isEmpty(selectedText)) {
@@ -62,7 +85,7 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
                     caps = !caps
                     keyboard!!.isShifted = caps
                     keyboardView!!.invalidateAllKeys()
-                }
+                }*/
                 Keyboard.KEYCODE_DONE -> inputConnection.sendKeyEvent(
                     KeyEvent(
                         KeyEvent.ACTION_DOWN,
@@ -74,9 +97,10 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
                     if (Character.isLetter(code) && caps) {
                         code = Character.toUpperCase(code)
                     }
+                    Log.d("ONKEY", code.toString())
                     inputConnection.commitText(code.toString(), 1)
                 }
-            }*/
+            }
         }
     }
 

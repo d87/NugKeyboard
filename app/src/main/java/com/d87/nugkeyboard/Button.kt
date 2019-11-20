@@ -1,15 +1,57 @@
 package com.d87.nugkeyboard
 
-import android.animation.Animator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.text.TextPaint
-import android.widget.Button
-import androidx.core.animation.addListener
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
-open class SwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) { //(parent: Row) {
+class KeyboardAction(action: String) {
+    val action: String = action
+    val keyCode: Int = 0
+    var label: String? = null
+    var icon: Drawable? = null
+    var scale: Float = 1f
+    var isHidden = false
+    var xOffset = 0f
+    var yOffset = 0f
+
+    companion object {
+        enum class ActionType {
+            NOOP,
+            INPUT,
+            CAPS_UP,
+            CAPS_DOWN,
+            DELETE_CHAR,
+            DELETE_WORD,
+            CYCLE_LAYOUT
+        }
+        val actionStringToId: Map<String, ActionType> = mapOf(
+            Pair("NOOP", ActionType.NOOP),
+            Pair("INPUT", ActionType.INPUT),
+            Pair("CAPS_UP", ActionType.CAPS_UP),
+            Pair("CAPS_DOWN", ActionType.CAPS_DOWN),
+            Pair("DELETE_CHAR", ActionType.DELETE_CHAR),
+            Pair("DELETE_WORD", ActionType.DELETE_WORD),
+            Pair("CYCLE_LAYOUT", ActionType.CYCLE_LAYOUT)
+        )
+        fun getActionId(actionStr: String): ActionType? {
+            return actionStringToId[actionStr]
+        }
+    }
+}
+
+open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
+    val layout = layout
+    var config: ButtonConfig = config
 
     val EDGE_LEFT = 0x01
     val EDGE_RIGHT = 0x02
@@ -22,71 +64,81 @@ open class SwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) { //
     val KEYCODE_DELETE = -5
     val KEYCODE_ALT = -6
 
-    var code = "K"
-
-    /** Label to display  */
-    var label: CharSequence = "Key"
-
-    /**
-     * Flags that specify the anchoring to edges of the keyboard for detecting touch events
-     * that are just out of the boundary of the key. This is a bit mask of
-     * [Keyboard.EDGE_LEFT], [Keyboard.EDGE_RIGHT], [Keyboard.EDGE_TOP] and
-     * [Keyboard.EDGE_BOTTOM].
-     */
     var edgeFlags: Int = 0
-    /** Width of the key, not including the gap  */
     var width: Float = 0f
-    /** Height of the key, not including the gap  */
     var height: Float = 0f
-    /** X coordinate of the key in the keyboard layout  */
     var x: Float = 0f
-    /** Y coordinate of the key in the keyboard layout  */
     var y: Float = 0f
     var centerX: Float = 0f
     var centerY: Float = 0f
+    var keyBackground: Drawable? = null
 
-    var config: ButtonConfig = config
+    var mainKey = config.mainKey
 
     var roll: Float = config.roll
     var type: String = "Normal"
-    var divisions: Int = config.divisions
+    var divisions: Int = if (config.divisions >= 2) config.divisions else 0
+    val divisionAngle = if (divisions > 0) 360/divisions else 90
+    class SwipeZone(
+        var start: Float,
+        var end: Float,
+        var binding: KeyboardAction
+    ){}
+    var swipeZones: ArrayList<SwipeZone> = arrayListOf()
 
-    /** The current pressed state of this key  */
-    var pressed: Boolean = false
-    /** If this is a sticky key, is it on?  */
-    var on: Boolean = false
-    /** Whether this key is sticky, i.e., a toggle key  */
-    var sticky: Boolean = false
-
-    val borderPaint: Paint = Paint().apply{
-        color = Color.GRAY
-        style = Paint.Style.STROKE
-        strokeWidth = 2f
-        //isAntiAlias = true
+    init {
+        val binds = config.radialKeys
+        var curAngle = 0f
+        var i = 0;
+        val numBinds = binds.size
+        var previousZone: SwipeZone? = null
+        while (i < numBinds) {
+            val bind = binds[i]
+            curAngle = i.toFloat() * divisionAngle
+            if (previousZone != null && bind == previousZone.binding)
+            {
+                previousZone?.let{
+                    it.end += divisionAngle
+                }
+            } else {
+                var zoneEnd = curAngle+divisionAngle
+                if (360-zoneEnd < 1) zoneEnd = 360f
+                val newZone = SwipeZone(curAngle, zoneEnd, bind)
+                swipeZones.add(newZone)
+                previousZone = newZone
+            }
+            i++
+        }
     }
-    val primaryTextPaint: TextPaint = TextPaint().apply {
-        flags = Paint.ANTI_ALIAS_FLAG
-        textAlign = Paint.Align.CENTER
-        color = Color.RED
-        textSize = 60f
-    }
-    val secondaryTextPaint: TextPaint = TextPaint()
-    val highlightPaint: Paint = Paint().apply{
-        style = Paint.Style.FILL
-        color = Color.CYAN
+    fun getBindingByAngle(angle: Float): KeyboardAction? {
+        val rolledAngle = angle + roll
+
+        var matchedZone: SwipeZone
+        for (zone in swipeZones) {
+            if (rolledAngle >= zone.start && rolledAngle < zone.end )
+                return zone.binding
+        }
+        return null
     }
 
-    private var _keyboardView: NugKeyboardView = keyboardView
-    private var _highlightAlpha = 0
+    // val borderPaint: Paint = Paint().apply{
+    //     color = Color.GRAY
+    //     style = Paint.Style.STROKE
+    //     strokeWidth = 2f
+    //     //isAntiAlias = true
+    // }
 
-    val alphaAnimation = ValueAnimator.ofInt(0, 150, 0).apply {
-        duration = 300
+
+    protected var highlightAlpha = 0
+
+    val highlightFadeOutAnimation = ValueAnimator.ofInt(150, 0).apply {
+        duration = 200
         addUpdateListener { updatedAnimation ->
             // You can use the animated value in a property that uses the
             // same type as the animation. In this case, you can use the
             // float value in the translationX property.
-            _highlightAlpha = updatedAnimation.animatedValue as Int
-            _keyboardView.invalidate()
+            highlightAlpha = updatedAnimation.animatedValue as Int
+            layout.keyboardView.invalidate()
         }
         /*addListener(obj : Animator.AnimatorListener! {
             override fun onAnimationEnd(animation: Animator) {
@@ -95,13 +147,14 @@ open class SwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) { //
         })*/
     }
 
-    /**
-     * Informs the key that it has been pressed, in case it needs to change its appearance or
-     * state.
-     * @see .onReleased
-     */
-    fun startHIghlight(){
-        alphaAnimation.start()
+    fun highlightFadeIn(){
+        if (highlightFadeOutAnimation.isStarted)
+            highlightFadeOutAnimation.cancel() // end()?
+        highlightAlpha = 150
+        layout.keyboardView.invalidate()
+    }
+    fun highlightFadeOut(){
+        highlightFadeOutAnimation.start()
     }
 
     open fun onResize() {
@@ -109,48 +162,99 @@ open class SwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) { //
         this.centerY = y + height/2
     }
 
-    fun onPressed() {
-        pressed = !pressed
-    }
+    var normalColor: Paint = layout.normalButtonPaint
+    var highlightColor: Paint = layout.highlightPaint
 
-    /**
-     * Changes the pressed state of the key.
-     *
-     *
-     * Toggled state of the key will be flipped when all the following conditions are
-     * fulfilled:
-     *
-     *
-     *  * This is a sticky key, that is, [.sticky] is `true`.
-     *  * The parameter `inside` is `true`.
-     *  * [android.os.Build.VERSION.SDK_INT] is greater than
-     * [android.os.Build.VERSION_CODES.LOLLIPOP_MR1].
-     *
-     *
-     * @param inside whether the finger was released inside the key. Works only on Android M and
-     * later. See the method document for details.
-     * @see .onPressed
-     */
-    fun onReleased(inside: Boolean) {
-        pressed = !pressed
-        if (sticky && inside) {
-            on = !on
+    fun applyTheme(){
+        val isAccented = if (config.isAccented) 1 else 0
+        val isAltColor = if (config.isAccented) 2 else 0
+        val c = isAccented + isAltColor
+        normalColor = when (c) {
+            1 -> layout.accentButtonPaint
+            3 -> layout.accentAltButtonPaint
+            2 -> layout.normalAltButtonPaint
+            else -> layout.normalButtonPaint
         }
+    }
+    init {
+        applyTheme()
     }
 
     open fun draw(canvas: Canvas) {
-        val text = "A"
-        val textWidth = primaryTextPaint.measureText(text)
+        //val textWidth = primaryTextPaint.measureText(text)
+        val primaryTextPaint = layout.primaryTextPaint
+        val secondaryTextPaint = layout.secondaryTextPaint
+        val density = layout.keyboardView.resources.displayMetrics.density
+        val padding = (1*density).toInt()
+        val roundingRadius = 7*density
+
+        val left = x+padding
+        val top = y+padding
+        val right = x+width-padding
+        val bottom = y+height-padding
+
+
+        canvas.drawRoundRect(x+padding, y+padding, x+width-padding, y+height-padding, roundingRadius, roundingRadius, normalColor)
+        //canvas.drawRect(x+padding, y+padding, x+width-padding, y+height-padding, normalButtonPaint)
+
         val textHeight = primaryTextPaint.ascent() + primaryTextPaint.descent()
 
-        canvas.drawText(text, centerX, centerY-textHeight/2, primaryTextPaint)
+        //canvas.drawCircle(centerX, centerY, 21*density, centerCirclePaint)
+        //canvas.drawCircle(centerX, centerY, 19*density, normalButtonPaint)
 
-        if (_highlightAlpha > 0) {
-            highlightPaint.alpha = _highlightAlpha
-            canvas.drawRect(x, y, x + width, y + height, highlightPaint)
+        if (!mainKey.isHidden) {
+            if (mainKey.icon != null) {
+                val icon = mainKey.icon!!
+                val scale = mainKey.scale
+                var w = icon.intrinsicWidth * scale
+                var h = icon.intrinsicHeight * scale
+                val left = (centerX - w / 2).toInt()
+                val top = (centerY - h / 2).toInt()
+                val right = (centerX + w / 2).toInt()
+                val bottom = (centerY + h / 2).toInt()
+                icon.setBounds(left, top, right, bottom)
+                icon.draw(canvas)
+            } else {
+                canvas.drawText(mainKey.action, centerX, centerY - textHeight / 2, primaryTextPaint)
+            }
         }
 
-        canvas.drawRect(x, y, x+width, y+height, borderPaint)
+        for (zone in swipeZones) {
+            val midAngle = (zone.start + zone.end)/2 / (180/PI)
+            val distanceOriginal = 70*density
+            var distance = distanceOriginal
+            var dx = (sin(midAngle)*distance).toFloat()
+            var dy = (-cos(midAngle)*distance).toFloat()
+
+            val edgeMargin = 15*density
+
+            // Clamping radial key text to stay inside rectangular button area
+            // while still freely turning
+            if (abs(dx) > width/2 - edgeMargin) {
+                val ratio = (width/2 - edgeMargin)/abs(dx)
+                distance = distanceOriginal*ratio
+
+                dx = (sin(midAngle)*distance).toFloat()
+                dy = (-cos(midAngle)*distance).toFloat()
+            }
+            if (abs(dy) > height/2 - edgeMargin) {
+                val ratio = (height/2 - edgeMargin)/abs(dy)
+                distance = distanceOriginal*ratio
+
+                dx = (sin(midAngle)*distance).toFloat()
+                dy = (-cos(midAngle)*distance).toFloat()
+            }
+
+            val textHeight = secondaryTextPaint.ascent() + secondaryTextPaint.descent()
+            canvas.drawText(zone.binding.action, centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
+        }
+
+        //if (highlightAlpha > 0) {
+        //    highlightPaint.alpha = highlightAlpha
+        //    canvas.drawRect(x, y, x + width, y + height, highlightPaint)
+        //}
+
+        //canvas.drawRect(x, y, x+width, y+height, borderPaint)
     }
 
     /**
@@ -161,18 +265,8 @@ open class SwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) { //
      * it will assume that all points between the key and the edge are considered to be inside
      * the key.
      */
-    open fun isInside(tx: Int, ty: Int): Boolean {
+    open fun isInside(tx: Float, ty: Float): Boolean {
         return false
-        /*val leftEdge = edgeFlags and EDGE_LEFT > 0
-        val rightEdge = edgeFlags and EDGE_RIGHT > 0
-        val topEdge = edgeFlags and EDGE_TOP > 0
-        val bottomEdge = edgeFlags and EDGE_BOTTOM > 0
-        return (
-                (tx >= x || leftEdge && tx <= x + width)
-            && (tx < x + width || rightEdge && tx >= x)
-            && (ty >= y || topEdge && ty <= y + height)
-            && (ty < y + height || bottomEdge && ty >= y)
-        )*/
     }
 
     /**
@@ -220,9 +314,15 @@ open class SwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) { //
         //text = a.getText(com.android.internal.R.styleable.Keyboard_Key_keyOutputText)
         label = "TestKey"
     } */
+
+    companion object {
+        private val KEY_STATE_NORMAL = intArrayOf()
+        private val KEY_STATE_PRESSED = intArrayOf(android.R.attr.state_pressed)
+    }
 }
 
-class RoundSwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) : SwipeButton(config, keyboardView) {
+class RoundSwipeButton(layout: KeyboardLayout, config: ButtonConfig) : SwipeButton(layout, config) {
+
     override fun onResize() {
         if (height != width) {
             width = height
@@ -230,16 +330,53 @@ class RoundSwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) : Sw
         super.onResize()
     }
 
-    override fun isInside(tx: Int, ty: Int): Boolean {
+    override fun isInside(tx: Float, ty: Float): Boolean {
         val radius = centerX - x
         val dx = tx - centerX
         val dy = ty - centerY
         return (dx*dx + dy*dy < radius*radius)
     }
+
+    override fun draw(canvas: Canvas) {
+        val primaryTextPaint = layout.primaryTextPaint
+        val secondaryTextPaint = layout.secondaryTextPaint
+        val highlightPaint = layout.highlightPaint
+
+        //val textWidth = primaryTextPaint.measureText(text)
+        val textHeight = primaryTextPaint.ascent() + primaryTextPaint.descent()
+
+        if (mainKey.icon != null) {
+            val icon = mainKey.icon!!
+            var w = icon.intrinsicWidth
+            var h = icon.intrinsicHeight
+            val left = (centerX-w/2).toInt()
+            val top = (centerY-h/2).toInt()
+            val right = (centerX+w/2).toInt()
+            val bottom = (centerY+h/2).toInt()
+            icon.setBounds(left, top, right, bottom)
+            icon.draw(canvas)
+        } else {
+            canvas.drawText(mainKey.action, centerX, centerY - textHeight / 2, primaryTextPaint)
+        }
+
+        for (zone in swipeZones) {
+            val midAngle = (zone.start + zone.end)/2 / (180/PI)
+            val distance = width * 0.3
+            val dx = (sin(midAngle)*distance).toFloat()
+            val dy = (-cos(midAngle)*distance).toFloat()
+            val textHeight = secondaryTextPaint.ascent() + secondaryTextPaint.descent()
+            canvas.drawText(zone.binding.action, centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
+        }
+
+        //if (highlightAlpha > 0) {
+        //    highlightPaint.alpha = highlightAlpha
+        //    canvas.drawRect(x, y, x + width, y + height, highlightPaint)
+        //}
+    }
 }
 
-class RectSwipeButton(config: ButtonConfig, keyboardView: NugKeyboardView) : SwipeButton(config, keyboardView) {
-    override fun isInside(tx: Int, ty: Int): Boolean {
+class RectSwipeButton(layout: KeyboardLayout, config: ButtonConfig) : SwipeButton(layout, config) {
+    override fun isInside(tx: Float, ty: Float): Boolean {
         return (
             (tx >= x)
             && (tx < x + width)

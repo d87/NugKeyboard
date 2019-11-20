@@ -1,40 +1,42 @@
 {
+    "layoutVersion": 1,
     "keyConfig": [
         {
             "type": "Rect",
             "x": 0,
             "y": 0,
-            "width": 0.25,
-            "height": 0.25,
-            "divisions": 3,
-            "bindings": [
-                "A",
-                "B",
-                "C"
+            "width": 250,
+            "height": 250,
+            "mainKey": { "action":"a" },
+            "radialKeys": [
+                { "action":"v" },
+                null,
+                null,
+                { "action":"q" }
             ]
         },
         {
             "type": "Rect",
-            "x": 0.25,
+            "x": 250,
             "y": 0,
-            "width": 0.25,
-            "height": 0.25,
-            "divisions": 4,
-            "bindings": [
-                "D",
-                "E",
-                "F",
-                "G"
+            "width": 250,
+            "height": 250,
+            "mainKey": { "action":"n" },
+            "radialKeys": [
+                { "action":"v" },
+                null,
+                { "action":"y" },
+                null
             ]
         },
         {
             "type": "Rect",
-            "x": 0.5,
+            "x": 500,
             "y": 0,
-            "width": 0.25,
-            "height": 0.25,
-            "divisions": 3,
-            "bindings": [
+            "width": 250,
+            "height": 250,
+            "mainKey": "A",
+            "radialKeys": [
                 "A",
                 "B",
                 "C"
@@ -42,12 +44,12 @@
         },
         {
             "type": "Rect",
-            "x": 0.75,
+            "x": 750,
             "y": 0,
-            "width": 0.25,
-            "height": 0.25,
-            "divisions": 3,
-            "bindings": [
+            "width": 250,
+            "height": 250,
+            "mainKey": "A",
+            "radialKeys": [
                 "A",
                 "B",
                 "C"
@@ -55,15 +57,174 @@
         },
         {
             "type": "Rect",
-            "x": 0.25,
-            "y": 0.25,
-            "width": 0.25,
-            "height": 0.25,
-            "divisions": 3,
-            "bindings": [
+            "x": 0,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "mainKey": "A",
+            "radialKeys": [
                 "A",
                 "B",
                 "C"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 250,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "mainKey": "B",
+            "radialKeys": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 500,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "mainKey": "B",
+            "radialKeys": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 750,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "mainKey": "B",
+            "radialKeys": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0,
+            "y": 500,
+            "width": 250,
+            "height": 250,
+            "mainKey": "B",
+            "radialKeys": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 250,
+            "y": 500,
+            "width": 250,
+            "height": 250,
+            "mainKey": "B",
+            "radialKeys": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 500,
+            "y": 500,
+            "width": 250,
+            "height": 250,
+            "mainKey": "B",
+            "radialKeys": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 750,
+            "y": 500,
+            "isAccented": true,
+            "isAltColor": false,
+            "width": 250,
+            "height": 250,
+            "mainKey": "B",
+            "hideRadials": true,
+            "radialKeys": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": true,
+            "width": 130,
+            "height": 180,
+            "mainKey": "P",
+            "hideRadials": true,
+            "radialKeys": [
+                "Q",
+                "R"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 130,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": false,
+            "width": 520,
+            "height": 180,
+            "mainKey": { "action":"#32", "icon": "#!SPACE" },
+            "hideRadials": true,
+            "radialKeys": [
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 650,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": true,
+            "width": 150,
+            "height": 180,
+            "mainKey": "P",
+            "hideRadials": true,
+            "radialKeys": [
+                "Q",
+                "R"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 800,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": false,
+            "width": 200,
+            "height": 180,
+            "mainKey": { "action":"#13", "icon": "#!RETURN" },
+            "hideRadials": true,
+            "radialKeys": [
+                "Q",
+                "R"
             ]
         }
     ]
