@@ -67,45 +67,28 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
 
     override fun onKey(primaryCode: Int) {
         val inputConnection = currentInputConnection
-        if (inputConnection != null) {
-            when (primaryCode) {
-                /*Keyboard.KEYCODE_DELETE -> {
-                    val selectedText = inputConnection.getSelectedText(0)
+        inputConnection ?: return
 
-                    if (TextUtils.isEmpty(selectedText)) {
-                        inputConnection.deleteSurroundingText(1, 0)
-                    } else {
-                        inputConnection.commitText("", 1)
-                    }
-                    caps = !caps
-                    keyboard!!.isShifted = caps
-                    keyboardView!!.invalidateAllKeys()
-                }
-                Keyboard.KEYCODE_SHIFT -> {
-                    caps = !caps
-                    keyboard!!.isShifted = caps
-                    keyboardView!!.invalidateAllKeys()
-                }*/
-                Keyboard.KEYCODE_DONE -> inputConnection.sendKeyEvent(
-                    KeyEvent(
-                        KeyEvent.ACTION_DOWN,
-                        KeyEvent.KEYCODE_ENTER
-                    )
-                )
-                else -> {
-                    var code = primaryCode.toChar()
-                    if (Character.isLetter(code) && caps) {
-                        code = Character.toUpperCase(code)
-                    }
-                    Log.d("ONKEY", code.toString())
-                    inputConnection.commitText(code.toString(), 1)
-                }
-            }
-        }
+        val eventDown = KeyEvent(
+            KeyEvent.ACTION_DOWN,
+            primaryCode
+        )
+        val eventUp = KeyEvent(
+            KeyEvent.ACTION_UP,
+            primaryCode
+        )
+        inputConnection.sendKeyEvent(eventDown)
+        inputConnection.sendKeyEvent(eventUp)
     }
 
-
     override fun onText(charSequence: CharSequence) {
+        val inputConnection = currentInputConnection
+        inputConnection ?: return
+
+        inputConnection.commitText(charSequence, 1)
+    }
+
+    override fun onAction(action: KeyboardAction) {
 
     }
 

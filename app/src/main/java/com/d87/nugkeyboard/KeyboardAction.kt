@@ -1,6 +1,7 @@
 package com.d87.nugkeyboard
 
 import android.graphics.drawable.Drawable
+import android.view.KeyEvent
 
 enum class ActionType {
     NOOP,
@@ -30,10 +31,42 @@ enum class KeyboardModifierState {
     }
 }
 
+class KeyCodes {
+    companion object {
+        private val map = mapOf(
+            Pair("KEYCODE_ENTER", KeyEvent.KEYCODE_ENTER),
+            Pair("KEYCODE_DEL", KeyEvent.KEYCODE_DEL), // Backspace
+            Pair("KEYCODE_BACKSPACE", KeyEvent.KEYCODE_DEL), // Backspace
+            Pair("KEYCODE_FORWARD_DEL", KeyEvent.KEYCODE_FORWARD_DEL), // Delete
+            Pair("KEYCODE_DELETE", KeyEvent.KEYCODE_FORWARD_DEL), // Delete
+            Pair("KEYCODE_END", KeyEvent.KEYCODE_MOVE_END), // End
+            Pair("KEYCODE_HOME", KeyEvent.KEYCODE_HOME), // There's also MOVE_HOME
+            Pair("KEYCODE_TAB", KeyEvent.KEYCODE_TAB),
+
+            Pair("KEYCODE_SHIFT_LEFT", KeyEvent.KEYCODE_SHIFT_LEFT),
+            Pair("KEYCODE_SHIFT", KeyEvent.KEYCODE_SHIFT_LEFT),
+            Pair("KEYCODE_SHIFT_RIGHT", KeyEvent.KEYCODE_SHIFT_RIGHT),
+
+            Pair("KEYCODE_CTRL_LEFT", KeyEvent.KEYCODE_CTRL_LEFT),
+            Pair("KEYCODE_CTRL", KeyEvent.KEYCODE_CTRL_LEFT),
+            Pair("KEYCODE_CTRL_RIGHT", KeyEvent.KEYCODE_CTRL_RIGHT),
+
+            Pair("KEYCODE_ALT_LEFT", KeyEvent.KEYCODE_ALT_LEFT),
+            Pair("KEYCODE_ALT", KeyEvent.KEYCODE_ALT_LEFT),
+            Pair("KEYCODE_ALT_RIGHT", KeyEvent.KEYCODE_ALT_RIGHT),
+
+            Pair("KEYCODE_CUT", KeyEvent.KEYCODE_CUT),
+            Pair("KEYCODE_COPY", KeyEvent.KEYCODE_COPY),
+            Pair("KEYCODE_SPACE", KeyEvent.KEYCODE_SPACE)
+        )
+        operator fun get(name: String) = map[name]
+    }
+}
+
 open class KeyboardAction(action: ActionType) {
     var action: ActionType = action
     //var shit: ArrayList<Int> = arrayListOf()
-    var character: Char? = null
+    var text: String? = null
     var keyCode: Int? = null
     var label: String? = null
     var icon: Drawable? = null
@@ -62,7 +95,7 @@ class KeyboardStateAction(): KeyboardAction(ActionType.NOOP) {
     fun switchToAction(newAction: KeyboardAction?) {
         if (newAction != null) {
             this.action = newAction.action
-            this.character = newAction.character
+            this.text = newAction.text
             this.keyCode = newAction.keyCode
             this.label = newAction.label
             this.icon = newAction.icon

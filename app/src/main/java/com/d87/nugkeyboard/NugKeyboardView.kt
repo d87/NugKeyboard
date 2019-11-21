@@ -61,6 +61,8 @@ class NugKeyboardView : View {
          */
         fun onText(text: CharSequence)
 
+        fun onAction(action: KeyboardAction)
+
         /**
          * Called when the user quickly moves the finger from right to left.
          */
@@ -404,6 +406,20 @@ class NugKeyboardView : View {
     }
     private var _uiHandler = InternalHandler()
 
+    fun executeAction(action: KeyboardAction?) {
+        action ?: return
+
+        when(action.action) {
+            ActionType.INPUT -> {
+                action.keyCode?.let { onKeyboardActionListener!!.onKey(it) }
+                action.text?.let { onKeyboardActionListener!!.onText(it) }
+            }
+            else -> {
+                onKeyboardActionListener!!.onAction(action)
+            }
+        }
+    }
+
     //private fun onModifiedTouchEvent(me: MotionEvent, possiblePoly: Boolean): Boolean {
     private fun onModifiedTouchEvent(me: MotionEvent, pointerID: Int): Boolean {
         // var touchX = me.x.toInt() - paddingBottom
@@ -456,12 +472,7 @@ class NugKeyboardView : View {
                     key!!.highlightFadeOut()
 
                     val action = key.getBindingByAngle(angle)
-                    action?.let{
-                        val c: Char = it.character ?: 'z'
-                        val code: Int = c.toInt()
-                        val keyCode = code
-                        onKeyboardActionListener!!.onKey(keyCode)
-                    }
+                    executeAction(action)
                 } else {
                     Log.d( "KEYPRESS", pointerID.toString())
                     val (x,y) = swipeTracker.getOrigin()
@@ -469,12 +480,7 @@ class NugKeyboardView : View {
                     key ?: return true
 
                     val action = key.config.mainKey
-                    action?.let {
-                        val c: Char = it.character ?: 'z'
-                        val code: Int = c.toInt()
-                        val keyCode = code
-                        onKeyboardActionListener!!.onKey(keyCode)
-                    }
+                    executeAction(action)
                 }
             }
         }

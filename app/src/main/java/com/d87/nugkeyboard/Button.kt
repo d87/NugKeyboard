@@ -180,7 +180,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
                 icon.setBounds(left, top, right, bottom)
                 icon.draw(canvas)
             } else {
-                canvas.drawText(mainKey.character.toString(), centerX, centerY - textHeight / 2, primaryTextPaint)
+                canvas.drawText(mainKey.text ?: "", centerX, centerY - textHeight / 2, primaryTextPaint)
             }
         }
 
@@ -211,7 +211,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
             }
 
             val textHeight = secondaryTextPaint.ascent() + secondaryTextPaint.descent()
-            canvas.drawText(zone.binding.character.toString(), centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
+            canvas.drawText(zone.binding.text ?: "", centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
         }
 
         //if (highlightAlpha > 0) {
@@ -286,6 +286,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
     }
 }
 
+/*
 class RoundSwipeButton(layout: KeyboardLayout, config: ButtonConfig) : SwipeButton(layout, config) {
 
     override fun onResize() {
@@ -339,6 +340,7 @@ class RoundSwipeButton(layout: KeyboardLayout, config: ButtonConfig) : SwipeButt
         //}
     }
 }
+*/
 
 class RectSwipeButton(layout: KeyboardLayout, config: ButtonConfig) : SwipeButton(layout, config) {
     override fun isInside(tx: Float, ty: Float): Boolean {

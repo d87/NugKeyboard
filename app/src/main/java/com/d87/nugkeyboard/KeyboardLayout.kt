@@ -9,6 +9,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
@@ -49,7 +50,6 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
         }
         keyboardView.invalidate()
     }
-    //var aspectRatio: Float = 1f;
 
     // These are virtual pixel units for setting up layout and it's aspect ratio, not even dps
     // They get mapped onto dips, and if it's a phone this dips value should snap to phone's width
@@ -63,9 +63,6 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
     var keyConfig: ArrayList<ButtonConfig> = arrayListOf()
     var keys: ArrayList<SwipeButton> = arrayListOf()
 
-    //open fun initializeResources(context: Context, keyboardView: NugKeyboardView) {
-    //    _context = context
-    //}
 
     init {
         theme.backgroundColor = Color.parseColor("#000000")
@@ -154,7 +151,9 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
     }
 
 
-    private fun parseActionObj(obj: JSONObject): KeyboardAction {
+    private fun parseActionObj(obj: JSONObject?): KeyboardAction {
+        obj ?: return KeyboardAction(ActionType.NOOP)
+
         val actionString = obj.optString("action","NOOP")
         val cmdList = actionString.split(":")
         var actionName = cmdList[0]
@@ -176,7 +175,11 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
                     action.keyCode = keyString.substring(1).toIntOrNull()
                 }
                 '&' ->  {
-                    action.character = keyString[1]
+                    action.text = keyString.substring(1)
+                }
+                '@' ->  {
+                    val keycodeName = keyString.substring(1)
+                    action.keyCode = KeyCodes[keycodeName]
                 }
             }
         }
@@ -193,39 +196,31 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
         return action
     }
 
-    fun getActionArrayOrObject(jsonObj: JSONObject, name: String): KeyboardAction? {
-        val actionArray = jsonObj.optJSONArray(name)
-        if (actionArray != null) {
-            val stateAction = KeyboardStateAction()
-            for (actionIndex in 0 until actionArray.length()) {
-                val actionObj = actionArray.getJSONObject(actionIndex)
-                val action = parseActionObj(actionObj)
+    fun parseActionArray(actionArray: JSONArray?): KeyboardAction? {
+        actionArray ?: return null
+        val stateAction = KeyboardStateAction()
+        for (actionIndex in 0 until actionArray.length()) {
+            val actionObj = actionArray.getJSONObject(actionIndex)
+            val action = parseActionObj(actionObj)
 
-                val stateSetString = actionObj.optString("condition","")
+            val stateSetString = actionObj.optString("condition","")
 
-                if (stateSetString == "") {
-                    stateAction.defaultAction = action
-                } else {
-                    val statesByName = stateSetString.split(",")
-                    val set = mutableSetOf<KeyboardModifierState>()
-                    for (stateName in statesByName) {
-                        val stateId = KeyboardModifierState.getByName(stateName)
-                        stateId?.let {
-                            set.add(it)
-                        }
+            if (stateSetString == "") {
+                stateAction.defaultAction = action
+            } else {
+                val statesByName = stateSetString.split(",")
+                val set = mutableSetOf<KeyboardModifierState>()
+                for (stateName in statesByName) {
+                    val stateId = KeyboardModifierState.getByName(stateName)
+                    stateId?.let {
+                        set.add(it)
                     }
-                    stateAction.addState(set, action)
                 }
-            }
-            stateAction.setState(this.stateSet)
-            return stateAction
-        } else {
-            val actionObj = jsonObj.optJSONObject(name)
-            actionObj?.let{
-                return parseActionObj(it)
+                stateAction.addState(set, action)
             }
         }
-        return null
+        stateAction.setState(this.stateSet)
+        return stateAction
     }
 
     fun importJSON(jsonStr: String) {
@@ -255,7 +250,8 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
             val roll: Double? = try { keyJObj.getDouble("roll") } catch (e: JSONException) { null }
             val type: String? = try { keyJObj.getString("type") } catch (e: JSONException) { null }
 
-            val mainKeyAction = getActionArrayOrObject(keyJObj,"mainKey")
+            var mainKeyAction = parseActionArray(keyJObj.optJSONArray("mainKey"))
+            mainKeyAction = mainKeyAction ?: parseActionObj(keyJObj.optJSONObject("mainKey"))
 
             val isAccented: Boolean? = try { keyJObj.getBoolean("isAccented") } catch (e: JSONException) { null }
             val isAltColor: Boolean? = try { keyJObj.getBoolean("isAltColor") } catch (e: JSONException) { null }
@@ -277,11 +273,8 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
 
                 val newRadialKeys: ArrayList<KeyboardAction> = arrayListOf()
                 for (radialIndex in 0 until divisions ) {
-                    //val radialStr: String = try { radialArray.getString(radialIndex) } catch (e: JSONException) { "<REPEAT>" }
-                    val actionObj = try { radialArray.getJSONObject(radialIndex) } catch (e: JSONException) { null }
-                    if (actionObj == null) continue
-
-                    val action = parseActionObj(actionObj)
+                    var action = parseActionArray(radialArray.optJSONArray(radialIndex))
+                    action = action ?: parseActionObj(radialArray.optJSONObject(radialIndex))
 
                     try {
                         newRadialKeys.add(action)
@@ -304,7 +297,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
         loop@ for (btnConf in keyConfig) {
             val key = when(btnConf.type) {
                 "Rect" -> RectSwipeButton(this, btnConf)
-                "Round" -> RoundSwipeButton(this, btnConf)
+                //"Round" -> RoundSwipeButton(this, btnConf)
                 else -> continue@loop
             }
             newKeys.add(key)

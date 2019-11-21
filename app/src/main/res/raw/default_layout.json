@@ -196,7 +196,7 @@
             "isAltColor": false,
             "width": 520,
             "height": 180,
-            "mainKey": { "action":"#32", "icon": "#!SPACE" },
+            "mainKey": { "action":"INPUT:@KEYCODE_SPACE", "icon": "#!SPACE" },
             "hideRadials": true,
             "radialKeys": [
             ]
