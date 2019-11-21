@@ -30,7 +30,7 @@ data class ButtonConfig(val id: Int) {
     var roll: Float = 0f // Angle to adjust divisions
     var type: String = "Normal"
     var divisions: Int = 4
-    var mainKey: KeyboardAction = KeyboardAction("O")
+    var mainKey: KeyboardAction = KeyboardAction(ActionType.NOOP)
     var radialKeys = arrayListOf<KeyboardAction>()
 }
 
@@ -38,6 +38,18 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
     var _context: Context = keyboardView.context
     var keyboardView = keyboardView
 
+    val stateSet = mutableSetOf<KeyboardModifierState>(KeyboardModifierState.CAPS)
+    fun setState(state: KeyboardModifierState, enable: Boolean) {
+        if (enable) { stateSet.add(state) } else { stateSet.remove(state) }
+
+        for (key in keys) {
+            if (key.mainKey != null && key.mainKey is KeyboardStateAction) {
+                val mainAction = key.mainKey as KeyboardStateAction
+                mainAction.setState(stateSet)
+            }
+        }
+        keyboardView.invalidate()
+    }
     //var aspectRatio: Float = 1f;
 
     // These are virtual pixel units for setting up layout and it's aspect ratio, not even dps
@@ -144,9 +156,31 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
 
 
     private fun parseActionObj(obj: JSONObject): KeyboardAction {
-        val actionString = try { obj.getString("action") } catch (e: JSONException) { "%NOOP" }
+        val actionString = obj.optString("action","NOOP")
+        val cmdList = actionString.split(":")
+        var actionName = cmdList[0]
 
-        val action = KeyboardAction(actionString)
+        var _savedArg: String? = null
+        if (actionName.startsWith('&') || actionName.startsWith('&')) {
+            _savedArg = actionName
+            actionName = "INPUT"
+        }
+
+        val actionId = ActionType.getByName(actionName) ?: ActionType.NOOP
+
+        val action = KeyboardAction(actionId)
+
+        if (actionName == "INPUT") {
+            var keyString = _savedArg ?: cmdList[1]
+            when(keyString[0]) {
+                '#' ->  {
+                    action.keyCode = keyString.substring(1).toIntOrNull()
+                }
+                '&' ->  {
+                    action.character = keyString[1]
+                }
+            }
+        }
 
         val iconString = try { obj.getString("icon") } catch (e: JSONException) { null }
         iconString?.let{ action.icon = getDrawableByName(it) }
@@ -158,6 +192,41 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
         action.isHidden = isHidden
 
         return action
+    }
+
+    fun getActionArrayOrObject(jsonObj: JSONObject, name: String): KeyboardAction? {
+        val actionArray = jsonObj.optJSONArray(name)
+        if (actionArray != null) {
+            val stateAction = KeyboardStateAction()
+            for (actionIndex in 0 until actionArray.length()) {
+                val actionObj = actionArray.getJSONObject(actionIndex)
+                val action = parseActionObj(actionObj)
+
+                val stateSetString = actionObj.optString("condition","")
+
+                if (stateSetString == "") {
+                    stateAction.defaultAction = action
+                } else {
+                    val statesByName = stateSetString.split(",")
+                    val set = mutableSetOf<KeyboardModifierState>()
+                    for (stateName in statesByName) {
+                        val stateId = KeyboardModifierState.getByName(stateName)
+                        stateId?.let {
+                            set.add(it)
+                        }
+                    }
+                    stateAction.addState(set, action)
+                }
+            }
+            stateAction.setState(this.stateSet)
+            return stateAction
+        } else {
+            val actionObj = jsonObj.optJSONObject(name)
+            actionObj?.let{
+                return parseActionObj(it)
+            }
+        }
+        return null
     }
 
     fun importJSON(jsonStr: String) {
@@ -180,14 +249,15 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
 
             val btnConf = ButtonConfig(keyIndex)
 
-            val x: Double? = try { keyJObj.getDouble("x") } catch (e: JSONException) { null }
-            val y: Double? = try { keyJObj.getDouble("y") } catch (e: JSONException) { null }
+            val x: Double? = keyJObj.optDouble("x", 0.0)
+            val y: Double? = keyJObj.optDouble("y", 0.0)
             val width: Double? = try { keyJObj.getDouble("width") } catch (e: JSONException) { null }
             val height: Double? = try { keyJObj.getDouble("height") } catch (e: JSONException) { null }
             val roll: Double? = try { keyJObj.getDouble("roll") } catch (e: JSONException) { null }
             val type: String? = try { keyJObj.getString("type") } catch (e: JSONException) { null }
-            val mainKeyActionObj = try { keyJObj.getJSONObject("mainKey") } catch (e: JSONException) { null }
-            val mainKeyAction = mainKeyActionObj?.let { parseActionObj(it) }
+
+            val mainKeyAction = getActionArrayOrObject(keyJObj,"mainKey")
+
             val isAccented: Boolean? = try { keyJObj.getBoolean("isAccented") } catch (e: JSONException) { null }
             val isAltColor: Boolean? = try { keyJObj.getBoolean("isAltColor") } catch (e: JSONException) { null }
 
@@ -195,7 +265,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
             y?.let{ btnConf.y = it.toFloat() }
             width?.let{ btnConf.width = it.toFloat() }
             height?.let{ btnConf.height = it.toFloat() }
-            roll?.let{ btnConf.height = it.toFloat() }
+            roll?.let{ btnConf.roll = it.toFloat() }
             type?.let{ btnConf.type = it }
             mainKeyAction?.let{ btnConf.mainKey = mainKeyAction }
             isAccented?.let{ btnConf.isAccented = it }

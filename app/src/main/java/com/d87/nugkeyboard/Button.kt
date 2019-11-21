@@ -180,7 +180,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
                 icon.setBounds(left, top, right, bottom)
                 icon.draw(canvas)
             } else {
-                canvas.drawText(mainKey.action, centerX, centerY - textHeight / 2, primaryTextPaint)
+                canvas.drawText(mainKey.character.toString(), centerX, centerY - textHeight / 2, primaryTextPaint)
             }
         }
 
@@ -211,7 +211,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
             }
 
             val textHeight = secondaryTextPaint.ascent() + secondaryTextPaint.descent()
-            canvas.drawText(zone.binding.action, centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
+            canvas.drawText(zone.binding.character.toString(), centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
         }
 
         //if (highlightAlpha > 0) {
@@ -321,7 +321,7 @@ class RoundSwipeButton(layout: KeyboardLayout, config: ButtonConfig) : SwipeButt
             icon.setBounds(left, top, right, bottom)
             icon.draw(canvas)
         } else {
-            canvas.drawText(mainKey.action, centerX, centerY - textHeight / 2, primaryTextPaint)
+            canvas.drawText(mainKey.character.toString(), centerX, centerY - textHeight / 2, primaryTextPaint)
         }
 
         for (zone in swipeZones) {
@@ -330,7 +330,7 @@ class RoundSwipeButton(layout: KeyboardLayout, config: ButtonConfig) : SwipeButt
             val dx = (sin(midAngle)*distance).toFloat()
             val dy = (-cos(midAngle)*distance).toFloat()
             val textHeight = secondaryTextPaint.ascent() + secondaryTextPaint.descent()
-            canvas.drawText(zone.binding.action, centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
+            canvas.drawText(zone.binding.character.toString(), centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
         }
 
         //if (highlightAlpha > 0) {

@@ -457,7 +457,7 @@ class NugKeyboardView : View {
 
                     val action = key.getBindingByAngle(angle)
                     action?.let{
-                        val c: Char = it.action[0]
+                        val c: Char = it.character ?: 'z'
                         val code: Int = c.toInt()
                         val keyCode = code
                         onKeyboardActionListener!!.onKey(keyCode)
@@ -470,7 +470,7 @@ class NugKeyboardView : View {
 
                     val action = key.config.mainKey
                     action?.let {
-                        val c: Char = it.action[0]
+                        val c: Char = it.character ?: 'z'
                         val code: Int = c.toInt()
                         val keyCode = code
                         onKeyboardActionListener!!.onKey(keyCode)

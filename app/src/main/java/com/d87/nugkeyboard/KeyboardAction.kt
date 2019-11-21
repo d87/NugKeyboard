@@ -29,13 +29,24 @@ enum class ActionType {
 enum class KeyboardModifierState {
     CAPS,
     NUMPAD,
-    CUSTOM1
+    CUSTOM1;
+    companion object {
+        private val stringToId: Map<String, KeyboardModifierState> = mapOf(
+            Pair("CAPS", KeyboardModifierState.CAPS),
+            Pair("NUMPAD", KeyboardModifierState.NUMPAD),
+            Pair("CUSTOM1", KeyboardModifierState.CUSTOM1)
+        )
+        fun getByName(str: String): KeyboardModifierState? {
+            return stringToId[str]
+        }
+    }
 }
 
 open class KeyboardAction(action: ActionType) {
     var action: ActionType = action
     //var shit: ArrayList<Int> = arrayListOf()
-    var keyCode: Int = 0
+    var character: Char? = null
+    var keyCode: Int? = null
     var label: String? = null
     var icon: Drawable? = null
     var scale: Float = 1f
@@ -48,14 +59,10 @@ class KeyboardStateAction(): KeyboardAction(ActionType.NOOP) {
 
     var defaultAction: KeyboardAction? = null
     val stateSetList: ArrayList<Pair<Set<KeyboardModifierState>, KeyboardAction>> = arrayListOf()
-    private var currentStateSet: MutableSet<KeyboardModifierState> = mutableSetOf()
+    private var currentStateSet: Set<KeyboardModifierState>? = null
 
-    fun setState(state: KeyboardModifierState, enable: Boolean ) {
-        if ( enable ) {
-            currentStateSet.add(state)
-        } else {
-            currentStateSet.remove(state)
-        }
+    fun setState(newStateSet: Set<KeyboardModifierState>) {
+        currentStateSet = newStateSet
         onStateChanged()
     }
 
@@ -67,6 +74,7 @@ class KeyboardStateAction(): KeyboardAction(ActionType.NOOP) {
     fun switchToAction(newAction: KeyboardAction?) {
         if (newAction != null) {
             this.action = newAction.action
+            this.character = newAction.character
             this.keyCode = newAction.keyCode
             this.label = newAction.label
             this.icon = newAction.icon
