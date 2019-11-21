@@ -14,41 +14,6 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
-class KeyboardAction(action: String) {
-    val action: String = action
-    val keyCode: Int = 0
-    var label: String? = null
-    var icon: Drawable? = null
-    var scale: Float = 1f
-    var isHidden = false
-    var xOffset = 0f
-    var yOffset = 0f
-
-    companion object {
-        enum class ActionType {
-            NOOP,
-            INPUT,
-            CAPS_UP,
-            CAPS_DOWN,
-            DELETE_CHAR,
-            DELETE_WORD,
-            CYCLE_LAYOUT
-        }
-        val actionStringToId: Map<String, ActionType> = mapOf(
-            Pair("NOOP", ActionType.NOOP),
-            Pair("INPUT", ActionType.INPUT),
-            Pair("CAPS_UP", ActionType.CAPS_UP),
-            Pair("CAPS_DOWN", ActionType.CAPS_DOWN),
-            Pair("DELETE_CHAR", ActionType.DELETE_CHAR),
-            Pair("DELETE_WORD", ActionType.DELETE_WORD),
-            Pair("CYCLE_LAYOUT", ActionType.CYCLE_LAYOUT)
-        )
-        fun getActionId(actionStr: String): ActionType? {
-            return actionStringToId[actionStr]
-        }
-    }
-}
-
 open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
     val layout = layout
     var config: ButtonConfig = config
