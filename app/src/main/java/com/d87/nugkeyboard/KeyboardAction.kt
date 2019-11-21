@@ -11,17 +11,9 @@ enum class ActionType {
     DELETE_WORD,
     CYCLE_LAYOUT;
     companion object {
-        val actionStringToId: Map<String, ActionType> = mapOf(
-            Pair("NOOP", ActionType.NOOP),
-            Pair("INPUT", ActionType.INPUT),
-            Pair("CAPS_UP", ActionType.CAPS_UP),
-            Pair("CAPS_DOWN", ActionType.CAPS_DOWN),
-            Pair("DELETE_CHAR", ActionType.DELETE_CHAR),
-            Pair("DELETE_WORD", ActionType.DELETE_WORD),
-            Pair("CYCLE_LAYOUT", ActionType.CYCLE_LAYOUT)
-        )
-        fun getByName(actionStr: String): ActionType? {
-            return actionStringToId[actionStr]
+        private val map = values().associateBy({ it.name }, { it })
+        fun getByName(name: String): ActionType? {
+            return map[name]
         }
     }
 }
@@ -31,13 +23,9 @@ enum class KeyboardModifierState {
     NUMPAD,
     CUSTOM1;
     companion object {
-        private val stringToId: Map<String, KeyboardModifierState> = mapOf(
-            Pair("CAPS", KeyboardModifierState.CAPS),
-            Pair("NUMPAD", KeyboardModifierState.NUMPAD),
-            Pair("CUSTOM1", KeyboardModifierState.CUSTOM1)
-        )
-        fun getByName(str: String): KeyboardModifierState? {
-            return stringToId[str]
+        private val map = values().associateBy({ it.name }, { it })
+        fun getByName(name: String): KeyboardModifierState? {
+            return map[name]
         }
     }
 }
