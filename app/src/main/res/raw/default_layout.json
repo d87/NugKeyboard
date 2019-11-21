@@ -9,8 +9,8 @@
             "height": 250,
             "mainKey": [
                 { "condition": "NUMPAD", "action":"INPUT:&1" },
-                { "condition": "CAPS", "action":"INPUT:&A" },
-                { "action":"INPUT:&a" }
+                { "condition": "CAPS", "action":"INPUT:&E" },
+                { "action":"INPUT:&e" }
             ],
             "radialKeys": [
                 { "action":"v" },
@@ -25,7 +25,11 @@
             "y": 0,
             "width": 250,
             "height": 250,
-            "mainKey": { "action":"n" },
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&2" },
+                { "condition": "CAPS", "action":"INPUT:&T" },
+                { "action":"INPUT:&t" }
+            ],
             "radialKeys": [
                 { "action":"v" },
                 null,
@@ -39,7 +43,11 @@
             "y": 0,
             "width": 250,
             "height": 250,
-            "mainKey": "A",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&3" },
+                { "condition": "CAPS", "action":"INPUT:&A" },
+                { "action":"INPUT:&a" }
+            ],
             "radialKeys": [
                 "A",
                 "B",
@@ -52,7 +60,11 @@
             "y": 0,
             "width": 250,
             "height": 250,
-            "mainKey": "A",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&0" },
+                { "condition": "CAPS", "action":"INPUT:&O" },
+                { "action":"INPUT:&o" }
+            ],
             "radialKeys": [
                 "A",
                 "B",
@@ -65,7 +77,11 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": "A",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&4" },
+                { "condition": "CAPS", "action":"INPUT:&I" },
+                { "action":"INPUT:&i" }
+            ],
             "radialKeys": [
                 "A",
                 "B",
@@ -78,7 +94,11 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": "B",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&5" },
+                { "condition": "CAPS", "action":"INPUT:&N" },
+                { "action":"INPUT:&n" }
+            ],
             "radialKeys": [
                 "Q",
                 "R",
@@ -92,7 +112,11 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": "B",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&6" },
+                { "condition": "CAPS", "action":"INPUT:&S" },
+                { "action":"INPUT:&s" }
+            ],
             "radialKeys": [
                 "Q",
                 "R",
@@ -106,7 +130,10 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": "B",
+            "mainKey": [
+                { "condition": "CAPS", "action":"INPUT:&R" },
+                { "action":"INPUT:&r" }
+            ],
             "radialKeys": [
                 "Q",
                 "R",
@@ -120,7 +147,11 @@
             "y": 500,
             "width": 250,
             "height": 250,
-            "mainKey": "B",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&7" },
+                { "condition": "CAPS", "action":"INPUT:&H" },
+                { "action":"INPUT:&h" }
+            ],
             "radialKeys": [
                 "Q",
                 "R",
@@ -134,7 +165,11 @@
             "y": 500,
             "width": 250,
             "height": 250,
-            "mainKey": "B",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&8" },
+                { "condition": "CAPS", "action":"INPUT:&D" },
+                { "action":"INPUT:&d" }
+            ],
             "radialKeys": [
                 "Q",
                 "R",
@@ -148,7 +183,11 @@
             "y": 500,
             "width": 250,
             "height": 250,
-            "mainKey": "B",
+            "mainKey": [
+                { "condition": "NUMPAD", "action":"INPUT:&9" },
+                { "condition": "CAPS", "action":"INPUT:&L" },
+                { "action":"INPUT:&l" }
+            ],
             "radialKeys": [
                 "Q",
                 "R",
@@ -160,11 +199,12 @@
             "type": "Rect",
             "x": 750,
             "y": 500,
-            "isAccented": true,
-            "isAltColor": false,
             "width": 250,
             "height": 250,
-            "mainKey": "B",
+            "mainKey": [
+                { "condition": "CAPS", "action":"INPUT:&U" },
+                { "action":"INPUT:&u" }
+            ],
             "hideRadials": true,
             "radialKeys": [
                 "Q",
@@ -224,7 +264,7 @@
             "isAltColor": false,
             "width": 200,
             "height": 180,
-            "mainKey": { "action":"#13", "icon": "#!RETURN" },
+            "mainKey": { "action":"INPUT:@KEYCODE_ENTER", "icon": "#!RETURN" },
             "hideRadials": true,
             "radialKeys": [
                 "Q",
