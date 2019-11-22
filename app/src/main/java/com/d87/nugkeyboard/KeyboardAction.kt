@@ -8,6 +8,7 @@ enum class ActionType {
     INPUT,
     CAPS_UP,
     CAPS_DOWN,
+    CAPS_TOGGLE,
     DELETE_CHAR,
     DELETE_WORD,
     CYCLE_LAYOUT;

@@ -221,7 +221,7 @@
             "isAltColor": true,
             "width": 130,
             "height": 180,
-            "mainKey": "P",
+            "mainKey": { "action":"CAPS_TOGGLE", "icon": "#!CAPS_UP" },
             "hideRadials": true,
             "radialKeys": [
                 "Q",
@@ -249,7 +249,7 @@
             "isAltColor": true,
             "width": 150,
             "height": 180,
-            "mainKey": "P",
+            "mainKey": { "action":"INPUT:@KEYCODE_BACKSPACE", "icon": "#!BACKSPACE" },
             "hideRadials": true,
             "radialKeys": [
                 "Q",

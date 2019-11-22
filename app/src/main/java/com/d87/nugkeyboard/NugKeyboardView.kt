@@ -85,16 +85,29 @@ class NugKeyboardView : View {
     }
 
     var onKeyboardActionListener: OnKeyboardActionListener? = null
-    private var _OldPointerCount = 1
-    private var _OldPointerX: Float = 0.toFloat()
-    private var _OldPointerY: Float = 0.toFloat()
 
-    // TODO: Dynamically expand array or something
+
+
+    val stateSet = mutableSetOf<KeyboardModifierState>()
+    fun setState(state: KeyboardModifierState, enable: Boolean) {
+        if (enable) { stateSet.add(state) } else { stateSet.remove(state) }
+        onKeyboardStateChanged()
+    }
+    fun getState(state: KeyboardModifierState): Boolean {
+        return stateSet.contains(state)
+    }
+    fun onKeyboardStateChanged() {
+        for (key in activeLayout!!.keys) {
+            if (key.mainKey != null && key.mainKey is KeyboardStateAction) {
+                val mainAction = key.mainKey as KeyboardStateAction
+                mainAction.setState(stateSet)
+            }
+        }
+        this.invalidate()
+    }
+
     private var _swipeTrackers: ArrayList<SwipeTracker> = arrayListOf(SwipeTracker(), SwipeTracker(), SwipeTracker())
 
-    private var _VerticalCorrection: Int = 0
-
-    //private var _keys: ArrayList<SwipeButton> = arrayListOf()
     var activeLayout: KeyboardLayout? = null
     init {
         val kLayout = KeyboardLayout(this)
@@ -105,6 +118,7 @@ class NugKeyboardView : View {
         kLayout.importJSON(layoutJson)
         kLayout.makeKeys()
         activeLayout = kLayout
+        onKeyboardStateChanged()
     }
 
     private var _KeyBackground: Drawable? = null
@@ -444,11 +458,6 @@ class NugKeyboardView : View {
             MotionEvent.ACTION_DOWN -> {
                 swipeTracker.start(me, pointerID)
 
-                // Start LONG_PRESS countdown, swipeTracker here is passsed as "obj" to message
-                // to later identify this message for this pointer id
-                val msg = _uiHandler.obtainMessage(LONG_PRESS, pointerID, 0, swipeTracker)
-                _uiHandler.sendMessageDelayed(msg, 1500)
-
                 var (x,y) = swipeTracker.getOrigin()
                 // x -= paddingBottom
                 // y -= paddingTop
@@ -456,6 +465,13 @@ class NugKeyboardView : View {
                 key?.let{
                     it.highlightFadeIn()
                 }
+
+                // Start LONG_PRESS countdown, swipeTracker here is passsed as "obj" to message
+                // to later identify this message for this pointer id
+                val msg = _uiHandler.obtainMessage(LONG_PRESS, pointerID, 0, swipeTracker)
+                _uiHandler.sendMessageDelayed(msg, 1500)
+
+
             }
             MotionEvent.ACTION_MOVE -> {
                 swipeTracker.addMovement(me, pointerID)

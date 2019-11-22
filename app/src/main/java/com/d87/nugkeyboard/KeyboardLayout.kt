@@ -38,18 +38,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
     var _context: Context = keyboardView.context
     var keyboardView = keyboardView
 
-    val stateSet = mutableSetOf<KeyboardModifierState>(KeyboardModifierState.CAPS)
-    fun setState(state: KeyboardModifierState, enable: Boolean) {
-        if (enable) { stateSet.add(state) } else { stateSet.remove(state) }
 
-        for (key in keys) {
-            if (key.mainKey != null && key.mainKey is KeyboardStateAction) {
-                val mainAction = key.mainKey as KeyboardStateAction
-                mainAction.setState(stateSet)
-            }
-        }
-        keyboardView.invalidate()
-    }
 
     // These are virtual pixel units for setting up layout and it's aspect ratio, not even dps
     // They get mapped onto dips, and if it's a phone this dips value should snap to phone's width
@@ -144,6 +133,8 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
 
     private val iconMap: Map<String, Drawable?> = mapOf(
         Pair("#!RETURN", makeTintedDrawable(R.drawable.ic_keyboard_return_black_24dp)),
+        Pair("#!BACKSPACE", makeTintedDrawable(R.drawable.ic_backspace_black_24dp)),
+        Pair("#!CAPS_UP", makeTintedDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp)),
         Pair("#!SPACE", makeTintedDrawable(R.drawable.ic_space_bar_black_24dp))
     )
     fun getDrawableByName(iconName: String): Drawable? {
@@ -159,7 +150,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
         var actionName = cmdList[0]
 
         var _savedArg: String? = null
-        if (actionName.startsWith('&') || actionName.startsWith('&')) {
+        if (actionName.startsWith('&') || actionName.startsWith('&') || actionName.startsWith('@')) {
             _savedArg = actionName
             actionName = "INPUT"
         }
@@ -219,7 +210,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
                 stateAction.addState(set, action)
             }
         }
-        stateAction.setState(this.stateSet)
+        stateAction.setState(keyboardView.stateSet) // TODO: Redundant
         return stateAction
     }
 

@@ -12,7 +12,7 @@ import android.view.inputmethod.InputConnection
 
 class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardActionListener {
 
-    //private var keyboardView: KeyboardView? = null
+    private var keyboardView: NugKeyboardView? = null
     //private var keyboard: Keyboard? = null
 
     private var caps = false
@@ -46,9 +46,11 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
 
         kv.onKeyboardActionListener = this
 
+        keyboardView = kv
+
         //kv.exampleString = "asd"
         /*val kv = layoutInflater.inflate(R.layout.keyboard_view, null) as KeyboardView
-        keyboardView = kv
+
         keyboard = Keyboard(this, R.xml.keys_layout)
         kv!!.keyboard = keyboard
         kv!!.setOnKeyboardActionListener(this)
@@ -89,7 +91,12 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
     }
 
     override fun onAction(action: KeyboardAction) {
-
+        when(action.action) {
+            ActionType.CAPS_TOGGLE -> {
+                val newCapsState = !keyboardView!!.getState(KeyboardModifierState.CAPS)
+                keyboardView!!.setState(KeyboardModifierState.CAPS, newCapsState)
+            }
+        }
     }
 
     override fun swipeLeft() {
