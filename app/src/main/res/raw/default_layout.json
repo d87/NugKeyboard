@@ -1,4 +1,4 @@
-{
+    {
     "layoutVersion": 1,
     "keyConfig": [
         {
@@ -7,12 +7,12 @@
             "y": 0,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&1" },
                 { "condition": "CAPS", "action":"INPUT:&E" },
                 { "action":"INPUT:&e" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 { "action":"v" },
                 null,
                 null,
@@ -25,12 +25,12 @@
             "y": 0,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&2" },
                 { "condition": "CAPS", "action":"INPUT:&T" },
                 { "action":"INPUT:&t" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 { "action":"v" },
                 null,
                 { "action":"y" },
@@ -43,12 +43,12 @@
             "y": 0,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&3" },
                 { "condition": "CAPS", "action":"INPUT:&A" },
                 { "action":"INPUT:&a" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "A",
                 "B",
                 "C"
@@ -60,12 +60,12 @@
             "y": 0,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&0" },
                 { "condition": "CAPS", "action":"INPUT:&O" },
                 { "action":"INPUT:&o" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "A",
                 "B",
                 "C"
@@ -77,12 +77,12 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&4" },
                 { "condition": "CAPS", "action":"INPUT:&I" },
                 { "action":"INPUT:&i" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "A",
                 "B",
                 "C"
@@ -94,12 +94,12 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&5" },
                 { "condition": "CAPS", "action":"INPUT:&N" },
                 { "action":"INPUT:&n" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R",
                 "N",
@@ -112,12 +112,12 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&6" },
                 { "condition": "CAPS", "action":"INPUT:&S" },
                 { "action":"INPUT:&s" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R",
                 "N",
@@ -130,11 +130,11 @@
             "y": 250,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "CAPS", "action":"INPUT:&R" },
                 { "action":"INPUT:&r" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R",
                 "N",
@@ -147,12 +147,12 @@
             "y": 500,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&7" },
                 { "condition": "CAPS", "action":"INPUT:&H" },
                 { "action":"INPUT:&h" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R",
                 "N",
@@ -165,12 +165,12 @@
             "y": 500,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&8" },
                 { "condition": "CAPS", "action":"INPUT:&D" },
                 { "action":"INPUT:&d" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R",
                 "N",
@@ -183,12 +183,12 @@
             "y": 500,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&9" },
                 { "condition": "CAPS", "action":"INPUT:&L" },
                 { "action":"INPUT:&l" }
             ],
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R",
                 "N",
@@ -201,12 +201,12 @@
             "y": 500,
             "width": 250,
             "height": 250,
-            "mainKey": [
+            "onPressAction": [
                 { "condition": "CAPS", "action":"INPUT:&U" },
                 { "action":"INPUT:&u" }
             ],
             "hideRadials": true,
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R",
                 "N",
@@ -221,9 +221,9 @@
             "isAltColor": true,
             "width": 130,
             "height": 180,
-            "mainKey": { "action":"CAPS_TOGGLE", "icon": "#!CAPS_UP" },
+            "onPressAction": { "action":"CAPS_TOGGLE", "icon": "#!CAPS_UP" },
             "hideRadials": true,
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R"
             ]
@@ -236,9 +236,9 @@
             "isAltColor": false,
             "width": 520,
             "height": 180,
-            "mainKey": { "action":"INPUT:@KEYCODE_SPACE", "icon": "#!SPACE" },
+            "onPressAction": { "action":"INPUT:@KEYCODE_SPACE", "icon": "#!SPACE" },
             "hideRadials": true,
-            "radialKeys": [
+            "onSwipeActions": [
             ]
         },
         {
@@ -249,9 +249,9 @@
             "isAltColor": true,
             "width": 150,
             "height": 180,
-            "mainKey": { "action":"INPUT:@KEYCODE_BACKSPACE", "icon": "#!BACKSPACE" },
+            "onPressAction": { "action":"INPUT:@KEYCODE_BACKSPACE", "icon": "#!BACKSPACE" },
             "hideRadials": true,
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R"
             ]
@@ -264,9 +264,9 @@
             "isAltColor": false,
             "width": 200,
             "height": 180,
-            "mainKey": { "action":"INPUT:@KEYCODE_ENTER", "icon": "#!RETURN" },
+            "onPressAction": { "action":"INPUT:@KEYCODE_ENTER", "icon": "#!RETURN" },
             "hideRadials": true,
-            "radialKeys": [
+            "onSwipeActions": [
                 "Q",
                 "R"
             ]

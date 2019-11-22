@@ -1,14 +1,9 @@
 package com.d87.nugkeyboard
 
 import android.animation.ValueAnimator
-import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.text.TextPaint
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -38,7 +33,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
     var centerY: Float = 0f
     var keyBackground: Drawable? = null
 
-    var mainKey = config.mainKey
+    var mainKey = config.onPressAction
 
     var roll: Float = config.roll
     var type: String = "Normal"
@@ -52,7 +47,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
     var swipeZones: ArrayList<SwipeZone> = arrayListOf()
 
     init {
-        val binds = config.radialKeys
+        val binds = config.onSwipeActions
         var curAngle = 0f
         var i = 0;
         val numBinds = binds.size

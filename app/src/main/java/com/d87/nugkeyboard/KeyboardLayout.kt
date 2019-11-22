@@ -1,6 +1,5 @@
 package com.d87.nugkeyboard
 
-import android.content.Context
 import org.json.JSONObject
 import android.graphics.Color
 import android.graphics.Paint
@@ -9,11 +8,8 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.Log
-import android.view.KeyEvent
-import android.view.View
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import org.json.JSONArray
 import org.json.JSONException
 
@@ -26,19 +22,19 @@ data class ButtonConfig(val id: Int) {
     var width: Float = 0.25f
     var isAccented = false
     var isAltColor = false
+    var enableKeyRepeat = true
     //var _displayDensity: Float = 0f
     var roll: Float = 0f // Angle to adjust divisions
     var type: String = "Normal"
     var divisions: Int = 4
-    var mainKey: KeyboardAction = KeyboardAction(ActionType.NOOP)
-    var radialKeys = arrayListOf<KeyboardAction>()
+    var onPressAction: KeyboardAction = KeyboardAction(ActionType.NOOP)
+    var onTouchDownAction: KeyboardAction? = null
+    var onTouchUpAction: KeyboardAction? = null
+    var onSwipeActions = arrayListOf<KeyboardAction>()
 }
 
 class KeyboardLayout(keyboardView: NugKeyboardView) {
-    var _context: Context = keyboardView.context
     var keyboardView = keyboardView
-
-
 
     // These are virtual pixel units for setting up layout and it's aspect ratio, not even dps
     // They get mapped onto dips, and if it's a phone this dips value should snap to phone's width
@@ -241,8 +237,11 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
             val roll: Double? = try { keyJObj.getDouble("roll") } catch (e: JSONException) { null }
             val type: String? = try { keyJObj.getString("type") } catch (e: JSONException) { null }
 
-            var mainKeyAction = parseActionArray(keyJObj.optJSONArray("mainKey"))
-            mainKeyAction = mainKeyAction ?: parseActionObj(keyJObj.optJSONObject("mainKey"))
+            var onPressAction = parseActionArray(keyJObj.optJSONArray("onPressAction"))
+            onPressAction = onPressAction ?: parseActionObj(keyJObj.optJSONObject("onPressAction"))
+
+            var onTouchDownAction = parseActionObj(keyJObj.optJSONObject("onTouchDownAction"))
+            var onTouchUpAction = parseActionObj(keyJObj.optJSONObject("onTouchUpAction"))
 
             val isAccented: Boolean? = try { keyJObj.getBoolean("isAccented") } catch (e: JSONException) { null }
             val isAltColor: Boolean? = try { keyJObj.getBoolean("isAltColor") } catch (e: JSONException) { null }
@@ -253,27 +252,30 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
             height?.let{ btnConf.height = it.toFloat() }
             roll?.let{ btnConf.roll = it.toFloat() }
             type?.let{ btnConf.type = it }
-            mainKeyAction?.let{ btnConf.mainKey = mainKeyAction }
+            onPressAction?.let{ btnConf.onPressAction = it }
+            onTouchDownAction?.let{ btnConf.onTouchDownAction = it}
+            onTouchUpAction?.let{ btnConf.onTouchUpAction = it}
+
             isAccented?.let{ btnConf.isAccented = it }
             isAltColor?.let{ btnConf.isAltColor = it }
 
-            val radialArray: JSONArray? = try { keyJObj.getJSONArray("radialKeys") } catch (e: JSONException) { null }
-            if (radialArray != null) {
-                val divisions = radialArray.length()
+            val onSwipeJSONArray: JSONArray? = try { keyJObj.getJSONArray("onSwipeActions") } catch (e: JSONException) { null }
+            if (onSwipeJSONArray != null) {
+                val divisions = onSwipeJSONArray.length()
                 btnConf.divisions = divisions
 
-                val newRadialKeys: ArrayList<KeyboardAction> = arrayListOf()
-                for (radialIndex in 0 until divisions ) {
-                    var action = parseActionArray(radialArray.optJSONArray(radialIndex))
-                    action = action ?: parseActionObj(radialArray.optJSONObject(radialIndex))
+                val newSwipeActions: ArrayList<KeyboardAction> = arrayListOf()
+                for (swipeArrayIndex in 0 until divisions ) {
+                    var action = parseActionArray(onSwipeJSONArray.optJSONArray(swipeArrayIndex))
+                    action = action ?: parseActionObj(onSwipeJSONArray.optJSONObject(swipeArrayIndex))
 
                     try {
-                        newRadialKeys.add(action)
+                        newSwipeActions.add(action)
                     } catch (e: Exception) {
                         Log.e("ButtonConfig ArrayList", "Error " + e.toString());
                     }
                 }
-                btnConf.radialKeys = newRadialKeys
+                btnConf.onSwipeActions = newSwipeActions
             }
 
             newKeyConfig.add(btnConf)

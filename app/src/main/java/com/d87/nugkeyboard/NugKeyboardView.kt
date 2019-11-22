@@ -7,17 +7,9 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import android.view.MotionEvent
-import android.view.Display
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.util.DisplayMetrics
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.os.Handler
 import android.os.Message
 import android.util.Log
-import android.widget.FrameLayout
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 
 
 //import android.inputmethodservice.KeyboardView;
@@ -495,7 +487,7 @@ class NugKeyboardView : View {
                     val key = getKeyFromCoords(x, y)
                     key ?: return true
 
-                    val action = key.config.mainKey
+                    val action = key.config.onPressAction
                     executeAction(action)
                 }
             }
