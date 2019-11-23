@@ -11,6 +11,8 @@ class SwipeTracker {
     internal val mPastX = FloatArray(NUM_PAST)
     internal val mPastY = FloatArray(NUM_PAST)
     internal val mPastTime = LongArray(NUM_PAST)
+    internal var distanceTraveled = 0f
+    var minSwipeLength = 15 // in pixels, but should by set in dips
 
     var _msgLongPress: Message? = null
 
@@ -27,6 +29,7 @@ class SwipeTracker {
     fun clear() {
         //mPastTime[0] = 0
         mPastTime.fill(0)
+        distanceTraveled = 0f
         currentLogIndex = 0
     }
 
@@ -52,7 +55,7 @@ class SwipeTracker {
     }
 
     fun isSwiping(): Boolean {
-        if (currentLogIndex >= 2) return true
+        if (distanceTraveled > minSwipeLength) return true
         return false
     }
 
@@ -108,6 +111,11 @@ class SwipeTracker {
         if (i < NUM_PAST) {
             pastX[i] = x
             pastY[i] = y
+            if (i>0) {
+                val dx = pastX[i-1]
+                val dy = pastY[i-1]
+                distanceTraveled += dx * dx + dy * dy
+            }
             pastTime[i] = time
             currentLogIndex++
         }
@@ -203,7 +211,6 @@ class SwipeTracker {
 
 
     companion object {
-        const val LONG_PRESS = 2
         const val NUM_PAST = 10
         const val LONGEST_PAST_TIME = 200 // If event comes after this amount of time since chain start, then drop the chain
     }

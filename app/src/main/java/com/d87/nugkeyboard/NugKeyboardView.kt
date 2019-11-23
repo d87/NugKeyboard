@@ -399,11 +399,20 @@ class NugKeyboardView : View {
         return null
     }
 
-    class InternalHandler : Handler() {
+    // Handler for UI-thread message queue, receives non-hardware events like key-repeats and long presses
+    inner class InternalHandler : Handler() {
         override fun handleMessage(msg: Message) {
             //super.handleMessage(msg)
+
             Log.d("MESSAGE", msg.toString())
             when (msg.what) {
+                KEY_REPEAT, KEY_REPEAT_DELAY -> {
+                    val pointerID = msg.arg1 as Int
+                    val swipeTracker = msg.obj
+                    runPointerAction(pointerID)
+                    val msg = _uiHandler.obtainMessage(KEY_REPEAT, pointerID, 0, swipeTracker)
+                    _uiHandler.sendMessageDelayed(msg, KEY_REPEAT_TIMEOUT)
+                }
                 LONG_PRESS -> {
                     Log.d("LONG_PRESS", msg.arg1.toString())
                 }
@@ -425,6 +434,27 @@ class NugKeyboardView : View {
             }
         }
     }
+
+    fun runPointerAction(pointerID: Int) {
+        val swipeTracker = _swipeTrackers[pointerID]
+        //return runPointerAction(swipeTracker)
+        val (x,y) = swipeTracker.getOrigin()
+        val key = getKeyFromCoords(x, y)
+        key ?: return
+
+        var action: KeyboardAction?
+        if (swipeTracker.isSwiping()) {
+            val angle = swipeTracker.getSwipeAngle()
+            Log.d("SWIPE_ANGLE", angle.toString() )
+            action = key.getBindingByAngle(angle)
+        } else {
+            Log.d( "KEYPRESS", pointerID.toString())
+            action = key.config.onPressAction
+        }
+        key!!.highlightFadeOut()
+        executeAction(action)
+    }
+
 
     //private fun onModifiedTouchEvent(me: MotionEvent, possiblePoly: Boolean): Boolean {
     private fun onModifiedTouchEvent(me: MotionEvent, pointerID: Int): Boolean {
@@ -449,47 +479,33 @@ class NugKeyboardView : View {
         when (me.action) {
             MotionEvent.ACTION_DOWN -> {
                 swipeTracker.start(me, pointerID)
-
                 var (x,y) = swipeTracker.getOrigin()
                 // x -= paddingBottom
                 // y -= paddingTop
                 val key = getKeyFromCoords(x, y)
                 key?.let{
                     it.highlightFadeIn()
+
+                    if (key.config.enableKeyRepeat) {
+                        val msg = _uiHandler.obtainMessage(KEY_REPEAT_DELAY, pointerID, 0, swipeTracker)
+                        _uiHandler.sendMessageDelayed(msg, KEY_REPEAT_DELAY_TIMEOUT)
+                    } else {
+                        // Start LONG_PRESS countdown, swipeTracker here is passsed as "obj" to message
+                        // to later identify this message for this pointer id
+                        val msg = _uiHandler.obtainMessage(LONG_PRESS, pointerID, 0, swipeTracker)
+                        _uiHandler.sendMessageDelayed(msg, LONG_PRESS_TIMEOUT)
+                    }
                 }
-
-                // Start LONG_PRESS countdown, swipeTracker here is passsed as "obj" to message
-                // to later identify this message for this pointer id
-                val msg = _uiHandler.obtainMessage(LONG_PRESS, pointerID, 0, swipeTracker)
-                _uiHandler.sendMessageDelayed(msg, 1500)
-
-
             }
             MotionEvent.ACTION_MOVE -> {
                 swipeTracker.addMovement(me, pointerID)
             }
             MotionEvent.ACTION_UP -> {
                 _uiHandler.removeMessages(LONG_PRESS, swipeTracker)
-                if (swipeTracker.isSwiping()) {
-                    val angle = swipeTracker.getSwipeAngle()
-                    Log.d("SWIPE_ANGLE", angle.toString() )
-                    val (x,y) = swipeTracker.getOrigin()
-                    val key = getKeyFromCoords(x, y)
-                    key ?: return true
-
-                    key!!.highlightFadeOut()
-
-                    val action = key.getBindingByAngle(angle)
-                    executeAction(action)
-                } else {
-                    Log.d( "KEYPRESS", pointerID.toString())
-                    val (x,y) = swipeTracker.getOrigin()
-                    val key = getKeyFromCoords(x, y)
-                    key ?: return true
-
-                    val action = key.config.onPressAction
-                    executeAction(action)
-                }
+                _uiHandler.removeMessages(KEY_REPEAT_DELAY, swipeTracker)
+                _uiHandler.removeMessages(KEY_REPEAT, swipeTracker)
+                // TODO: Skip after key-repeating
+                runPointerAction(pointerID) // Executes current swipe or press action
             }
         }
 
@@ -698,6 +714,11 @@ class NugKeyboardView : View {
 
     companion object {
         const val LONG_PRESS = 12
+        const val KEY_REPEAT_DELAY = 13
+        const val KEY_REPEAT = 14
+        const val LONG_PRESS_TIMEOUT = 1500L
+        const val KEY_REPEAT_DELAY_TIMEOUT = 250L
+        const val KEY_REPEAT_TIMEOUT = 50L
     }
 
 }

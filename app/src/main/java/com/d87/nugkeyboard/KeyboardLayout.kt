@@ -277,7 +277,6 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
                 }
                 btnConf.onSwipeActions = newSwipeActions
             }
-
             newKeyConfig.add(btnConf)
         }
 
