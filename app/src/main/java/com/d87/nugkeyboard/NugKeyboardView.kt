@@ -486,7 +486,19 @@ class NugKeyboardView : View {
                 key?.let{
                     it.highlightFadeIn()
 
+                    // TODO: Need to somehow split key repeat and non-KR actions.
+                    //  - For example delete word on swipe left, but KR delete char on the same button
+
+                    // TODO:
+                    //  - Make another delayed event for initial KR OnPress
+                    //  - It'll allow swipe tracker to decide in that time what action is being run
+                    //  - Execute and then whether that action is KR enabled or not
+                    //  - Still maybe have a pure KR mode. So probably a button should have KR-Mode setting
+                    //  - And actions the particular behaviour
+                    //  - Or Delayed-KR should just not have initial OnKeyDown action
+
                     if (key.config.enableKeyRepeat) {
+                        // runPointerAction(pointerID)
                         val msg = _uiHandler.obtainMessage(KEY_REPEAT_DELAY, pointerID, 0, swipeTracker)
                         _uiHandler.sendMessageDelayed(msg, KEY_REPEAT_DELAY_TIMEOUT)
                     } else {
@@ -718,7 +730,7 @@ class NugKeyboardView : View {
         const val KEY_REPEAT = 14
         const val LONG_PRESS_TIMEOUT = 1500L
         const val KEY_REPEAT_DELAY_TIMEOUT = 250L
-        const val KEY_REPEAT_TIMEOUT = 50L
+        const val KEY_REPEAT_TIMEOUT = 40L
     }
 
 }

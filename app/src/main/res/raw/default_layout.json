@@ -13,10 +13,9 @@
                 { "action":"INPUT:&e" }
             ],
             "onSwipeActions": [
-                { "action":"v" },
-                null,
-                null,
-                { "action":"q" }
+                { "action":"INPUT:&e" },
+                { "action":"INPUT:&e" },
+                { "action":"INPUT:&e" }
             ]
         },
         {

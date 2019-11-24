@@ -144,6 +144,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         //val textWidth = primaryTextPaint.measureText(text)
         val primaryTextPaint = layout.primaryTextPaint
         val secondaryTextPaint = layout.secondaryTextPaint
+        val highlightPaint = layout.highlightPaint
         val density = layout.keyboardView.resources.displayMetrics.density
         val padding = (1*density).toInt()
         val roundingRadius = 7*density
@@ -154,7 +155,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         val bottom = y+height-padding
 
 
-        canvas.drawRoundRect(x+padding, y+padding, x+width-padding, y+height-padding, roundingRadius, roundingRadius, normalColor)
+        canvas.drawRoundRect(left, top, right, bottom, roundingRadius, roundingRadius, normalColor)
         //canvas.drawRect(x+padding, y+padding, x+width-padding, y+height-padding, normalButtonPaint)
 
         val textHeight = primaryTextPaint.ascent() + primaryTextPaint.descent()
@@ -209,10 +210,10 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
             canvas.drawText(zone.binding.text ?: "", centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
         }
 
-        //if (highlightAlpha > 0) {
-        //    highlightPaint.alpha = highlightAlpha
-        //    canvas.drawRect(x, y, x + width, y + height, highlightPaint)
-        //}
+        if (highlightAlpha > 0) {
+            highlightPaint.alpha = highlightAlpha
+            canvas.drawRoundRect(left, top, right, bottom, roundingRadius, roundingRadius, highlightPaint)
+        }
 
         //canvas.drawRect(x, y, x+width, y+height, borderPaint)
     }

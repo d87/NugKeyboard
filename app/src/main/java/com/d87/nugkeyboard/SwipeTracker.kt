@@ -93,7 +93,6 @@ class SwipeTracker {
     }
 
     private fun addPoint(x: Float, y: Float, time: Long) {
-        // TODO: Just drop everything that comes after LONGEST_PAST_TIME timeout
         var i = currentLogIndex
         val pastTime = mPastTime
         val pastX = mPastX
