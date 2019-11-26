@@ -3,6 +3,7 @@ package com.d87.nugkeyboard
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.media.MediaPlayer
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
@@ -98,7 +99,8 @@ class NugKeyboardView : View {
         this.invalidate()
     }
 
-    private var _swipeTrackers: ArrayList<SwipeTracker> = arrayListOf(SwipeTracker(), SwipeTracker(), SwipeTracker())
+    private var _swipeTrackers: ArrayList<SwipeTracker> = arrayListOf()
+    private var _mediaPlayers: ArrayList<MediaPlayer> = arrayListOf()
 
     var activeLayout: KeyboardLayout? = null
     init {
