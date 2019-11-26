@@ -3,6 +3,7 @@ package com.d87.nugkeyboard
 import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.drawable.Drawable
 import kotlin.math.PI
 import kotlin.math.abs
@@ -208,6 +209,32 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
 
             val textHeight = secondaryTextPaint.ascent() + secondaryTextPaint.descent()
             canvas.drawText(zone.binding.text ?: "", centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
+
+           /* if (90 > zone.start && 90 < zone.end && config.y == 0f && config.x == 0f ) {
+                canvas.save()
+
+                val clipPath = Path()
+                val extra = width
+
+                val zoneStartRad = zone.start / (180/PI)
+                val zoneEndRad = zone.end / (180/PI)
+                var sx = (sin(zoneStartRad)*extra*5).toFloat()
+                var sy = (-cos(zoneStartRad)*extra*5).toFloat()
+                var ex = (sin(zoneEndRad)*extra*5).toFloat()
+                var ey = (-cos(zoneEndRad)*extra*5).toFloat()
+
+                clipPath.moveTo(centerX, centerY)
+                clipPath.lineTo(centerX+sx, centerY+sy)
+                clipPath.lineTo(centerX+ex, centerY+ey)
+                clipPath.lineTo(centerX, centerY)
+
+                canvas.clipPath(clipPath)
+
+                highlightPaint.alpha = highlightAlpha
+                canvas.drawRoundRect(left, top, right, bottom, roundingRadius, roundingRadius, highlightPaint)
+
+                canvas.restore()
+            }*/
         }
 
         if (highlightAlpha > 0) {

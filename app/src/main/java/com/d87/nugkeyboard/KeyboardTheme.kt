@@ -13,6 +13,8 @@ class KeyboardTheme {
     var normalButtonColorAlt = Color.BLACK
     var normalButtonColorHighlight = Color.BLACK
 
+    var trailColorHighlight = Color.BLACK
+
     var accentButtonColor = Color.BLACK
     var accentButtonColorAlt = Color.BLACK
     var accentButtonColorHighlight = Color.BLACK

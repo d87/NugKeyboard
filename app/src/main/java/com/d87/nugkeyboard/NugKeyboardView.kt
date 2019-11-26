@@ -293,10 +293,12 @@ class NugKeyboardView : View {
             for (key: SwipeButton in it.keys) {
                 key.draw(canvas)
             }
+
+            for (tracker in _swipeTrackers){
+                if (tracker.hasTrail)
+                    tracker.drawTrail(canvas, it.highlightSwipeTrailPaint)
+            }
         }
-
-
-
 
 
         //val rect = Rect(0,0, 30, 30)
@@ -510,7 +512,9 @@ class NugKeyboardView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
+                // TODO: iterate over all pointer indices
                 swipeTracker.addMovement(me, pointerID)
+                this.invalidate() // To redraw swipe tracker's trail
             }
             MotionEvent.ACTION_UP -> {
                 _uiHandler.removeMessages(LONG_PRESS, swipeTracker)

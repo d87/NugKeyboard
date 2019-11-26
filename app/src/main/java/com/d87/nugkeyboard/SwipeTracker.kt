@@ -1,5 +1,8 @@
 package com.d87.nugkeyboard
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Path
 import android.os.Handler
 import android.os.Message
 import android.util.Log
@@ -12,6 +15,11 @@ class SwipeTracker {
     internal val mPastY = FloatArray(NUM_PAST)
     internal val mPastTime = LongArray(NUM_PAST)
     internal var distanceTraveled = 0f
+
+    val trailPath = Path() // Where swipe movements aggregate
+    var hasTrail = false   // Quick indicator if trail has any points
+
+
     var minSwipeLength = 15 // in pixels, but should by set in dips
 
     var _msgLongPress: Message? = null
@@ -31,6 +39,8 @@ class SwipeTracker {
         mPastTime.fill(0)
         distanceTraveled = 0f
         currentLogIndex = 0
+        trailPath.reset()
+        hasTrail = false
     }
 
     fun start(ev: MotionEvent, pointerID: Int) {
@@ -41,6 +51,7 @@ class SwipeTracker {
         originY = ev.getY(pointerIndex)
         val eventTime = ev.eventTime
         addPoint(originX, originY, eventTime)
+        trailPath.moveTo(originX, originY)
     }
 
     fun getSwipeAngle(): Float {
@@ -74,6 +85,10 @@ class SwipeTracker {
         return Pair(mPastX[i], mPastY[i])
     }
 
+    fun drawTrail(canvas: Canvas, paint: Paint) {
+        canvas.drawPath(trailPath, paint)
+    }
+
     fun addMovement(ev: MotionEvent, pointerID: Int) {
         val pointerIndex = ev.findPointerIndex(pointerID)
         if (pointerIndex == -1) return
@@ -89,7 +104,11 @@ class SwipeTracker {
         }
 
         val time = ev.eventTime
-        addPoint(ev.getX(pointerIndex), ev.getY(pointerIndex), time)
+        val x = ev.getX(pointerIndex)
+        val y = ev.getY(pointerIndex)
+        addPoint(x, y, time)
+        trailPath.lineTo(x, y)
+        hasTrail = true
     }
 
     private fun addPoint(x: Float, y: Float, time: Long) {
@@ -210,7 +229,7 @@ class SwipeTracker {
 
 
     companion object {
-        const val NUM_PAST = 10
+        const val NUM_PAST = 30
         const val LONGEST_PAST_TIME = 200 // If event comes after this amount of time since chain start, then drop the chain
     }
 }

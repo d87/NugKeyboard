@@ -60,6 +60,8 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
         theme.normalButtonColorAlt = Color.parseColor("#0d0d0d")
         theme.normalButtonColorHighlight = Color.parseColor("#d35c92")
 
+        theme.trailColorHighlight = Color.parseColor("#d37cb2")
+
         theme.accentButtonColor = Color.parseColor("#272727")
         theme.accentButtonColorAlt = Color.parseColor("#1d1d1d")
         theme.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
@@ -83,6 +85,11 @@ class KeyboardLayout(keyboardView: NugKeyboardView) {
     val highlightPaint: Paint = Paint().apply{
         style = Paint.Style.FILL
         color = theme.normalButtonColorHighlight
+    }
+    val highlightSwipeTrailPaint: Paint = Paint().apply{
+        style = Paint.Style.STROKE
+        strokeWidth = 15f
+        color = theme.trailColorHighlight
     }
     val normalButtonPaint: Paint = Paint().apply{
         style = Paint.Style.FILL
