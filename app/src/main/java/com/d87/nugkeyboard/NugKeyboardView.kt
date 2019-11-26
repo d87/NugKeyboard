@@ -337,60 +337,28 @@ class NugKeyboardView : View {
         // ACTION_DOWN/UP only comes for the first/last pointer remaining, so their's pointerIndex is always 0
         // ACTION_MOVE events at all times carry positions of all active pointers,
         // without specifying which one changed
+        // IMPORTANT: Do not edit motionevent object itself, it can screw up with subsequent events
+        var motionEventType: Int = actionMasked
+
         when(actionMasked) {
             MotionEvent.ACTION_POINTER_DOWN -> {
-                //Log.d("NEW POINTER", me.toString())
                 pointerID = me.getPointerId(me.actionIndex)
-                me.action = MotionEvent.ACTION_DOWN
+                motionEventType = MotionEvent.ACTION_DOWN
             }
             MotionEvent.ACTION_POINTER_UP -> {
-                //Log.d("LOST POINTER", me.toString())
                 pointerID = me.getPointerId(me.actionIndex)
-                me.action = MotionEvent.ACTION_UP
+                motionEventType = MotionEvent.ACTION_UP
             }
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP -> {
                 pointerID = me.getPointerId(0)
             }
-        }
-
-        return onModifiedTouchEvent(me, pointerID)
-
-        /*
-        if (pointerCount != _OldPointerCount) {
-            if (pointerCount == 1) {
-                // Send a down event for the latest pointer
-                val down = MotionEvent.obtain(
-                    now, now, MotionEvent.ACTION_DOWN,
-                    me.x, me.y, me.metaState
-                )
-                result = onModifiedTouchEvent(down, false)
-                down.recycle()
-                // If it's an up action, then deliver the up as well.
-                if (action == MotionEvent.ACTION_UP) {
-                    result = onModifiedTouchEvent(me, true)
-                }
-            } else {
-                // Send an up event for the last pointer
-                val up = MotionEvent.obtain(
-                    now, now, MotionEvent.ACTION_UP,
-                    _OldPointerX, _OldPointerY, me.metaState
-                )
-                result = onModifiedTouchEvent(up, true)
-                up.recycle()
-            }
-        } else {
-            if (pointerCount == 1) {
-                result = onModifiedTouchEvent(me, false)
-                _OldPointerX = me.x
-                _OldPointerY = me.y
-            } else {
-                // Don't do anything when 2 pointers are down and moving.
-                result = true
+            MotionEvent.ACTION_CANCEL -> {
+                pointerID = me.getPointerId(0)
+                motionEventType = MotionEvent.ACTION_UP
             }
         }
-        _OldPointerCount = pointerCount
-        */
-        //return result
+
+        return onModifiedTouchEvent(motionEventType, pointerID, me)
     }
 
     fun getKeyFromCoords(touchX: Float, touchY: Float): SwipeButton? {
@@ -406,7 +374,6 @@ class NugKeyboardView : View {
         override fun handleMessage(msg: Message) {
             //super.handleMessage(msg)
 
-            Log.d("MESSAGE", msg.toString())
             when (msg.what) {
                 KEY_REPEAT, KEY_REPEAT_DELAY -> {
                     val pointerID = msg.arg1 as Int
@@ -437,9 +404,16 @@ class NugKeyboardView : View {
         }
     }
 
+    fun getKeyForPointer(pointerID: Int): SwipeButton? {
+        val swipeTracker = _swipeTrackers[pointerID]
+        var (x,y) = swipeTracker.getOrigin()
+        // x -= paddingBottom
+        // y -= paddingTop
+        return getKeyFromCoords(x, y)
+    }
+
     fun runPointerAction(pointerID: Int) {
         val swipeTracker = _swipeTrackers[pointerID]
-        //return runPointerAction(swipeTracker)
         val (x,y) = swipeTracker.getOrigin()
         val key = getKeyFromCoords(x, y)
         key ?: return
@@ -447,46 +421,39 @@ class NugKeyboardView : View {
         var action: KeyboardAction?
         if (swipeTracker.isSwiping()) {
             val angle = swipeTracker.getSwipeAngle()
-            Log.d("SWIPE_ANGLE", angle.toString() )
+            //Log.d("SWIPE_ANGLE", angle.toString() )
             action = key.getBindingByAngle(angle)
         } else {
-            Log.d( "KEYPRESS", pointerID.toString())
+            //Log.d( "KEYPRESS", pointerID.toString())
             action = key.config.onPressAction
         }
-        key!!.highlightFadeOut()
+        key.highlightFadeOut()
         executeAction(action)
     }
 
 
     //private fun onModifiedTouchEvent(me: MotionEvent, possiblePoly: Boolean): Boolean {
-    private fun onModifiedTouchEvent(me: MotionEvent, pointerID: Int): Boolean {
-        // var touchX = me.x.toInt() - paddingBottom
-        // var touchY = me.y.toInt() - paddingTop
-        // if (touchY >= _VerticalCorrection)
-        //     touchY += _VerticalCorrection
-        val action = me.action
-        val eventTime = me.eventTime
-        //val key = getKeyFromCoords(touchX, touchY)    //--------- <----- Where keys get recognized
-        //key ?: return false
-
-        val swipeTracker = try {
-             _swipeTrackers[pointerID]
-        } catch ( e: ArrayIndexOutOfBoundsException) {
+    private fun onModifiedTouchEvent(motionEventType: Int,  pointerID: Int, me: MotionEvent): Boolean {
+        val numSwipeTrackers = _swipeTrackers.size
+        if (pointerID == numSwipeTrackers) {
             val newTracker = SwipeTracker()
             _swipeTrackers.add(newTracker)
-            if (_swipeTrackers.size-1 != pointerID ) throw e
-            newTracker
+            _mediaPlayers.add(MediaPlayer.create(context, R.raw.key_click3))
         }
+        val swipeTracker = _swipeTrackers[pointerID]
+        val mediaPlayer = _mediaPlayers[pointerID]
 
-        when (me.action) {
+        when (motionEventType) {
             MotionEvent.ACTION_DOWN -> {
                 swipeTracker.start(me, pointerID)
                 var (x,y) = swipeTracker.getOrigin()
-                // x -= paddingBottom
-                // y -= paddingTop
                 val key = getKeyFromCoords(x, y)
                 key?.let{
                     it.highlightFadeIn()
+                    if (mediaPlayer.isPlaying)
+                        mediaPlayer.stop()
+                    mediaPlayer.reset()
+                    mediaPlayer.start()
 
                     // TODO: Need to somehow split key repeat and non-KR actions.
                     //  - For example delete word on swipe left, but KR delete char on the same button
@@ -522,210 +489,13 @@ class NugKeyboardView : View {
                 _uiHandler.removeMessages(KEY_REPEAT, swipeTracker)
                 // TODO: Skip after key-repeating
                 runPointerAction(pointerID) // Executes current swipe or press action
+                //val key = getKeyForPointer(pointerID)
+                //key?.let{ it.highlightFadeOut() }
+                swipeTracker.clear()
             }
         }
-
-
-        // mSwipeTracker.addMovement(me)
-
-        // if (mGestureDetector!!.onTouchEvent(me)) {
-        //     showPreview(NOT_A_KEY)
-        //     mHandler!!.removeMessages(MSG_REPEAT)
-        //     mHandler!!.removeMessages(MSG_LONGPRESS)
-        //     return true
-        // }
 
         return true
-        //mPossiblePoly = possiblePoly
-        /*
-        // Track the last few movements to look for spurious swipes.
-        if (action == MotionEvent.ACTION_DOWN) mSwipeTracker.clear()
-        mSwipeTracker.addMovement(me)
-
-        // Ignore all motion events until a DOWN.
-        if (mAbortKey
-            && action != MotionEvent.ACTION_DOWN && action != MotionEvent.ACTION_CANCEL
-        ) {
-            return true
-        }
-        if (mGestureDetector!!.onTouchEvent(me)) {
-            showPreview(NOT_A_KEY)
-            mHandler!!.removeMessages(MSG_REPEAT)
-            mHandler!!.removeMessages(MSG_LONGPRESS)
-            return true
-        }
-        // Needs to be called after the gesture detector gets a turn, as it may have
-        // displayed the mini keyboard
-        if (mMiniKeyboardOnScreen && action != MotionEvent.ACTION_CANCEL) {
-            return true
-        }
-        /*
-        when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                mAbortKey = false
-                mStartX = touchX
-                mStartY = touchY
-                mLastCodeX = touchX
-                mLastCodeY = touchY
-                mLastKeyTime = 0
-                mCurrentKeyTime = 0
-                mLastKey = NOT_A_KEY
-                mCurrentKey = keyIndex
-                mDownKey = keyIndex
-                mDownTime = me.eventTime
-                mLastMoveTime = mDownTime
-                checkMultiTap(eventTime, keyIndex)
-                onKeyboardActionListener!!.onPress(
-                    if (keyIndex != NOT_A_KEY)
-                        mKeys!![keyIndex].codes[0]
-                    else
-                        0
-                )
-                if (mCurrentKey >= 0 && mKeys!![mCurrentKey].repeatable) {
-                    mRepeatKeyIndex = mCurrentKey
-                    val msg = mHandler!!.obtainMessage(MSG_REPEAT)
-                    mHandler!!.sendMessageDelayed(msg, REPEAT_START_DELAY.toLong())
-                    repeatKey()
-                    // Delivering the key could have caused an abort
-                    if (mAbortKey) {
-                        mRepeatKeyIndex = NOT_A_KEY
-                        break
-                    }
-                }
-                if (mCurrentKey != NOT_A_KEY) {
-                    val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
-                    mHandler!!.sendMessageDelayed(msg, LONGPRESS_TIMEOUT.toLong())
-                }
-                showPreview(keyIndex)
-            }
-            MotionEvent.ACTION_MOVE -> {
-                var continueLongPress = false
-                if (keyIndex != NOT_A_KEY) {
-                    if (mCurrentKey == NOT_A_KEY) {
-                        mCurrentKey = keyIndex
-                        mCurrentKeyTime = eventTime - mDownTime
-                    } else {
-                        if (keyIndex == mCurrentKey) {
-                            mCurrentKeyTime += eventTime - mLastMoveTime
-                            continueLongPress = true
-                        } else if (mRepeatKeyIndex == NOT_A_KEY) {
-                            resetMultiTap()
-                            mLastKey = mCurrentKey
-                            mLastCodeX = mLastX
-                            mLastCodeY = mLastY
-                            mLastKeyTime = mCurrentKeyTime + eventTime - mLastMoveTime
-                            mCurrentKey = keyIndex
-                            mCurrentKeyTime = 0
-                        }
-                    }
-                }
-                if (!continueLongPress) {
-                    // Cancel old longpress
-                    mHandler!!.removeMessages(MSG_LONGPRESS)
-                    // Start new longpress if key has changed
-                    if (keyIndex != NOT_A_KEY) {
-                        val msg = mHandler!!.obtainMessage(MSG_LONGPRESS, me)
-                        mHandler!!.sendMessageDelayed(msg, LONGPRESS_TIMEOUT.toLong())
-                    }
-                }
-                showPreview(mCurrentKey)
-                mLastMoveTime = eventTime
-            }
-            MotionEvent.ACTION_UP -> {
-                removeMessages()
-                if (keyIndex == mCurrentKey) {
-                    mCurrentKeyTime += eventTime - mLastMoveTime
-                } else {
-                    resetMultiTap()
-                    mLastKey = mCurrentKey
-                    mLastKeyTime = mCurrentKeyTime + eventTime - mLastMoveTime
-                    mCurrentKey = keyIndex
-                    mCurrentKeyTime = 0
-                }
-                if (mCurrentKeyTime < mLastKeyTime && mCurrentKeyTime < DEBOUNCE_TIME
-                    && mLastKey != NOT_A_KEY
-                ) {
-                    mCurrentKey = mLastKey
-                    touchX = mLastCodeX
-                    touchY = mLastCodeY
-                }
-                showPreview(NOT_A_KEY)
-                Arrays.fill(mKeyIndices, NOT_A_KEY)
-                // If we're not on a repeating key (which sends on a DOWN event)
-                if (mRepeatKeyIndex == NOT_A_KEY && !mMiniKeyboardOnScreen && !mAbortKey) {
-                    detectAndSendKey(mCurrentKey, touchX, touchY, eventTime)
-                }
-                invalidateKey(keyIndex)
-                mRepeatKeyIndex = NOT_A_KEY
-            }
-            MotionEvent.ACTION_CANCEL -> {
-                removeMessages()
-                dismissPopupKeyboard()
-                mAbortKey = true
-                showPreview(NOT_A_KEY)
-                invalidateKey(mCurrentKey)
-            }
-        }
-        mLastX = touchX
-        mLastY = touchY
-        return true
-        */
-    }*/
-
-    /*
-    private fun getKeyIndices(x: Int, y: Int, allKeys: IntArray?): Int {
-        val keys = activeLayout!!.keys
-        //var primaryIndex = NOT_A_KEY
-        //var closestKey = NOT_A_KEY
-        var closestKeyDist = mProximityThreshold + 1
-        java.util.Arrays.fill(mDistances, Integer.MAX_VALUE)
-        val nearestKeyIndices = keyboard!!.getNearestKeys(x, y)
-        val keyCount = nearestKeyIndices.size
-        for (i in 0 until keyCount) {
-            val key = keys!![nearestKeyIndices[i]]
-            var dist = 0
-            val isInside = key.isInside(x, y)
-            if (isInside) {
-                primaryIndex = nearestKeyIndices[i]
-            }
-            if ((isProximityCorrectionEnabled && (dist = key.squaredDistanceFrom(
-                    x,
-                    y
-                )) < mProximityThreshold || isInside) && key.codes[0] > 32
-            ) {
-                // Find insertion point
-                val nCodes = key.codes.size
-                if (dist < closestKeyDist) {
-                    closestKeyDist = dist
-                    closestKey = nearestKeyIndices[i]
-                }
-                if (allKeys == null) continue
-                for (j in mDistances.indices) {
-                    if (mDistances[j] > dist) {
-                        // Make space for nCodes codes
-                        System.arraycopy(
-                            mDistances, j, mDistances, j + nCodes,
-                            mDistances.size - j - nCodes
-                        )
-                        System.arraycopy(
-                            allKeys, j, allKeys, j + nCodes,
-                            allKeys.size - j - nCodes
-                        )
-                        for (c in 0 until nCodes) {
-                            allKeys[j + c] = key.codes[c]
-                            mDistances[j + c] = dist
-                        }
-                        break
-                    }
-                }
-            }
-        }
-        if (primaryIndex == NOT_A_KEY) {
-            primaryIndex = closestKey
-        }
-        return primaryIndex
-
-     */
     }
 
     companion object {
