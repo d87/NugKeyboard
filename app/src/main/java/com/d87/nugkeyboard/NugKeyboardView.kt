@@ -323,20 +323,15 @@ class NugKeyboardView : View {
     override fun onTouchEvent(me: MotionEvent): Boolean {
         // Convert multi-pointer up/down events to single up/down events to
         // deal with the typical multi-pointer behavior of two-thumb typing
-        val pointerCount = me.pointerCount
         val actionMasked = me.actionMasked
-        var result = false
-        val now = me.eventTime
 
         var pointerID = 0
-
-        Log.d("MOTION", me.toString() )
 
         // If you have more than 1 active pointer, then ACTION_POINTER_DOWN/UP events are coming in
         // instead of a normal ACTION_DOWN/UP, these events carry pointerIndex inside of them
         // That's why actionMasked is used instead of normal action, otherwise ACTION_POINTER_DOWN
         // wouldn't register.
-        // ACTION_DOWN/UP only comes for the first/last pointer remaining, so their's pointerIndex is always 0
+        // ACTION_DOWN/UP only comes for the first/last pointer remaining, so their pointerIndex is always 0
         // ACTION_MOVE events at all times carry positions of all active pointers,
         // without specifying which one changed
         // IMPORTANT: Do not edit motionevent object itself, it can screw up with subsequent events
@@ -481,8 +476,12 @@ class NugKeyboardView : View {
                 }
             }
             MotionEvent.ACTION_MOVE -> {
-                // TODO: iterate over all pointer indices
-                swipeTracker.addMovement(me, pointerID)
+                val pointerCount = me.pointerCount
+                for (i in 0 until pointerCount) {
+                    val pid = me.getPointerId(i)
+                    val tracker = _swipeTrackers[pid]
+                    tracker.addMovement(me, pid)
+                }
                 this.invalidate() // To redraw swipe tracker's trail
             }
             MotionEvent.ACTION_UP -> {
