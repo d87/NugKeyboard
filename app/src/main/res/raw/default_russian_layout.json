@@ -1,0 +1,274 @@
+    {
+    "layoutVersion": 1,
+    "keyConfig": [
+        {
+            "type": "Rect",
+            "x": 0,
+            "y": 0,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&1" },
+                { "condition": "CAPS", "action":"INPUT:&С" },
+                { "action":"INPUT:&с" }
+            ],
+            "onSwipeActions": [
+                { "action":"INPUT:&м" },
+                { "action":"INPUT:&п" },
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 250,
+            "y": 0,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&2" },
+                { "condition": "CAPS", "action":"INPUT:&И" },
+                { "action":"INPUT:&и" }
+            ],
+            "onSwipeActions": [
+                { "action":"у" },
+                { "action":"г" },
+                { "action":"к" },
+                { "action":"я" },
+                { "action":"й" }
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 500,
+            "y": 0,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&3" },
+                { "condition": "CAPS", "action":"INPUT:&Т" },
+                { "action":"INPUT:&т" }
+            ],
+            "onSwipeActions": [
+                "A",
+                "B",
+                "C"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 750,
+            "y": 0,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&0" },
+                { "condition": "CAPS", "action":"INPUT:&O" },
+                { "action":"INPUT:&o" }
+            ],
+            "onSwipeActions": [
+                "A",
+                "B",
+                "C"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&4" },
+                { "condition": "CAPS", "action":"INPUT:&I" },
+                { "action":"INPUT:&i" }
+            ],
+            "onSwipeActions": [
+                "A",
+                "B",
+                "C"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 250,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&5" },
+                { "condition": "CAPS", "action":"INPUT:&N" },
+                { "action":"INPUT:&n" }
+            ],
+            "onSwipeActions": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 500,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&6" },
+                { "condition": "CAPS", "action":"INPUT:&S" },
+                { "action":"INPUT:&s" }
+            ],
+            "onSwipeActions": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 750,
+            "y": 250,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "CAPS", "action":"INPUT:&R" },
+                { "action":"INPUT:&r" }
+            ],
+            "onSwipeActions": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0,
+            "y": 500,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&7" },
+                { "condition": "CAPS", "action":"INPUT:&H" },
+                { "action":"INPUT:&h" }
+            ],
+            "onSwipeActions": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 250,
+            "y": 500,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&8" },
+                { "condition": "CAPS", "action":"INPUT:&D" },
+                { "action":"INPUT:&d" }
+            ],
+            "onSwipeActions": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 500,
+            "y": 500,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&9" },
+                { "condition": "CAPS", "action":"INPUT:&L" },
+                { "action":"INPUT:&l" }
+            ],
+            "onSwipeActions": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 750,
+            "y": 500,
+            "width": 250,
+            "height": 250,
+            "onPressAction": [
+                { "condition": "CAPS", "action":"INPUT:&U" },
+                { "action":"INPUT:&u" }
+            ],
+            "hideRadials": true,
+            "onSwipeActions": [
+                "Q",
+                "R",
+                "N",
+                "J"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 0,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": true,
+            "width": 130,
+            "height": 180,
+            "onPressAction": { "action":"CAPS_TOGGLE", "icon": "#!CAPS_UP" },
+            "hideRadials": true,
+            "onSwipeActions": [
+                "Q",
+                "R"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 130,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": false,
+            "width": 520,
+            "height": 180,
+            "onPressAction": { "action":"INPUT:@KEYCODE_SPACE", "icon": "#!SPACE" },
+            "hideRadials": true,
+            "onSwipeActions": [
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 650,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": true,
+            "width": 150,
+            "height": 180,
+            "onPressAction": { "action":"INPUT:@KEYCODE_BACKSPACE", "icon": "#!BACKSPACE" },
+            "hideRadials": true,
+            "onSwipeActions": [
+                "Q",
+                "R"
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 800,
+            "y": 750,
+            "isAccented": true,
+            "isAltColor": false,
+            "width": 200,
+            "height": 180,
+            "onPressAction": { "action":"INPUT:@KEYCODE_ENTER", "icon": "#!RETURN" },
+            "hideRadials": true,
+            "onSwipeActions": [
+                "Q",
+                "R"
+            ]
+        }
+    ]
+}

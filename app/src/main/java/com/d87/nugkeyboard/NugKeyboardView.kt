@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.os.Handler
 import android.os.Message
 import android.util.Log
+import java.lang.Exception
 
 
 //import android.inputmethodservice.KeyboardView;
@@ -19,7 +20,7 @@ import android.util.Log
  * TODO: document your custom view class.
  */
 class NugKeyboardView : View {
-
+    // TODO: Maybe decouple View class from Keyboard Class
     interface OnKeyboardActionListener {
         /**
          * Called when the user presses a key. This is sent before the [.onKey] is called.
@@ -103,15 +104,35 @@ class NugKeyboardView : View {
     private var _mediaPlayers: ArrayList<MediaPlayer> = arrayListOf()
 
     var activeLayout: KeyboardLayout? = null
+    var activeLayoutName = "DefaultEnglish" // TODO: Get from prefs
+    val layoutList: ArrayList<String> = arrayListOf("DefaultEnglish", "DefaultRussian")
+    val layoutMapByName = mapOf(
+        Pair("DefaultEnglish", KeyboardLayout(this, resources.openRawResource(R.raw.default_layout))),
+        Pair("DefaultRussian", KeyboardLayout(this, resources.openRawResource(R.raw.default_russian_layout)))
+    )
     init {
-        val kLayout = KeyboardLayout(this)
+        var layout = layoutMapByName[activeLayoutName]
 
-        val layoutJson = resources.openRawResource(R.raw.default_layout)
-            .bufferedReader().use { it.readText() }
+        if (layout == null) {
+            if (layoutMapByName.isEmpty()){
+                throw Exception("No layouts selected")
+            }
+            val layouts = layoutMapByName.values
+            layout = layouts.first()
+        }
 
-        kLayout.importJSON(layoutJson)
-        kLayout.makeKeys()
-        activeLayout = kLayout
+        val curLayout = layout!!
+        curLayout.load()
+        curLayout.makeKeys()
+        activeLayout = curLayout
+
+        // TODO: Use background thread for non-active layouts?
+        for ( (bLayoutName, bLayout) in layoutMapByName) {
+            if (!bLayout.isLoaded) {
+                bLayout.load()
+                bLayout.makeKeys()
+            }
+        }
         onKeyboardStateChanged()
     }
 
@@ -276,20 +297,7 @@ class NugKeyboardView : View {
         val keyWidth = (contentWidth / 4).toFloat()
         val keyHeight = (contentHeight / 4).toFloat()
 
-
-        //canvas.drawColor(0x00000000, PorterDuff.Mode.CLEAR)
-        //canvas.drawColor(0x00000000, PorterDuff.Mode.SRC)
         canvas.drawPaint(backgroundPaint)
-
-        /*exampleString?.let {
-            // Draw the text.
-            canvas.drawText(
-                it,
-                paddingLeft + (contentWidth - textWidth) / 2,
-                paddingTop + (contentHeight + textHeight) / 2,
-                textPaint as Paint
-            )
-        }*/
 
         activeLayout?.let {
             for (key: SwipeButton in it.keys) {
@@ -301,23 +309,6 @@ class NugKeyboardView : View {
                     tracker.drawTrail(canvas, it.highlightSwipeTrailPaint)
             }
         }
-
-
-        //val rect = Rect(0,0, 30, 30)
-
-        //canvas.drawLine(0f,0f, width.toFloat(), height.toFloat(), redPaint)
-        //canvas.drawLine(0.toFloat(), height.toFloat()/2, paddingRight.toFloat(), height.toFloat()/2, redPaint)
-
-
-
-        // Draw the example drawable on top of the text.
-        /*exampleDrawable?.let {
-            it.setBounds(
-                paddingLeft, paddingTop,
-                paddingLeft + contentWidth, paddingTop + contentHeight
-            )
-            it.draw(canvas)
-        }*/
     }
 
     override fun onTouchEvent(me: MotionEvent): Boolean {

@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
 import org.json.JSONArray
 import org.json.JSONException
+import java.io.InputStream
 
 data class ButtonConfig(val id: Int) {
     //val id: Int = id
@@ -33,8 +34,21 @@ data class ButtonConfig(val id: Int) {
     var onSwipeActions = arrayListOf<KeyboardAction>()
 }
 
-class KeyboardLayout(keyboardView: NugKeyboardView) {
+class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
     var keyboardView = keyboardView
+
+    var isLoaded = false
+    var layoutFile: InputStream = file
+    //constructor(keyboardView: NugKeyboardView, ): this(keyboardView) {
+    //    layoutFile = file
+    //}
+    fun load() {
+        if (isLoaded) return
+
+        val JSON = layoutFile.bufferedReader().use { it.readText() }
+        importJSON(JSON)
+        isLoaded = true
+    }
 
     // These are virtual pixel units for setting up layout and it's aspect ratio, not even dps
     // They get mapped onto dips, and if it's a phone this dips value should snap to phone's width
