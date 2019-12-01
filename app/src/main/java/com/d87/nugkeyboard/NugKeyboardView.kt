@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.os.Handler
 import android.os.Message
 import android.util.Log
+import android.view.ViewGroup
 import java.lang.Exception
 
 
@@ -104,14 +105,15 @@ class NugKeyboardView : View {
     private var _mediaPlayers: ArrayList<MediaPlayer> = arrayListOf()
 
     var activeLayout: KeyboardLayout? = null
-    var activeLayoutName = "DefaultEnglish" // TODO: Get from prefs
+    var activeLayoutIndex = 0 // TODO: Get from prefs
     val layoutList: ArrayList<String> = arrayListOf("DefaultEnglish", "DefaultRussian")
     val layoutMapByName = mapOf(
         Pair("DefaultEnglish", KeyboardLayout(this, resources.openRawResource(R.raw.default_layout))),
         Pair("DefaultRussian", KeyboardLayout(this, resources.openRawResource(R.raw.default_russian_layout)))
     )
     init {
-        var layout = layoutMapByName[activeLayoutName]
+        val layoutName = layoutList[activeLayoutIndex]
+        var layout = layoutMapByName[layoutName]
 
         if (layout == null) {
             if (layoutMapByName.isEmpty()){
@@ -125,6 +127,7 @@ class NugKeyboardView : View {
         curLayout.load()
         curLayout.makeKeys()
         activeLayout = curLayout
+        resizeForLayout()
 
         // TODO: Use background thread for non-active layouts?
         for ( (bLayoutName, bLayout) in layoutMapByName) {
@@ -136,7 +139,20 @@ class NugKeyboardView : View {
         onKeyboardStateChanged()
     }
 
-    private var _KeyBackground: Drawable? = null
+    fun cycleLayout(back: Boolean = false) {
+        if (back) { activeLayoutIndex-- } else { activeLayoutIndex ++ }
+        if ( activeLayoutIndex >= layoutList.size ) { activeLayoutIndex = 0 }
+        if ( activeLayoutIndex < 0 ) { activeLayoutIndex = layoutList.size-1 }
+
+        val layoutName = layoutList[activeLayoutIndex]
+        var layout = layoutMapByName[layoutName]
+        activeLayout = layout
+
+        resizeForLayout()
+        onLayoutChanged()
+        onKeyboardStateChanged()
+    }
+
 
     private var _exampleString: String? = null // TODO: use a default from R.string...
     private var _exampleColor: Int = Color.RED // TODO: use a default from R.color...
@@ -256,6 +272,36 @@ class NugKeyboardView : View {
         }
     }
 
+    fun resizeForLayout() {
+        if (activeLayout == null) return
+
+        val keyboardLayoutAspectRatio = activeLayout!!.layoutWidth/activeLayout!!.layoutHeight
+        val density = resources.displayMetrics.density
+        //val dpHeight = resources.displayMetrics.heightPixels / density
+        //val dpWidth = resources.displayMetrics.widthPixels / density
+
+        val displayWidth = resources.displayMetrics.widthPixels
+        val displayHeight = resources.displayMetrics.heightPixels
+        var kbHeight = 0
+        var kbWidth = 0
+        if (keyboardLayoutAspectRatio >= 1) {
+            kbWidth = displayWidth
+            kbHeight = (displayWidth / keyboardLayoutAspectRatio).toInt()
+        } else {
+            kbWidth = (displayWidth * keyboardLayoutAspectRatio).toInt()
+            kbHeight = displayWidth
+        }
+
+        this.setLayoutParams(ViewGroup.LayoutParams(kbWidth, kbHeight))
+        this.requestLayout()
+    }
+
+    fun onLayoutChanged() {
+        for (tracker in _swipeTrackers) {
+            tracker.clear()
+        }
+    }
+
     override  fun onSizeChanged(neww: Int, newh: Int, oldw: Int, oldh: Int) {
         //val paddingLeft = paddingLeft
         //val paddingTop = paddingTop
@@ -367,8 +413,8 @@ class NugKeyboardView : View {
                     val pointerID = msg.arg1 as Int
                     val swipeTracker = msg.obj
                     runPointerAction(pointerID)
-                    val msg = _uiHandler.obtainMessage(KEY_REPEAT, pointerID, 0, swipeTracker)
-                    _uiHandler.sendMessageDelayed(msg, KEY_REPEAT_TIMEOUT)
+                    val krmsg = _uiHandler.obtainMessage(KEY_REPEAT, pointerID, 0, swipeTracker)
+                    _uiHandler.sendMessageDelayed(krmsg, KEY_REPEAT_TIMEOUT)
                 }
                 LONG_PRESS -> {
                     Log.d("LONG_PRESS", msg.arg1.toString())

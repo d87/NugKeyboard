@@ -22,28 +22,6 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         val kv: NugKeyboardView = layout.findViewById(R.id.KeyboardView)
 
 
-        // TODO: load keyboard profile/layout here to change keyboard size?
-        val keyboardLayoutAspectRatio = kv.activeLayout!!.layoutWidth/kv.activeLayout!!.layoutHeight
-        val density = resources.displayMetrics.density
-        val dpHeight = resources.displayMetrics.heightPixels / density
-        val dpWidth = resources.displayMetrics.widthPixels / density
-
-        val displayWidth = resources.displayMetrics.widthPixels
-        val displayHeight = resources.displayMetrics.heightPixels
-        var kbHeight = 0
-        var kbWidth = 0
-        if (keyboardLayoutAspectRatio >= 1) {
-            kbWidth = displayWidth
-            kbHeight = (displayWidth / keyboardLayoutAspectRatio).toInt()
-        } else {
-            kbWidth = (displayWidth * keyboardLayoutAspectRatio).toInt()
-            kbHeight = displayWidth
-        }
-
-        kv.layoutParams.width = kbWidth
-        kv.layoutParams.height = kbHeight
-        kv.requestLayout()
-
         kv.onKeyboardActionListener = this
 
         keyboardView = kv
