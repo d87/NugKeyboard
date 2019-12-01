@@ -1,25 +1,23 @@
 package com.d87.nugkeyboard
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
-import android.text.TextPaint
-import android.util.AttributeSet
-import android.view.View
-import android.view.MotionEvent
 import android.os.Handler
 import android.os.Message
+import android.text.TextPaint
+import android.util.AttributeSet
 import android.util.Log
-import android.view.ViewGroup
-import java.lang.Exception
+import android.view.MotionEvent
+import android.view.View
+import android.widget.FrameLayout
+import androidx.core.view.updateLayoutParams
+import kotlin.math.min
 
 
-//import android.inputmethodservice.KeyboardView;
-
-/**
- * TODO: document your custom view class.
- */
 class NugKeyboardView : View {
     // TODO: Maybe decouple View class from Keyboard Class
     interface OnKeyboardActionListener {
@@ -151,6 +149,7 @@ class NugKeyboardView : View {
         resizeForLayout()
         onLayoutChanged()
         onKeyboardStateChanged()
+        this.invalidate()
     }
 
 
@@ -272,14 +271,15 @@ class NugKeyboardView : View {
         }
     }
 
-    fun resizeForLayout() {
-        if (activeLayout == null) return
+    fun getSuggestedLayoutSize(): Pair<Int, Int> {
+        if (activeLayout == null) return Pair(0,0)
 
         val keyboardLayoutAspectRatio = activeLayout!!.layoutWidth/activeLayout!!.layoutHeight
-        val density = resources.displayMetrics.density
+
         //val dpHeight = resources.displayMetrics.heightPixels / density
         //val dpWidth = resources.displayMetrics.widthPixels / density
 
+        val density = resources.displayMetrics.density
         val displayWidth = resources.displayMetrics.widthPixels
         val displayHeight = resources.displayMetrics.heightPixels
         var kbHeight = 0
@@ -291,35 +291,37 @@ class NugKeyboardView : View {
             kbWidth = (displayWidth * keyboardLayoutAspectRatio).toInt()
             kbHeight = displayWidth
         }
+        return Pair(kbWidth, kbHeight)
+    }
 
-        this.setLayoutParams(ViewGroup.LayoutParams(kbWidth, kbHeight))
-        this.requestLayout()
+    fun resizeForLayout() {
+        if (activeLayout == null) return
+
+        val (kbWidth, kbHeight) = getSuggestedLayoutSize()
+
+        // The LayoutParams should be from the layout where the graphView is placed.
+        // For example if in the XML layout file graphView is placed inside RelativeLayout,
+        // then you should use new RelativeLayout.LayoutParams(width, height)
+        //this.layoutParams = FrameLayout.LayoutParams(kbWidth, kbHeight)
+
+        if (this.layoutParams != null) {
+            this.updateLayoutParams {
+                height = kbHeight
+                width = kbWidth
+            }
+            this.requestLayout()
+        }
+
+        val density = resources.displayMetrics.density
+        activeLayout!!.resize(kbWidth.toFloat(), kbHeight.toFloat(), density)
     }
 
     fun onLayoutChanged() {
+        _uiHandler.removeMessages(LONG_PRESS)
+        _uiHandler.removeMessages(KEY_REPEAT_DELAY)
+        _uiHandler.removeMessages(KEY_REPEAT)
         for (tracker in _swipeTrackers) {
             tracker.clear()
-        }
-    }
-
-    override  fun onSizeChanged(neww: Int, newh: Int, oldw: Int, oldh: Int) {
-        //val paddingLeft = paddingLeft
-        //val paddingTop = paddingTop
-        //val paddingRight = paddingRight
-        //val paddingBottom = paddingBottom
-
-        //val contentWidth = width - paddingLeft - paddingRight
-        //val contentHeight = height - paddingTop - paddingBottom
-
-        val density = resources.displayMetrics.density
-        //val dpHeight = resources.displayMetrics.heightPixels / density
-        //val dpWidth = resources.displayMetrics.widthPixels / density
-
-        //val keyWidth = (width / 4).toFloat()
-        //val keyHeight = (height / 4).toFloat()
-
-        activeLayout?.let{
-            it.resize(neww.toFloat(), newh.toFloat(), density)
         }
     }
 
@@ -412,9 +414,13 @@ class NugKeyboardView : View {
                 KEY_REPEAT, KEY_REPEAT_DELAY -> {
                     val pointerID = msg.arg1 as Int
                     val swipeTracker = msg.obj
-                    runPointerAction(pointerID)
+
                     val krmsg = _uiHandler.obtainMessage(KEY_REPEAT, pointerID, 0, swipeTracker)
                     _uiHandler.sendMessageDelayed(krmsg, KEY_REPEAT_TIMEOUT)
+
+                    // Kinda important that action follows the message,
+                    // because for example layout switch wipes the message queue
+                    runPointerAction(pointerID)
                 }
                 LONG_PRESS -> {
                     Log.d("LONG_PRESS", msg.arg1.toString())
@@ -484,9 +490,7 @@ class NugKeyboardView : View {
                 val key = getKeyFromCoords(x, y)
                 key?.let{
                     it.highlightFadeIn()
-                    if (mediaPlayer.isPlaying)
-                        mediaPlayer.stop()
-                    mediaPlayer.reset()
+                    mediaPlayer.seekTo(0)
                     mediaPlayer.start()
 
                     // TODO: Need to somehow split key repeat and non-KR actions.

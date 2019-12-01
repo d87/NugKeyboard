@@ -21,6 +21,7 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         val layout = layoutInflater.inflate(R.layout.sample_nug_keyboard_view, null) as FrameLayout
         val kv: NugKeyboardView = layout.findViewById(R.id.KeyboardView)
 
+        kv.resizeForLayout() // Can't set view dimensions during its initialization, so calling it here
 
         kv.onKeyboardActionListener = this
 
@@ -35,6 +36,7 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         */
         return layout
     }
+
 
     override fun onPress(i: Int) {
 
@@ -73,6 +75,12 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
             ActionType.CAPS_TOGGLE -> {
                 val newCapsState = !keyboardView!!.getState(KeyboardModifierState.CAPS)
                 keyboardView!!.setState(KeyboardModifierState.CAPS, newCapsState)
+            }
+            ActionType.CYCLE_LAYOUT -> {
+                keyboardView!!.cycleLayout()
+            }
+            else -> {
+
             }
         }
     }

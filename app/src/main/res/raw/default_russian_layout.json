@@ -134,10 +134,9 @@
                 { "action":"INPUT:&r" }
             ],
             "onSwipeActions": [
-                "Q",
-                "R",
-                "N",
-                "J"
+                { "action":"CYCLE_LAYOUT" },
+                { "action":"INPUT:&s" },
+                { "action":"INPUT:&s" }
             ]
         },
         {
