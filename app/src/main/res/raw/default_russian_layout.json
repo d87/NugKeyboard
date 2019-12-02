@@ -9,12 +9,22 @@
             "height": 250,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&1" },
-                { "condition": "CAPS", "action":"INPUT:&С" },
-                { "action":"INPUT:&с" }
+                { "condition": "CAPS", "action":"INPUT:&Т" },
+                { "action":"INPUT:&т" }
             ],
+            "roll": -22.5,
             "onSwipeActions": [
-                { "action":"INPUT:&м" },
-                { "action":"INPUT:&п" },
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ч" },
+                    { "action":"INPUT:&ч" }
+                ],
+                { "action":"CONTINUE" },
+                { "action":"CONTINUE" },
+                null,
+                null,
+                null
             ]
         },
         {
@@ -23,34 +33,62 @@
             "y": 0,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&2" },
+                { "condition": "CAPS", "action":"INPUT:&А" },
+                { "action":"INPUT:&а" }
+            ],
+            "onSwipeActions": [
+                null,
+                null,
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Д" },
+                    { "action":"INPUT:&д" }
+                ],
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ю" },
+                    { "action":"INPUT:&ю" }
+                ]
+            ]
+        },
+        {
+            "type": "Rect",
+            "x": 500,
+            "y": 0,
+            "width": 250,
+            "height": 250,
+            "roll": -22.5,
+            "onPressAction": [
+                { "condition": "NUMPAD", "action":"INPUT:&3" },
                 { "condition": "CAPS", "action":"INPUT:&И" },
                 { "action":"INPUT:&и" }
             ],
             "onSwipeActions": [
-                { "action":"у" },
-                { "action":"г" },
-                { "action":"к" },
-                { "action":"я" },
-                { "action":"й" }
-            ]
-        },
-        {
-            "type": "Rect",
-            "x": 500,
-            "y": 0,
-            "width": 250,
-            "height": 250,
-            "onPressAction": [
-                { "condition": "NUMPAD", "action":"INPUT:&3" },
-                { "condition": "CAPS", "action":"INPUT:&Т" },
-                { "action":"INPUT:&т" }
-            ],
-            "onSwipeActions": [
-                "A",
-                "B",
-                "C"
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Й" },
+                    { "action":"INPUT:&й" }
+                ],
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Я" },
+                    { "action":"INPUT:&я" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&П" },
+                    { "action":"INPUT:&п" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ь" },
+                    { "action":"INPUT:&ь" }
+                ],
+                null,
+                null
             ]
         },
         {
@@ -59,15 +97,30 @@
             "y": 0,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&0" },
-                { "condition": "CAPS", "action":"INPUT:&O" },
-                { "action":"INPUT:&o" }
+                { "condition": "CAPS", "action":"INPUT:&Н" },
+                { "action":"INPUT:&н" }
             ],
             "onSwipeActions": [
-                "A",
-                "B",
-                "C"
+                null,
+                null,
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ъ" },
+                    { "action":"INPUT:&ъ" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Б" },
+                    { "action":"INPUT:&б" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Щ" },
+                    { "action":"INPUT:&щ" }
+                ],
+                null
             ]
         },
         {
@@ -76,15 +129,24 @@
             "y": 250,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&4" },
-                { "condition": "CAPS", "action":"INPUT:&I" },
-                { "action":"INPUT:&i" }
+                { "condition": "CAPS", "action":"INPUT:&В" },
+                { "action":"INPUT:&в" }
             ],
             "onSwipeActions": [
-                "A",
-                "B",
-                "C"
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ц" },
+                    { "action":"INPUT:&ц" }
+                ],
+                null,
+                null,
+                null,
+                null,
+                null
             ]
         },
         {
@@ -93,16 +155,27 @@
             "y": 250,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&5" },
-                { "condition": "CAPS", "action":"INPUT:&N" },
-                { "action":"INPUT:&n" }
+                { "condition": "CAPS", "action":"INPUT:&О" },
+                { "action":"INPUT:&о" }
             ],
             "onSwipeActions": [
-                "Q",
-                "R",
-                "N",
-                "J"
+                null,
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ш" },
+                    { "action":"INPUT:&ш" }
+                ],
+                null,
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ы" },
+                    { "action":"INPUT:&ы" }
+                ]
             ]
         },
         {
@@ -111,16 +184,30 @@
             "y": 250,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&6" },
-                { "condition": "CAPS", "action":"INPUT:&S" },
-                { "action":"INPUT:&s" }
+                { "condition": "CAPS", "action":"INPUT:&Е" },
+                { "action":"INPUT:&е" }
             ],
             "onSwipeActions": [
-                "Q",
-                "R",
-                "N",
-                "J"
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&У" },
+                    { "action":"INPUT:&у" }
+                ],
+                null,
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Г" },
+                    { "action":"INPUT:&г" }
+                ],
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ё" },
+                    { "action":"INPUT:&ё" }
+                ]
             ]
         },
         {
@@ -129,14 +216,26 @@
             "y": 250,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
-                { "condition": "CAPS", "action":"INPUT:&R" },
-                { "action":"INPUT:&r" }
+                { "condition": "CAPS", "action":"INPUT:&Л" },
+                { "action":"INPUT:&л" }
             ],
             "onSwipeActions": [
+                { "action":"CAPS_TOGGLE", "icon": "#!CAPS_UP" },
+                null,
                 { "action":"CYCLE_LAYOUT" },
-                { "action":"INPUT:&s" },
-                { "action":"INPUT:&s" }
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Э" },
+                    { "action":"INPUT:&э" }
+                ],
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ж" },
+                    { "action":"INPUT:&ж" }
+                ]
             ]
         },
         {
@@ -145,16 +244,21 @@
             "y": 500,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&7" },
-                { "condition": "CAPS", "action":"INPUT:&H" },
-                { "action":"INPUT:&h" }
+                { "condition": "CAPS", "action":"INPUT:&К" },
+                { "action":"INPUT:&к" }
             ],
             "onSwipeActions": [
-                "Q",
-                "R",
-                "N",
-                "J"
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
             ]
         },
         {
@@ -163,16 +267,24 @@
             "y": 500,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&8" },
-                { "condition": "CAPS", "action":"INPUT:&D" },
-                { "action":"INPUT:&d" }
+                { "condition": "CAPS", "action":"INPUT:&Р" },
+                { "action":"INPUT:&р" }
             ],
             "onSwipeActions": [
-                "Q",
-                "R",
-                "N",
-                "J"
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&З" },
+                    { "action":"INPUT:&з" }
+                ]
             ]
         },
         {
@@ -181,16 +293,27 @@
             "y": 500,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&9" },
-                { "condition": "CAPS", "action":"INPUT:&L" },
-                { "action":"INPUT:&l" }
+                { "condition": "CAPS", "action":"INPUT:&С" },
+                { "action":"INPUT:&с" }
             ],
             "onSwipeActions": [
-                "Q",
-                "R",
-                "N",
-                "J"
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ф" },
+                    { "action":"INPUT:&ф" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Х" },
+                    { "action":"INPUT:&х" }
+                ],
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
             ]
         },
         {
@@ -199,9 +322,10 @@
             "y": 500,
             "width": 250,
             "height": 250,
+            "roll": -22.5,
             "onPressAction": [
-                { "condition": "CAPS", "action":"INPUT:&U" },
-                { "action":"INPUT:&u" }
+                { "condition": "CAPS", "action":"INPUT:&М" },
+                { "action":"INPUT:&м" }
             ],
             "hideRadials": true,
             "onSwipeActions": [
