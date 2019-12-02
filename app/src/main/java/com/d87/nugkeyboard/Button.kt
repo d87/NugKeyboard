@@ -56,7 +56,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         while (i < numBinds) {
             val bind = binds[i]
             curAngle = i.toFloat() * divisionAngle
-            if (previousZone != null && bind == previousZone.binding)
+            if (previousZone != null && bind.action == ActionType.CONTINUE)
             {
                 previousZone?.let{
                     it.end += divisionAngle
@@ -72,7 +72,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         }
     }
     fun getBindingByAngle(angle: Float): KeyboardAction? {
-        val rolledAngle = angle + roll
+        val rolledAngle = angle - roll
 
         var matchedZone: SwipeZone
         for (zone in swipeZones) {
@@ -182,7 +182,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         }
 
         for (zone in swipeZones) {
-            val midAngle = (zone.start + zone.end)/2 / (180/PI)
+            val midAngle = ((zone.start + zone.end)/2+roll) / (180/PI)
             val distanceOriginal = 70*density
             var distance = distanceOriginal
             var dx = (sin(midAngle)*distance).toFloat()

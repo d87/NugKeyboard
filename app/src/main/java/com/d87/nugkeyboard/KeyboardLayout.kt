@@ -163,6 +163,11 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
         obj ?: return KeyboardAction(ActionType.NOOP)
 
         val actionString = obj.optString("action","NOOP")
+
+        if (actionString == "CONTINUE") {
+            return KeyboardAction(ActionType.CONTINUE)
+        }
+
         val cmdList = actionString.split(":")
         var actionName = cmdList[0]
 

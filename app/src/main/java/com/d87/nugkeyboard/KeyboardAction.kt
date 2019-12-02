@@ -6,6 +6,7 @@ import android.view.KeyEvent
 enum class ActionType {
     NOOP,
     INPUT,
+    CONTINUE,
     CAPS_UP,
     CAPS_DOWN,
     CAPS_TOGGLE,

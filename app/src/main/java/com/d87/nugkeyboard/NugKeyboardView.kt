@@ -95,6 +95,12 @@ class NugKeyboardView : View {
                 val mainAction = key.mainKey as KeyboardStateAction
                 mainAction.setState(stateSet)
             }
+            for (zone in key.swipeZones) {
+                if (zone.binding != null && zone.binding is KeyboardStateAction) {
+                    val action = zone.binding as KeyboardStateAction
+                    action.setState(stateSet)
+                }
+            }
         }
         this.invalidate()
     }
@@ -104,7 +110,7 @@ class NugKeyboardView : View {
 
     var activeLayout: KeyboardLayout? = null
     var activeLayoutIndex = 0 // TODO: Get from prefs
-    val layoutList: ArrayList<String> = arrayListOf("DefaultEnglish", "DefaultRussian")
+    val layoutList: ArrayList<String> = arrayListOf("DefaultRussian", "DefaultEnglish")
     val layoutMapByName = mapOf(
         Pair("DefaultEnglish", KeyboardLayout(this, resources.openRawResource(R.raw.default_layout))),
         Pair("DefaultRussian", KeyboardLayout(this, resources.openRawResource(R.raw.default_russian_layout)))
@@ -490,8 +496,8 @@ class NugKeyboardView : View {
                 val key = getKeyFromCoords(x, y)
                 key?.let{
                     it.highlightFadeIn()
-                    mediaPlayer.seekTo(0)
-                    mediaPlayer.start()
+                    //mediaPlayer.seekTo(0)
+                    //mediaPlayer.start()
 
                     // TODO: Need to somehow split key repeat and non-KR actions.
                     //  - For example delete word on swipe left, but KR delete char on the same button
