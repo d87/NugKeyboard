@@ -9,8 +9,8 @@
             "height": 250,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&1" },
-                { "condition": "CAPS", "action":"INPUT:&Т" },
-                { "action":"INPUT:&т" }
+                { "condition": "CAPS", "action":"INPUT:&Р" },
+                { "action":"INPUT:&р" }
             ],
             "roll": -22.5,
             "onSwipeActions": [
@@ -36,17 +36,20 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&2" },
-                { "condition": "CAPS", "action":"INPUT:&А" },
-                { "action":"INPUT:&а" }
+                { "condition": "CAPS", "action":"INPUT:&Е" },
+                { "action":"INPUT:&е" }
             ],
             "onSwipeActions": [
-                null,
                 null,
                 null,
                 null,
                 [
                     { "condition": "CAPS", "action":"INPUT:&Д" },
                     { "action":"INPUT:&д" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ё" },
+                    { "action":"INPUT:&ё" }
                 ],
                 null,
                 null,
@@ -100,8 +103,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&0" },
-                { "condition": "CAPS", "action":"INPUT:&Н" },
-                { "action":"INPUT:&н" }
+                { "condition": "CAPS", "action":"INPUT:&Т" },
+                { "action":"INPUT:&т" }
             ],
             "onSwipeActions": [
                 null,
@@ -113,8 +116,8 @@
                     { "action":"INPUT:&ъ" }
                 ],
                 [
-                    { "condition": "CAPS", "action":"INPUT:&Б" },
-                    { "action":"INPUT:&б" }
+                    { "condition": "CAPS", "action":"INPUT:&Ь" },
+                    { "action":"INPUT:&ь" }
                 ],
                 [
                     { "condition": "CAPS", "action":"INPUT:&Щ" },
@@ -187,8 +190,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&6" },
-                { "condition": "CAPS", "action":"INPUT:&Е" },
-                { "action":"INPUT:&е" }
+                { "condition": "CAPS", "action":"INPUT:&А" },
+                { "action":"INPUT:&а" }
             ],
             "onSwipeActions": [
                 null,
@@ -205,8 +208,8 @@
                 ],
                 null,
                 [
-                    { "condition": "CAPS", "action":"INPUT:&Ё" },
-                    { "action":"INPUT:&ё" }
+                    { "condition": "CAPS", "action":"INPUT:&Б" },
+                    { "action":"INPUT:&б" }
                 ]
             ]
         },
@@ -270,8 +273,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&8" },
-                { "condition": "CAPS", "action":"INPUT:&Р" },
-                { "action":"INPUT:&р" }
+                { "condition": "CAPS", "action":"INPUT:&Н" },
+                { "action":"INPUT:&н" }
             ],
             "onSwipeActions": [
                 null,
@@ -310,9 +313,18 @@
                 ],
                 null,
                 null,
-                null,
-                null,
-                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&@", "altColor": true },
+                    { "action":"INPUT:&.", "altColor": true }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&#", "altColor": true },
+                    { "action":"INPUT:&?", "altColor": true }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&:", "altColor": true },
+                    { "action":"INPUT:&,", "altColor": true }
+                ],
                 null
             ]
         },
@@ -360,7 +372,12 @@
             "height": 180,
             "onPressAction": { "action":"INPUT:@KEYCODE_SPACE", "icon": "#!SPACE" },
             "hideRadials": true,
+            "roll": -45,
             "onSwipeActions": [
+                null,
+                { "action":"INPUT:@KEYCODE_DPAD_RIGHT" },
+                null,
+                { "action":"INPUT:@KEYCODE_DPAD_LEFT", "isHidden": true }
             ]
         },
         {

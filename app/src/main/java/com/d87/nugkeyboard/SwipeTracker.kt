@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.MotionEvent
 import kotlin.math.PI
 import kotlin.math.atan2
+import kotlin.math.sqrt
 
 class SwipeTracker {
     internal val mPastX = FloatArray(NUM_PAST)
@@ -20,7 +21,7 @@ class SwipeTracker {
     var hasTrail = false   // Quick indicator if trail has any points
 
 
-    var minSwipeLength = 15 // in pixels, but should by set in dips
+    var minSwipeLength: Float = 50f // in pixels, but should by set in dips
 
     var _msgLongPress: Message? = null
 
@@ -130,9 +131,9 @@ class SwipeTracker {
             pastX[i] = x
             pastY[i] = y
             if (i>0) {
-                val dx = pastX[i-1]
-                val dy = pastY[i-1]
-                distanceTraveled += dx * dx + dy * dy
+                val dx = pastX[i-1] - x
+                val dy = pastY[i-1] - y
+                distanceTraveled += sqrt(dx * dx + dy * dy)
             }
             pastTime[i] = time
             currentLogIndex++

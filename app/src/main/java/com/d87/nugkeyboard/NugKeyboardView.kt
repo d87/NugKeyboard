@@ -483,6 +483,7 @@ class NugKeyboardView : View {
         val numSwipeTrackers = _swipeTrackers.size
         if (pointerID == numSwipeTrackers) {
             val newTracker = SwipeTracker()
+            newTracker.minSwipeLength = 60*resources.displayMetrics.density
             _swipeTrackers.add(newTracker)
             _mediaPlayers.add(MediaPlayer.create(context, R.raw.key_click3))
         }

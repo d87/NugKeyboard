@@ -145,6 +145,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         //val textWidth = primaryTextPaint.measureText(text)
         val primaryTextPaint = layout.primaryTextPaint
         val secondaryTextPaint = layout.secondaryTextPaint
+        val tertiaryTextPaint = layout.tertiaryTextPaint
         val highlightPaint = layout.highlightPaint
         val density = layout.keyboardView.resources.displayMetrics.density
         val padding = (1*density).toInt()
@@ -207,8 +208,10 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
                 dy = (-cos(midAngle)*distance).toFloat()
             }
 
-            val textHeight = secondaryTextPaint.ascent() + secondaryTextPaint.descent()
-            canvas.drawText(zone.binding.text ?: "", centerX+dx, centerY+dy-textHeight/2, secondaryTextPaint)
+
+            val paint = if (zone.binding.altColor == true) { tertiaryTextPaint } else { secondaryTextPaint }
+            val textHeight = paint.ascent() + paint.descent()
+            canvas.drawText(zone.binding.text ?: "", centerX+dx, centerY+dy-textHeight/2, paint)
 
            /* if (90 > zone.start && 90 < zone.end && config.y == 0f && config.x == 0f ) {
                 canvas.save()

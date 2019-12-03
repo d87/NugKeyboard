@@ -36,6 +36,7 @@ enum class KeyboardModifierState {
 class KeyCodes {
     companion object {
         private val map = mapOf(
+            // TODO: Log error if constant not found
             Pair("KEYCODE_ENTER", KeyEvent.KEYCODE_ENTER),
             Pair("KEYCODE_DEL", KeyEvent.KEYCODE_DEL), // Backspace
             Pair("KEYCODE_BACKSPACE", KeyEvent.KEYCODE_DEL), // Backspace
@@ -44,6 +45,9 @@ class KeyCodes {
             Pair("KEYCODE_END", KeyEvent.KEYCODE_MOVE_END), // End
             Pair("KEYCODE_HOME", KeyEvent.KEYCODE_HOME), // There's also MOVE_HOME
             Pair("KEYCODE_TAB", KeyEvent.KEYCODE_TAB),
+
+            Pair("KEYCODE_DPAD_RIGHT", KeyEvent.KEYCODE_DPAD_RIGHT),
+            Pair("KEYCODE_DPAD_LEFT", KeyEvent.KEYCODE_DPAD_LEFT),
 
             Pair("KEYCODE_SHIFT_LEFT", KeyEvent.KEYCODE_SHIFT_LEFT),
             Pair("KEYCODE_SHIFT", KeyEvent.KEYCODE_SHIFT_LEFT),
@@ -73,6 +77,7 @@ open class KeyboardAction(action: ActionType) {
     var label: String? = null
     var icon: Drawable? = null
     var scale: Float = 1f
+    var altColor: Boolean = false
     var isHidden = false
     var xOffset = 0f
     var yOffset = 0f
@@ -102,6 +107,7 @@ class KeyboardStateAction(): KeyboardAction(ActionType.NOOP) {
             this.label = newAction.label
             this.icon = newAction.icon
             this.scale = newAction.scale
+            this.altColor = newAction.altColor
             this.xOffset = newAction.xOffset
             this.yOffset = newAction.yOffset
         } else {

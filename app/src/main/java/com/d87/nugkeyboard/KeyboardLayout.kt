@@ -68,7 +68,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
 
         theme.headKeyPrimaryTextColor = Color.parseColor("#878788")
         theme.radialKeyPrimaryTextColor = Color.parseColor("#9e252b")
-        theme.radialKeySecondaryTextColor = Color.parseColor("#55259e")
+        theme.radialKeySecondaryTextColor = Color.parseColor("#638dfe")
 
         theme.normalButtonColor = Color.parseColor("#151515")
         theme.normalButtonColorAlt = Color.parseColor("#0d0d0d")
@@ -81,20 +81,26 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
         theme.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
     }
 
-    var primaryTextSize: Float = 20f
     val primaryTextPaint: TextPaint = TextPaint().apply {
         typeface = Typeface.DEFAULT_BOLD
         flags = Paint.ANTI_ALIAS_FLAG
         textAlign = Paint.Align.CENTER
         color = theme.headKeyPrimaryTextColor
-        textSize = 60f
+        textSize = 36f*keyboardView.resources.displayMetrics.density
     }
     val secondaryTextPaint: TextPaint = TextPaint().apply {
         typeface = Typeface.DEFAULT_BOLD
         flags = Paint.ANTI_ALIAS_FLAG
         textAlign = Paint.Align.CENTER
         color = theme.radialKeyPrimaryTextColor
-        textSize = 40f
+        textSize = 24f*keyboardView.resources.displayMetrics.density
+    }
+    val tertiaryTextPaint: TextPaint = TextPaint().apply {
+        typeface = Typeface.DEFAULT_BOLD
+        flags = Paint.ANTI_ALIAS_FLAG
+        textAlign = Paint.Align.CENTER
+        color = theme.radialKeySecondaryTextColor
+        textSize = 24f*keyboardView.resources.displayMetrics.density
     }
     val highlightPaint: Paint = Paint().apply{
         style = Paint.Style.FILL
@@ -126,7 +132,6 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
         viewHeight = height
         viewWidth = width
         val lp = width/layoutWidth
-        primaryTextPaint.textSize = primaryTextSize*displeyDensity
 
         for (key in keys) {
             key.x = key.config.x * lp
@@ -202,6 +207,9 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
 
         var scale: Double = try { obj.getDouble("scale") } catch (e: JSONException) { 1.0 }
         action.scale = scale.toFloat()
+
+        var altColor: Boolean = try { obj.getBoolean("altColor") } catch (e: JSONException) { false }
+        action.altColor = altColor
 
         var isHidden = try { obj.getBoolean("isHidden") } catch (e: JSONException) { false }
         action.isHidden = isHidden
