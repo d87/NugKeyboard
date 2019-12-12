@@ -1,0 +1,8 @@
+consonant-vowel  181177
+vowel-consonant  160427
+consonant-consonant  67889
+vowel-vowel  9823
+other-consonant  913
+vowel-other  816
+consonant-other  290
+other-vowel  193

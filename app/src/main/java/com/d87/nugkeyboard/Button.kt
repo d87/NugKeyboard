@@ -72,8 +72,8 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         }
     }
     fun getBindingByAngle(angle: Float): KeyboardAction? {
-        val rolledAngle = angle - roll
-
+        var rolledAngle = angle - roll
+        if (rolledAngle >= 360) rolledAngle -= 360
         var matchedZone: SwipeZone
         for (zone in swipeZones) {
             if (rolledAngle >= zone.start && rolledAngle < zone.end )

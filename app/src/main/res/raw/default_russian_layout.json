@@ -3,25 +3,26 @@
     "keyConfig": [
         {
             "type": "Rect",
+            "name": "1x1",
             "x": 0,
             "y": 0,
             "width": 250,
             "height": 250,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&1" },
-                { "condition": "CAPS", "action":"INPUT:&Р" },
-                { "action":"INPUT:&р" }
+                { "condition": "CAPS", "action":"INPUT:&Л" },
+                { "action":"INPUT:&л" }
             ],
             "roll": -22.5,
             "onSwipeActions": [
+                null,
                 null,
                 null,
                 [
                     { "condition": "CAPS", "action":"INPUT:&Ч" },
                     { "action":"INPUT:&ч" }
                 ],
-                { "action":"CONTINUE" },
-                { "action":"CONTINUE" },
+                null,
                 null,
                 null,
                 null
@@ -29,6 +30,7 @@
         },
         {
             "type": "Rect",
+            "name": "1x2",
             "x": 250,
             "y": 0,
             "width": 250,
@@ -36,31 +38,32 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&2" },
-                { "condition": "CAPS", "action":"INPUT:&Е" },
-                { "action":"INPUT:&е" }
+                { "condition": "CAPS", "action":"INPUT:&С" },
+                { "action":"INPUT:&с" }
             ],
             "onSwipeActions": [
                 null,
                 null,
                 null,
                 [
-                    { "condition": "CAPS", "action":"INPUT:&Д" },
-                    { "action":"INPUT:&д" }
-                ],
-                [
-                    { "condition": "CAPS", "action":"INPUT:&Ё" },
-                    { "action":"INPUT:&ё" }
+                    { "condition": "CAPS", "action":"INPUT:&Г" },
+                    { "action":"INPUT:&г" }
                 ],
                 null,
-                null,
                 [
-                    { "condition": "CAPS", "action":"INPUT:&Ю" },
-                    { "action":"INPUT:&ю" }
-                ]
+                    { "condition": "CAPS", "action":"INPUT:&М" },
+                    { "action":"INPUT:&м" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ж" },
+                    { "action":"INPUT:&ж" }
+                ],
+                null
             ]
         },
         {
             "type": "Rect",
+            "name": "1x3",
             "x": 500,
             "y": 0,
             "width": 250,
@@ -77,25 +80,20 @@
                     { "condition": "CAPS", "action":"INPUT:&Й" },
                     { "action":"INPUT:&й" }
                 ],
-                null,
                 [
                     { "condition": "CAPS", "action":"INPUT:&Я" },
                     { "action":"INPUT:&я" }
                 ],
-                [
-                    { "condition": "CAPS", "action":"INPUT:&П" },
-                    { "action":"INPUT:&п" }
-                ],
-                [
-                    { "condition": "CAPS", "action":"INPUT:&Ь" },
-                    { "action":"INPUT:&ь" }
-                ],
+                null,
+                null,
+                null,
                 null,
                 null
             ]
         },
         {
             "type": "Rect",
+            "name": "1x4",
             "x": 750,
             "y": 0,
             "width": 250,
@@ -109,25 +107,26 @@
             "onSwipeActions": [
                 null,
                 null,
-                null,
-                null,
                 [
                     { "condition": "CAPS", "action":"INPUT:&Ъ" },
                     { "action":"INPUT:&ъ" }
                 ],
+                null,
+                null,
                 [
                     { "condition": "CAPS", "action":"INPUT:&Ь" },
                     { "action":"INPUT:&ь" }
                 ],
                 [
-                    { "condition": "CAPS", "action":"INPUT:&Щ" },
-                    { "action":"INPUT:&щ" }
+                    { "condition": "CAPS", "action":"INPUT:&Ю" },
+                    { "action":"INPUT:&ю" }
                 ],
                 null
             ]
         },
         {
             "type": "Rect",
+            "name": "2x1",
             "x": 0,
             "y": 250,
             "width": 250,
@@ -149,11 +148,15 @@
                 null,
                 null,
                 null,
-                null
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ш" },
+                    { "action":"INPUT:&ш" }
+                ]
             ]
         },
         {
             "type": "Rect",
+            "name": "2x2",
             "x": 250,
             "y": 250,
             "width": 250,
@@ -161,20 +164,26 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&5" },
-                { "condition": "CAPS", "action":"INPUT:&О" },
-                { "action":"INPUT:&о" }
+                { "condition": "CAPS", "action":"INPUT:&Н" },
+                { "action":"INPUT:&н" }
             ],
             "onSwipeActions": [
                 null,
-                null,
-                null,
                 [
-                    { "condition": "CAPS", "action":"INPUT:&Ш" },
-                    { "action":"INPUT:&ш" }
+                    { "condition": "CAPS", "action":"INPUT:&Щ" },
+                    { "action":"INPUT:&щ" }
                 ],
                 null,
                 null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&П" },
+                    { "action":"INPUT:&п" }
+                ],
                 null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Д" },
+                    { "action":"INPUT:&д" }
+                ],
                 [
                     { "condition": "CAPS", "action":"INPUT:&Ы" },
                     { "action":"INPUT:&ы" }
@@ -183,6 +192,7 @@
         },
         {
             "type": "Rect",
+            "name": "2x3",
             "x": 500,
             "y": 250,
             "width": 250,
@@ -190,8 +200,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&6" },
-                { "condition": "CAPS", "action":"INPUT:&А" },
-                { "action":"INPUT:&а" }
+                { "condition": "CAPS", "action":"INPUT:&О" },
+                { "action":"INPUT:&о" }
             ],
             "onSwipeActions": [
                 null,
@@ -202,47 +212,44 @@
                 null,
                 null,
                 null,
-                [
-                    { "condition": "CAPS", "action":"INPUT:&Г" },
-                    { "action":"INPUT:&г" }
-                ],
                 null,
-                [
-                    { "condition": "CAPS", "action":"INPUT:&Б" },
-                    { "action":"INPUT:&б" }
-                ]
+                null,
+                null
             ]
         },
         {
             "type": "Rect",
+            "name": "2x4",
             "x": 750,
             "y": 250,
             "width": 250,
             "height": 250,
             "roll": -22.5,
             "onPressAction": [
-                { "condition": "CAPS", "action":"INPUT:&Л" },
-                { "action":"INPUT:&л" }
+                { "condition": "CAPS", "action":"INPUT:&Е" },
+                { "action":"INPUT:&е" }
             ],
             "onSwipeActions": [
-                { "action":"CAPS_TOGGLE", "icon": "#!CAPS_UP" },
-                null,
-                { "action":"CYCLE_LAYOUT" },
-                null,
-                null,
                 [
                     { "condition": "CAPS", "action":"INPUT:&Э" },
                     { "action":"INPUT:&э" }
                 ],
-                null,
                 [
-                    { "condition": "CAPS", "action":"INPUT:&Ж" },
-                    { "action":"INPUT:&ж" }
-                ]
+                    { "condition": "CAPS", "action":"INPUT:&Ё" },
+                    { "action":"INPUT:&ё" }
+                ],
+                { "action":"CYCLE_LAYOUT" },
+                null,
+                null,
+                null,
+                null,
+                null,
+                { "action":"CAPS_TOGGLE", "icon": "#!CAPS_UP" }
             ]
         },
         {
             "type": "Rect",
+            "name": "3x1",
             "x": 0,
             "y": 500,
             "width": 250,
@@ -255,7 +262,10 @@
             ],
             "onSwipeActions": [
                 null,
-                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Б" },
+                    { "action":"INPUT:&б" }
+                ],
                 null,
                 null,
                 null,
@@ -266,6 +276,7 @@
         },
         {
             "type": "Rect",
+            "name": "3x2",
             "x": 250,
             "y": 500,
             "width": 250,
@@ -273,8 +284,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&8" },
-                { "condition": "CAPS", "action":"INPUT:&Н" },
-                { "action":"INPUT:&н" }
+                { "condition": "CAPS", "action":"INPUT:&Р" },
+                { "action":"INPUT:&р" }
             ],
             "onSwipeActions": [
                 null,
@@ -292,6 +303,7 @@
         },
         {
             "type": "Rect",
+            "name": "3x3",
             "x": 500,
             "y": 500,
             "width": 250,
@@ -299,8 +311,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&9" },
-                { "condition": "CAPS", "action":"INPUT:&С" },
-                { "action":"INPUT:&с" }
+                { "condition": "CAPS", "action":"INPUT:&А" },
+                { "action":"INPUT:&а" }
             ],
             "onSwipeActions": [
                 [
@@ -330,14 +342,14 @@
         },
         {
             "type": "Rect",
+            "name": "3x4",
             "x": 750,
             "y": 500,
             "width": 250,
             "height": 250,
             "roll": -22.5,
             "onPressAction": [
-                { "condition": "CAPS", "action":"INPUT:&М" },
-                { "action":"INPUT:&м" }
+                { "action":"INPUT:@KEYCODE_BACKSPACE", "icon": "#!BACKSPACE" }
             ],
             "hideRadials": true,
             "onSwipeActions": [
@@ -349,6 +361,7 @@
         },
         {
             "type": "Rect",
+            "name": "4x1",
             "x": 0,
             "y": 750,
             "isAccented": true,
