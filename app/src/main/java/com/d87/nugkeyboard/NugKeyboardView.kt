@@ -5,7 +5,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Handler
 import android.os.Message
 import android.text.TextPaint
@@ -80,15 +82,20 @@ class NugKeyboardView : View {
     var onKeyboardActionListener: OnKeyboardActionListener? = null
 
 
-
     val stateSet = mutableSetOf<KeyboardModifierState>()
     fun setState(state: KeyboardModifierState, enable: Boolean) {
-        if (enable) { stateSet.add(state) } else { stateSet.remove(state) }
+        if (enable) {
+            stateSet.add(state)
+        } else {
+            stateSet.remove(state)
+        }
         onKeyboardStateChanged()
     }
+
     fun getState(state: KeyboardModifierState): Boolean {
         return stateSet.contains(state)
     }
+
     fun onKeyboardStateChanged() {
         for (key in activeLayout!!.keys) {
             if (key.mainKey != null && key.mainKey is KeyboardStateAction) {
@@ -106,7 +113,18 @@ class NugKeyboardView : View {
     }
 
     private var _swipeTrackers: ArrayList<SwipeTracker> = arrayListOf()
-    private var _mediaPlayers: ArrayList<MediaPlayer> = arrayListOf()
+    //if (Build.VERSION.SDK_INT == BUILD.VERSION_CODES.LOLLIPOP)
+
+    private val audioAttributes = AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+        .build()
+    private var soundPool: SoundPool = SoundPool.Builder() // Android 21+
+        .setMaxStreams(6)
+        .setAudioAttributes(audioAttributes)
+        .build()
+    private var hitsound: Int = soundPool.load(context, R.raw.key_click3, 1)
+
 
     var activeLayout: KeyboardLayout? = null
     var activeLayoutIndex = 0 // TODO: Get from prefs
@@ -485,10 +503,8 @@ class NugKeyboardView : View {
             val newTracker = SwipeTracker()
             newTracker.minSwipeLength = 40*resources.displayMetrics.density
             _swipeTrackers.add(newTracker)
-            //_mediaPlayers.add(MediaPlayer.create(context, R.raw.key_click3))
         }
         val swipeTracker = _swipeTrackers[pointerID]
-        //val mediaPlayer = _mediaPlayers[pointerID]
 
         when (motionEventType) {
             MotionEvent.ACTION_DOWN -> {
@@ -497,8 +513,7 @@ class NugKeyboardView : View {
                 val key = getKeyFromCoords(x, y)
                 key?.let{
                     it.highlightFadeIn()
-                    //mediaPlayer.seekTo(0)
-                    //mediaPlayer.start()
+                    soundPool.play(hitsound, 1f, 1f, 0,0, 1.0f)
 
                     // TODO: Need to somehow split key repeat and non-KR actions.
                     //  - For example delete word on swipe left, but KR delete char on the same button
