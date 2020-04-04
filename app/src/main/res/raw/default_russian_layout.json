@@ -17,12 +17,18 @@
             "onSwipeActions": [
                 null,
                 null,
-                null,
                 [
                     { "condition": "CAPS", "action":"INPUT:&Ч" },
                     { "action":"INPUT:&ч" }
                 ],
-                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&П" },
+                    { "action":"INPUT:&п" }
+                ],
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ч" },
+                    { "action":"INPUT:&ч" }
+                ],
                 null,
                 null,
                 null
@@ -38,8 +44,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&2" },
-                { "condition": "CAPS", "action":"INPUT:&С" },
-                { "action":"INPUT:&с" }
+                { "condition": "CAPS", "action":"INPUT:&К" },
+                { "action":"INPUT:&к" }
             ],
             "onSwipeActions": [
                 null,
@@ -85,7 +91,10 @@
                     { "action":"INPUT:&я" }
                 ],
                 null,
-                null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Ш" },
+                    { "action":"INPUT:&ш" }
+                ],
                 null,
                 null,
                 null
@@ -148,10 +157,7 @@
                 null,
                 null,
                 null,
-                [
-                    { "condition": "CAPS", "action":"INPUT:&Ш" },
-                    { "action":"INPUT:&ш" }
-                ]
+                null
             ]
         },
         {
@@ -164,8 +170,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&5" },
-                { "condition": "CAPS", "action":"INPUT:&Н" },
-                { "action":"INPUT:&н" }
+                { "condition": "CAPS", "action":"INPUT:&А" },
+                { "action":"INPUT:&а" }
             ],
             "onSwipeActions": [
                 null,
@@ -212,9 +218,15 @@
                 null,
                 null,
                 null,
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Б" },
+                    { "action":"INPUT:&б" }
+                ],
                 null,
-                null,
-                null
+                [
+                    { "condition": "CAPS", "action":"INPUT:&Д" },
+                    { "action":"INPUT:&д" }
+                ]
             ]
         },
         {
@@ -226,8 +238,8 @@
             "height": 250,
             "roll": -22.5,
             "onPressAction": [
-                { "condition": "CAPS", "action":"INPUT:&Е" },
-                { "action":"INPUT:&е" }
+                { "condition": "CAPS", "action":"INPUT:&Н" },
+                { "action":"INPUT:&н" }
             ],
             "onSwipeActions": [
                 [
@@ -257,8 +269,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&7" },
-                { "condition": "CAPS", "action":"INPUT:&К" },
-                { "action":"INPUT:&к" }
+                { "condition": "CAPS", "action":"INPUT:&Е" },
+                { "action":"INPUT:&е" }
             ],
             "onSwipeActions": [
                 null,
@@ -311,8 +323,8 @@
             "roll": -22.5,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&9" },
-                { "condition": "CAPS", "action":"INPUT:&А" },
-                { "action":"INPUT:&а" }
+                { "condition": "CAPS", "action":"INPUT:&С" },
+                { "action":"INPUT:&с" }
             ],
             "onSwipeActions": [
                 [
@@ -353,10 +365,15 @@
             ],
             "hideRadials": true,
             "onSwipeActions": [
-                "Q",
-                "R",
-                "N",
-                "J"
+                { "action":"CAPS_UP", "icon": "#!CAPS_UP" },
+                null,
+                null,
+                null,
+                null,
+                { "action":"CAPS_DOWN", "icon": "#!CAPS_UP" },
+                null,
+                null,
+                null
             ]
         },
         {

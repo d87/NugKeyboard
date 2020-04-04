@@ -3,7 +3,6 @@ package com.d87.nugkeyboard
 import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.drawable.Drawable
 import kotlin.math.PI
 import kotlin.math.abs
@@ -56,7 +55,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         while (i < numBinds) {
             val bind = binds[i]
             curAngle = i.toFloat() * divisionAngle
-            if (previousZone != null && bind.action == ActionType.CONTINUE)
+            if (previousZone != null && bind.type == ActionType.CONTINUE)
             {
                 previousZone?.let{
                     it.end += divisionAngle
@@ -71,7 +70,19 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
             i++
         }
     }
-    fun getBindingByAngle(angle: Float): KeyboardAction? {
+
+    fun getMainAction(): KeyboardAction? {
+        return layout.bindings!!.getActiveForButton(config.id)?.let{
+            return it.getMainAction()
+        }
+    }
+
+    fun getActionByAngle(angle: Float): KeyboardAction? {
+        return layout.bindings!!.getActiveForButton(config.id)?.let{
+            return it.getActionByAngle(angle)
+        }
+
+/*
         var rolledAngle = angle - roll
         if (rolledAngle >= 360) rolledAngle -= 360
         var matchedZone: SwipeZone
@@ -79,7 +90,7 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
             if (rolledAngle >= zone.start && rolledAngle < zone.end )
                 return zone.binding
         }
-        return null
+        return null*/
     }
 
     // val borderPaint: Paint = Paint().apply{

@@ -2,13 +2,9 @@ package com.d87.nugkeyboard
 
 //import android.inputmethodservice;
 import android.inputmethodservice.InputMethodService
-import android.inputmethodservice.Keyboard
 import android.view.View
 import android.view.KeyEvent
-import android.text.TextUtils
-import android.util.Log
 import android.widget.FrameLayout
-import android.view.inputmethod.InputConnection
 
 class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardActionListener {
 
@@ -16,6 +12,7 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
     //private var keyboard: Keyboard? = null
 
     private var caps = false
+    private var capsLocked = false
 
     override fun onCreateInputView(): View {
         val layout = layoutInflater.inflate(R.layout.sample_nug_keyboard_view, null) as FrameLayout
@@ -61,6 +58,14 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         )
         inputConnection.sendKeyEvent(eventDown)
         inputConnection.sendKeyEvent(eventUp)
+
+        if (primaryCode == KeyEvent.KEYCODE_SPACE) {
+            val sequenceBefore = inputConnection.getTextBeforeCursor(2, 0)
+            if ( sequenceBefore == ". " && !capsLocked) {
+                caps = true
+                keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
+            }
+        }
     }
 
     override fun onText(charSequence: CharSequence) {
@@ -68,13 +73,36 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         inputConnection ?: return
 
         inputConnection.commitText(charSequence, 1)
+
+        if (!capsLocked) {
+            caps = false
+            keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
+        }
     }
 
     override fun onAction(action: KeyboardAction) {
-        when(action.action) {
+        when(action.type) {
             ActionType.CAPS_TOGGLE -> {
                 val newCapsState = !keyboardView!!.getState(KeyboardModifierState.CAPS)
                 keyboardView!!.setState(KeyboardModifierState.CAPS, newCapsState)
+            }
+            ActionType.CAPS_UP -> {
+                if (caps == true) {
+                    capsLocked = true
+                } else {
+                    caps = true
+                    capsLocked = false
+                }
+                keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
+            }
+            ActionType.CAPS_DOWN -> {
+                if (capsLocked) {
+                    capsLocked = false
+                } else {
+                    caps = false
+                    capsLocked = false
+                }
+                keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
             }
             ActionType.CYCLE_LAYOUT -> {
                 keyboardView!!.cycleLayout()

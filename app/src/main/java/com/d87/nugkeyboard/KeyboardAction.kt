@@ -70,7 +70,7 @@ class KeyCodes {
 }
 
 open class KeyboardAction(action: ActionType) {
-    var action: ActionType = action
+    var type: ActionType = action
     //var shit: ArrayList<Int> = arrayListOf()
     var text: String? = null
     var keyCode: Int? = null
@@ -101,7 +101,7 @@ class KeyboardStateAction(): KeyboardAction(ActionType.NOOP) {
 
     fun switchToAction(newAction: KeyboardAction?) {
         if (newAction != null) {
-            this.action = newAction.action
+            this.type = newAction.type
             this.text = newAction.text
             this.keyCode = newAction.keyCode
             this.label = newAction.label
@@ -111,7 +111,7 @@ class KeyboardStateAction(): KeyboardAction(ActionType.NOOP) {
             this.xOffset = newAction.xOffset
             this.yOffset = newAction.yOffset
         } else {
-            this.action = ActionType.NOOP
+            this.type = ActionType.NOOP
             this.icon = null
             this.label = null
             this.scale = 1f

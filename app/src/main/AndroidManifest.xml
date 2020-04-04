@@ -22,7 +22,7 @@
 
         <!-- Declares the input method service -->
         <service android:name=".MyInputMethodService"
-            android:label="My Input service label"
+            android:label="NugKeyboard"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
                 <action android:name="android.view.InputMethod" />

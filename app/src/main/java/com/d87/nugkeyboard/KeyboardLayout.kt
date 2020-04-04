@@ -12,9 +12,11 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
 import org.json.JSONArray
 import org.json.JSONException
+import org.xmlpull.v1.XmlPullParser
 import java.io.InputStream
+import java.util.concurrent.Callable
 
-data class ButtonConfig(val id: Int) {
+data class ButtonConfig(val id: String) {
     //val id: Int = id
     // These are not absolute values but relative to keyboard dimensions
     var x: Float = 0f
@@ -34,23 +36,60 @@ data class ButtonConfig(val id: Int) {
     var onSwipeActions = arrayListOf<KeyboardAction>()
 }
 
+class BindingsLayer(val name: String) {
+    val binds: MutableMap<String, BindingsConfig> = mutableMapOf()
+    var isRoot = false
+    var isActive = false
+}
+
+class BindingsStack(rootLayer: BindingsLayer) {
+    val layers = arrayListOf<BindingsLayer>(rootLayer)
+
+    fun add(new: BindingsLayer) {
+        layers.add(0, new)
+    }
+
+    fun getActiveLayer(): BindingsLayer {
+        for (layer in layers) {
+            if (layer.isActive) return layer
+        }
+        return layers.last()
+    }
+
+    fun getActiveForButton(id: String): BindingsConfig? {
+        val active = getActiveLayer()
+        val binds = active.binds[id]
+        return binds
+    }
+}
+
+
 class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
     var keyboardView = keyboardView
 
     var isLoaded = false
     var layoutFile: InputStream = file
-    //constructor(keyboardView: NugKeyboardView, ): this(keyboardView) {
-    //    layoutFile = file
-    //}
+
+    var bindings: BindingsStack? = null
+
     fun load() {
         if (isLoaded) return
 
         val JSON = layoutFile.bufferedReader().use { it.readText() }
         importJSON(JSON)
+
+        val newConfig = ButtonLayoutParser(keyboardView.resources.getXml(R.xml.button_layout)).parse()
+
+        val rootLayer = BindingsParser(this, keyboardView.resources.getXml(R.xml.bindings_ru)).parse()
+        rootLayer ?: throw IllegalStateException()
+        val layerStack = BindingsStack(rootLayer!!)
+        bindings = layerStack
+
+
         isLoaded = true
     }
 
-    // These are virtual pixel units for setting up layout and it's aspect ratio, not even dps
+    // These are virtual pixel units for setting up layout and its aspect ratio, not even dps
     // They get mapped onto dips, and if it's a phone this dips value should snap to phone's width
     var layoutWidth = 1000f
     var layoutHeight = 930f
@@ -262,7 +301,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
             val keyJObj = keyConfigArray.getJSONObject(keyIndex)
             Log.d("JSON2", keyJObj.toString())
 
-            val btnConf = ButtonConfig(keyIndex)
+            val btnConf = ButtonConfig(keyIndex.toString())
 
             val x: Double? = keyJObj.optDouble("x", 0.0)
             val y: Double? = keyJObj.optDouble("y", 0.0)
@@ -321,11 +360,12 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
         val newKeys: ArrayList<SwipeButton> = arrayListOf()
 
         loop@ for (btnConf in keyConfig) {
-            val key = when(btnConf.type) {
+            val key = RectSwipeButton(this, btnConf)
+            /*val key = when(btnConf.type) {
                 "Rect" -> RectSwipeButton(this, btnConf)
                 //"Round" -> RoundSwipeButton(this, btnConf)
                 else -> continue@loop
-            }
+            }*/
             newKeys.add(key)
         }
         keys = newKeys

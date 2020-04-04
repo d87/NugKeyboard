@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.media.SoundPool
 import android.os.Handler
 import android.os.Message
@@ -15,9 +14,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
-import kotlin.math.min
 
 
 class NugKeyboardView : View {
@@ -457,7 +454,7 @@ class NugKeyboardView : View {
     fun executeAction(action: KeyboardAction?) {
         action ?: return
 
-        when(action.action) {
+        when(action.type) {
             ActionType.INPUT -> {
                 action.keyCode?.let { onKeyboardActionListener!!.onKey(it) }
                 action.text?.let { onKeyboardActionListener!!.onText(it) }
@@ -486,7 +483,7 @@ class NugKeyboardView : View {
         if (swipeTracker.isSwiping()) {
             val angle = swipeTracker.getSwipeAngle()
             //Log.d("SWIPE_ANGLE", angle.toString() )
-            action = key.getBindingByAngle(angle)
+            action = key.getActionByAngle(angle)
         } else {
             //Log.d( "KEYPRESS", pointerID.toString())
             action = key.config.onPressAction
@@ -513,10 +510,21 @@ class NugKeyboardView : View {
                 val key = getKeyFromCoords(x, y)
                 key?.let{
                     it.highlightFadeIn()
-                    soundPool.play(hitsound, 1f, 1f, 0,0, 1.0f)
+                    soundPool.play(hitsound, 0.3f, 0.3f, 0,0, 1.0f)
 
                     // TODO: Need to somehow split key repeat and non-KR actions.
                     //  - For example delete word on swipe left, but KR delete char on the same button
+
+
+                    // TODO: XML Layout files
+                    //  - (Format Versioning?)
+                    //  - Split Button Layout and Bindings Layouts into separate entities
+                    //  - <BindingsLayer> as the root element, registers a new "language" layout. Can be either root layout or a layer
+                    //  - Non-base layouts aren't directly selectable from a language list, but are short and reusable for many languages
+                    //  - e.g. Numeric/Symbol/Emoji overlays
+                    //  - Above each layout layer should be an optional customization layer
+                    //  - A special tag that's basically a macro for capitalizable letters
+                    //  - BIndings are separate class(?)
 
                     // TODO:
                     //  - Make another delayed event for initial KR OnPress

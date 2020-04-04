@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BindingsLayer name="root_ruRU" root="true">
+    <Bindings name="1x1">
+        <OnPress>
+            <CapInput>л</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+            <CapInput>ч</CapInput>
+            <CapInput>п</CapInput>
+            <CapInput>ч</CapInput>
+            <None/>
+            <None/>
+            <None/>
+            <!-- <ActionList>
+                <Input>s</Input>
+                <Action>CAPS_TOGGLE</Action>
+                <Key icon="SPACE">KEYCODE_SPACE</Key>
+            </ActionList> -->
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="1x2">
+        <OnPress>
+            <CapInput>к</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+            <None/>
+            <CapInput>г</CapInput>
+            <None/>
+            <CapInput>м</CapInput>
+            <CapInput>ж</CapInput>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="1x3">
+        <OnPress>
+            <CapInput>и</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <CapInput>й</CapInput>
+            <CapInput>я</CapInput>
+            <None/>
+            <CapInput>ш</CapInput>
+            <None/>
+            <None/>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="1x4">
+        <OnPress>
+            <CapInput>т</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+            <CapInput>ъ</CapInput>
+            <None/>
+            <None/>
+            <CapInput>ь</CapInput>
+            <CapInput>ю</CapInput>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x1">
+        <OnPress>
+            <CapInput>в</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+            <CapInput>ц</CapInput>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x2">
+        <OnPress>
+            <CapInput>а</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <CapInput>щ</CapInput>
+            <None/>
+            <None/>
+            <CapInput>п</CapInput>
+            <None/>
+            <CapInput>д</CapInput>
+            <CapInput>ы</CapInput>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x3">
+        <OnPress>
+            <CapInput>о</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <CapInput>у</CapInput>
+            <None/>
+            <None/>
+            <None/>
+            <CapInput>б</CapInput>
+            <None/>
+            <CapInput>д</CapInput>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x4">
+        <OnPress>
+            <CapInput>н</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <CapInput>э</CapInput>
+            <CapInput>ё</CapInput>
+            <Action>CYCLE_LAYOUT</Action>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <Action icon="CAPS_UP">CAPS_TOGGLE</Action>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x1">
+        <OnPress>
+            <CapInput>е</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <CapInput>б</CapInput>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x2">
+        <OnPress>
+            <CapInput>р</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <CapInput>з</CapInput>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x3">
+        <OnPress>
+            <CapInput>с</CapInput>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <CapInput>ф</CapInput>
+            <CapInput>х</CapInput>
+            <None/>
+            <None/>
+            <Symbol>.</Symbol>
+            <Symbol>?</Symbol>
+            <Symbol>,</Symbol>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x4">
+        <OnPress>
+            <KeyCode icon="BACKSPACE">@KEYCODE_BACKSPACE</KeyCode>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Action icon="CAPS_UP">CAPS_UP</Action>
+            <None/>
+            <None/>
+            <None/>
+            <None/>
+            <Action icon="CAPS_DOWN">CAPS_DOWN</Action>
+            <None/>
+            <None/>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="4x1">
+        <OnPress>
+            <Action icon="CAPS_UP">CAPS_TOGGLE</Action>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="SPACE">
+        <OnPress>
+            <KeyCode icon="SPACE">@KEYCODE_SPACE</KeyCode>
+        </OnPress>
+        <OnSwipe roll="-45">
+            <None/>
+            <KeyCode>@KEYCODE_DPAD_RIGHT</KeyCode>
+            <None/>
+            <KeyCode>@KEYCODE_DPAD_LEFT</KeyCode>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="4x3">
+        <OnPress>
+            <KeyCode icon="BACKSPACE">@KEYCODE_BACKSPACE</KeyCode>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="4x4">
+        <OnPress>
+            <KeyCode icon="RETURN">@KEYCODE_ENTER</KeyCode>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <None/>
+            <None/>
+        </OnSwipe>
+    </Bindings>
+</BindingsLayer>
