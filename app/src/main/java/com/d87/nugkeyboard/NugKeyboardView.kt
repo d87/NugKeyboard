@@ -95,16 +95,7 @@ class NugKeyboardView : View {
 
     fun onKeyboardStateChanged() {
         for (key in activeLayout!!.keys) {
-            if (key.mainKey != null && key.mainKey is KeyboardStateAction) {
-                val mainAction = key.mainKey as KeyboardStateAction
-                mainAction.setState(stateSet)
-            }
-            for (zone in key.swipeZones) {
-                if (zone.binding != null && zone.binding is KeyboardStateAction) {
-                    val action = zone.binding as KeyboardStateAction
-                    action.setState(stateSet)
-                }
-            }
+            key.setState(stateSet)
         }
         this.invalidate()
     }
@@ -127,8 +118,8 @@ class NugKeyboardView : View {
     var activeLayoutIndex = 0 // TODO: Get from prefs
     val layoutList: ArrayList<String> = arrayListOf("DefaultRussian", "DefaultEnglish")
     val layoutMapByName = mapOf(
-        Pair("DefaultEnglish", KeyboardLayout(this, resources.openRawResource(R.raw.default_layout))),
-        Pair("DefaultRussian", KeyboardLayout(this, resources.openRawResource(R.raw.default_russian_layout)))
+        Pair("DefaultEnglish", KeyboardLayout(this, R.xml.button_layout, R.xml.bindings_en, R.xml.bindings_numeric)),
+        Pair("DefaultRussian", KeyboardLayout(this, R.xml.button_layout, R.xml.bindings_ru, R.xml.bindings_numeric))
     )
     init {
         val layoutName = layoutList[activeLayoutIndex]
@@ -173,52 +164,9 @@ class NugKeyboardView : View {
         this.invalidate()
     }
 
-
-    private var _exampleString: String? = null // TODO: use a default from R.string...
-    private var _exampleColor: Int = Color.RED // TODO: use a default from R.color...
-    private var _exampleDimension: Float = 0f // TODO: use a default from R.dimen...
-
     private var textPaint: TextPaint? = null
     private var textWidth: Float = 0f
     private var textHeight: Float = 0f
-
-    var redPaint: Paint = Paint()
-    val backgroundPaint = Paint()
-
-    /**
-     * The text to draw
-     */
-    var exampleString: String?
-        get() = _exampleString
-        set(value) {
-            _exampleString = value
-            invalidateTextPaintAndMeasurements()
-        }
-
-    /**
-     * The font color
-     */
-    var exampleColor: Int
-        get() = _exampleColor
-        set(value) {
-            _exampleColor = value
-            invalidateTextPaintAndMeasurements()
-        }
-
-    /**
-     * In the example view, this dimension is the font size.
-     */
-    var exampleDimension: Float
-        get() = _exampleDimension
-        set(value) {
-            _exampleDimension = value
-            invalidateTextPaintAndMeasurements()
-        }
-
-    /**
-     * In the example view, this drawable is drawn above the text.
-     */
-    var exampleDrawable: Drawable? = null
 
     constructor(context: Context) : super(context) {
         init(null, 0)
@@ -241,28 +189,6 @@ class NugKeyboardView : View {
         val a = context.obtainStyledAttributes(
             attrs, R.styleable.NugKeyboardView, defStyle, 0
         )
-
-
-        _exampleString = a.getString(
-            R.styleable.NugKeyboardView_exampleString
-        )
-        _exampleColor = a.getColor(
-            R.styleable.NugKeyboardView_exampleColor,
-            exampleColor
-        )
-        // Use getDimensionPixelSize or getDimensionPixelOffset when dealing with
-        // values that should fall on pixel boundaries.
-        _exampleDimension = a.getDimension(
-            R.styleable.NugKeyboardView_exampleDimension,
-            exampleDimension
-        )
-
-        if (a.hasValue(R.styleable.NugKeyboardView_exampleDrawable)) {
-            exampleDrawable = a.getDrawable(
-                R.styleable.NugKeyboardView_exampleDrawable
-            )
-            exampleDrawable?.callback = this
-        }
 
         a.recycle()
 
@@ -486,7 +412,7 @@ class NugKeyboardView : View {
             action = key.getActionByAngle(angle)
         } else {
             //Log.d( "KEYPRESS", pointerID.toString())
-            action = key.config.onPressAction
+            action = key.getMainAction()
         }
         key.highlightFadeOut()
         executeAction(action)
@@ -534,7 +460,7 @@ class NugKeyboardView : View {
                     //  - And actions the particular behaviour
                     //  - Or Delayed-KR should just not have initial OnKeyDown action
 
-                    if (key.config.enableKeyRepeat) {
+                    if (key.bindings!!.enableKeyRepeat) {
                         // runPointerAction(pointerID)
                         val msg = _uiHandler.obtainMessage(KEY_REPEAT_DELAY, pointerID, 0, swipeTracker)
                         _uiHandler.sendMessageDelayed(msg, KEY_REPEAT_DELAY_TIMEOUT)

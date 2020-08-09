@@ -2,6 +2,7 @@ package com.d87.nugkeyboard
 
 class BindingsConfig {
     var roll: Float = 0f // Angle to adjust divisions
+    var enableKeyRepeat = true
     // var type: String = "Normal"
     var divisions: Int = 4
     var onPressAction: KeyboardAction = KeyboardAction(ActionType.NOOP)

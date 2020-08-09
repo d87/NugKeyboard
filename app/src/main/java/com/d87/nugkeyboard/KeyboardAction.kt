@@ -5,6 +5,7 @@ import android.view.KeyEvent
 
 enum class ActionType {
     NOOP,
+    PASS,
     INPUT,
     CONTINUE,
     CAPS_UP,
@@ -12,6 +13,7 @@ enum class ActionType {
     CAPS_TOGGLE,
     DELETE_CHAR,
     DELETE_WORD,
+    TOGGLE_NUMERIC,
     CYCLE_LAYOUT;
     companion object {
         private val map = values().associateBy({ it.name }, { it })

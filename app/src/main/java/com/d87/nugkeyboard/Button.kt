@@ -33,73 +33,46 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
     var centerY: Float = 0f
     var keyBackground: Drawable? = null
 
-    var mainKey = config.onPressAction
-
-    var roll: Float = config.roll
-    var type: String = "Normal"
-    var divisions: Int = if (config.divisions >= 2) config.divisions else 0
-    val divisionAngle = if (divisions > 0) 360/divisions else 90
-    class SwipeZone(
-        var start: Float,
-        var end: Float,
-        var binding: KeyboardAction
-    ){}
-    var swipeZones: ArrayList<SwipeZone> = arrayListOf()
-
-    init {
-        val binds = config.onSwipeActions
-        var curAngle = 0f
-        var i = 0;
-        val numBinds = binds.size
-        var previousZone: SwipeZone? = null
-        while (i < numBinds) {
-            val bind = binds[i]
-            curAngle = i.toFloat() * divisionAngle
-            if (previousZone != null && bind.type == ActionType.CONTINUE)
-            {
-                previousZone?.let{
-                    it.end += divisionAngle
-                }
-            } else {
-                var zoneEnd = curAngle+divisionAngle
-                if (360-zoneEnd < 1) zoneEnd = 360f
-                val newZone = SwipeZone(curAngle, zoneEnd, bind)
-                swipeZones.add(newZone)
-                previousZone = newZone
-            }
-            i++
+    val bindings: BindingsConfig?
+        get() {
+            return layout.bindings!!.getActiveBindingsForButton(config.id)
         }
+
+    fun getSwipeZones(): ArrayList<BindingsConfig.SwipeZone> {
+        return bindings!!.swipeZones
     }
 
     fun getMainAction(): KeyboardAction? {
-        return layout.bindings!!.getActiveForButton(config.id)?.let{
-            return it.getMainAction()
-        }
+        return layout.bindings!!.getMainAction(config.id)
     }
 
     fun getActionByAngle(angle: Float): KeyboardAction? {
-        return layout.bindings!!.getActiveForButton(config.id)?.let{
-            return it.getActionByAngle(angle)
-        }
-
-/*
-        var rolledAngle = angle - roll
-        if (rolledAngle >= 360) rolledAngle -= 360
-        var matchedZone: SwipeZone
-        for (zone in swipeZones) {
-            if (rolledAngle >= zone.start && rolledAngle < zone.end )
-                return zone.binding
-        }
-        return null*/
+        return layout.bindings!!.getActionByAngle(config.id, angle)
     }
 
-    // val borderPaint: Paint = Paint().apply{
-    //     color = Color.GRAY
-    //     style = Paint.Style.STROKE
-    //     strokeWidth = 2f
-    //     //isAntiAlias = true
-    // }
+    fun setState(stateSet: Set<KeyboardModifierState>) {
+        // val bindingConfig = bindings
+        // bindingConfig ?: return
 
+
+        for (layer in layout.bindings!!.layers) {
+            val bindingConfig = layer.binds[config.id]
+            bindingConfig ?: continue
+            val mainKey = bindingConfig.getMainAction()
+            val swipeZones = bindingConfig.swipeZones!!
+
+            if (mainKey != null && mainKey is KeyboardStateAction) {
+                val mainAction = mainKey as KeyboardStateAction
+                mainAction.setState(stateSet)
+            }
+            for (zone in swipeZones) {
+                if (zone.action != null && zone.action is KeyboardStateAction) {
+                    val action = zone.action as KeyboardStateAction
+                    action.setState(stateSet)
+                }
+            }
+        }
+    }
 
     protected var highlightAlpha = 0
 
@@ -175,7 +148,8 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
 
         //canvas.drawCircle(centerX, centerY, 21*density, centerCirclePaint)
         //canvas.drawCircle(centerX, centerY, 19*density, normalButtonPaint)
-
+        val bindingConfig = layout.bindings!!.getActiveBindingsForButton(config.id)!!
+        val mainKey = this.getMainAction()!!
         if (!mainKey.isHidden) {
             if (mainKey.icon != null) {
                 val icon = mainKey.icon!!
@@ -193,8 +167,8 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
             }
         }
 
-        for (zone in swipeZones) {
-            val midAngle = ((zone.start + zone.end)/2+roll) / (180/PI)
+        for (zone in bindingConfig.swipeZones) {
+            val midAngle = ((zone.start + zone.end)/2+bindingConfig.roll) / (180/PI)
             val distanceOriginal = 70*density
             var distance = distanceOriginal
             var dx = (sin(midAngle)*distance).toFloat()
@@ -220,9 +194,9 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
             }
 
 
-            val paint = if (zone.binding.altColor == true) { tertiaryTextPaint } else { secondaryTextPaint }
+            val paint = if (zone.action.altColor == true) { tertiaryTextPaint } else { secondaryTextPaint }
             val textHeight = paint.ascent() + paint.descent()
-            canvas.drawText(zone.binding.text ?: "", centerX+dx, centerY+dy-textHeight/2, paint)
+            canvas.drawText(zone.action.text ?: "", centerX+dx, centerY+dy-textHeight/2, paint)
 
            /* if (90 > zone.start && 90 < zone.end && config.y == 0f && config.x == 0f ) {
                 canvas.save()

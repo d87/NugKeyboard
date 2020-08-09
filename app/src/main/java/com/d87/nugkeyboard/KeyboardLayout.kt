@@ -17,7 +17,6 @@ import java.io.InputStream
 import java.util.concurrent.Callable
 
 data class ButtonConfig(val id: String) {
-    //val id: Int = id
     // These are not absolute values but relative to keyboard dimensions
     var x: Float = 0f
     var y: Float = 0f
@@ -25,15 +24,6 @@ data class ButtonConfig(val id: String) {
     var width: Float = 0.25f
     var isAccented = false
     var isAltColor = false
-    var enableKeyRepeat = true
-    //var _displayDensity: Float = 0f
-    var roll: Float = 0f // Angle to adjust divisions
-    var type: String = "Normal"
-    var divisions: Int = 4
-    var onPressAction: KeyboardAction = KeyboardAction(ActionType.NOOP)
-    var onTouchDownAction: KeyboardAction? = null
-    var onTouchUpAction: KeyboardAction? = null
-    var onSwipeActions = arrayListOf<KeyboardAction>()
 }
 
 class BindingsLayer(val name: String) {
@@ -44,45 +34,91 @@ class BindingsLayer(val name: String) {
 
 class BindingsStack(rootLayer: BindingsLayer) {
     val layers = arrayListOf<BindingsLayer>(rootLayer)
+    init {
+        layers[0].isActive = true
+    }
 
-    fun add(new: BindingsLayer) {
+    fun add(new: BindingsLayer, defaultState: Boolean = false) {
+        new.isActive = defaultState
         layers.add(0, new)
     }
 
-    fun getActiveLayer(): BindingsLayer {
+    fun ToggleLayer(layerName: String) {
+        for (layer in layers) {
+            if (layer.name == layerName) {
+                layer.isActive = !layer.isActive
+                return
+            }
+        }
+    }
+
+    fun getActiveLayer(): BindingsLayer { // First active layer
         for (layer in layers) {
             if (layer.isActive) return layer
         }
         return layers.last()
     }
 
-    fun getActiveForButton(id: String): BindingsConfig? {
+    fun getActiveBindingsForButton(id: String): BindingsConfig? {
         val active = getActiveLayer()
         val binds = active.binds[id]
         return binds
     }
+
+    fun getMainAction(id: String): KeyboardAction {
+        for (layer in layers) {
+            if (layer.isActive) {
+                layer.binds[id]?.let {
+                    // PASS action type skips to the next layer
+                    // TODO: Disallow PASS on root layer or return empty action
+                    if (it.getMainAction().type != ActionType.PASS) {
+                        return it.getMainAction()
+                    }
+                }
+            }
+        }
+        return KeyboardAction(ActionType.NOOP)
+    }
+
+    fun getActionByAngle(id: String, angle: Float): KeyboardAction? {
+        for (layer in layers) {
+            if (layer.isActive) {
+                layer.binds[id]?.let {
+                    // PASS action type skips to the next layer
+                    // TODO: Disallow PASS on root layer or return empty action
+                    val action = it.getActionByAngle(angle)
+                    if (action != null && action.type != ActionType.PASS) {
+                        return action
+                    }
+                }
+            }
+        }
+        return KeyboardAction(ActionType.NOOP)
+    }
 }
 
 
-class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
+class KeyboardLayout(keyboardView: NugKeyboardView, val buttonLayoutResourceId: Int, val bindingsRootLayerID: Int, val bindingsNumericLayerID: Int) {
     var keyboardView = keyboardView
 
     var isLoaded = false
-    var layoutFile: InputStream = file
 
     var bindings: BindingsStack? = null
 
     fun load() {
         if (isLoaded) return
 
-        val JSON = layoutFile.bufferedReader().use { it.readText() }
-        importJSON(JSON)
+        val newConfig = ButtonLayoutParser(keyboardView.resources.getXml(buttonLayoutResourceId)).parse() // R.xml.button_layout
+        keyConfig = newConfig
 
-        val newConfig = ButtonLayoutParser(keyboardView.resources.getXml(R.xml.button_layout)).parse()
-
-        val rootLayer = BindingsParser(this, keyboardView.resources.getXml(R.xml.bindings_ru)).parse()
+        val rootLayer = BindingsParser(this, keyboardView.resources.getXml(bindingsRootLayerID)).parse() // R.xml.bindings_ru
         rootLayer ?: throw IllegalStateException()
         val layerStack = BindingsStack(rootLayer!!)
+
+        val numericLayer = BindingsParser(this, keyboardView.resources.getXml(bindingsNumericLayerID)).parse() // R.xml.bindings_numeric
+        numericLayer ?: throw IllegalStateException()
+        layerStack.add(numericLayer, false)
+
         bindings = layerStack
 
 
@@ -193,167 +229,13 @@ class KeyboardLayout(keyboardView: NugKeyboardView, file: InputStream) {
     }
 
     private val iconMap: Map<String, Drawable?> = mapOf(
-        Pair("#!RETURN", makeTintedDrawable(R.drawable.ic_keyboard_return_black_24dp)),
-        Pair("#!BACKSPACE", makeTintedDrawable(R.drawable.ic_backspace_black_24dp)),
-        Pair("#!CAPS_UP", makeTintedDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp)),
-        Pair("#!SPACE", makeTintedDrawable(R.drawable.ic_space_bar_black_24dp))
+        Pair("RETURN", makeTintedDrawable(R.drawable.ic_keyboard_return_black_24dp)),
+        Pair("BACKSPACE", makeTintedDrawable(R.drawable.ic_backspace_black_24dp)),
+        Pair("CAPS_UP", makeTintedDrawable(R.drawable.ic_keyboard_arrow_up_black_24dp)),
+        Pair("SPACE", makeTintedDrawable(R.drawable.ic_space_bar_black_24dp))
     )
     fun getDrawableByName(iconName: String): Drawable? {
         return iconMap[iconName]
-    }
-
-
-    private fun parseActionObj(obj: JSONObject?): KeyboardAction {
-        obj ?: return KeyboardAction(ActionType.NOOP)
-
-        val actionString = obj.optString("action","NOOP")
-
-        if (actionString == "CONTINUE") {
-            return KeyboardAction(ActionType.CONTINUE)
-        }
-
-        val cmdList = actionString.split(":")
-        var actionName = cmdList[0]
-
-        var _savedArg: String? = null
-        if (actionName.startsWith('&') || actionName.startsWith('&') || actionName.startsWith('@')) {
-            _savedArg = actionName
-            actionName = "INPUT"
-        }
-
-        val actionId = ActionType.getByName(actionName) ?: ActionType.NOOP
-
-        val action = KeyboardAction(actionId)
-
-        if (actionName == "INPUT") {
-            var keyString = _savedArg ?: cmdList[1]
-            when(keyString[0]) {
-                '#' ->  {
-                    action.keyCode = keyString.substring(1).toIntOrNull()
-                }
-                '&' ->  {
-                    action.text = keyString.substring(1)
-                }
-                '@' ->  {
-                    val keycodeName = keyString.substring(1)
-                    action.keyCode = KeyCodes[keycodeName]
-                }
-            }
-        }
-
-        val iconString = try { obj.getString("icon") } catch (e: JSONException) { null }
-        iconString?.let{ action.icon = getDrawableByName(it) }
-
-        var scale: Double = try { obj.getDouble("scale") } catch (e: JSONException) { 1.0 }
-        action.scale = scale.toFloat()
-
-        var altColor: Boolean = try { obj.getBoolean("altColor") } catch (e: JSONException) { false }
-        action.altColor = altColor
-
-        var isHidden = try { obj.getBoolean("isHidden") } catch (e: JSONException) { false }
-        action.isHidden = isHidden
-
-        return action
-    }
-
-    fun parseActionArray(actionArray: JSONArray?): KeyboardAction? {
-        actionArray ?: return null
-        val stateAction = KeyboardStateAction()
-        for (actionIndex in 0 until actionArray.length()) {
-            val actionObj = actionArray.getJSONObject(actionIndex)
-            val action = parseActionObj(actionObj)
-
-            val stateSetString = actionObj.optString("condition","")
-
-            if (stateSetString == "") {
-                stateAction.defaultAction = action
-            } else {
-                val statesByName = stateSetString.split(",")
-                val set = mutableSetOf<KeyboardModifierState>()
-                for (stateName in statesByName) {
-                    val stateId = KeyboardModifierState.getByName(stateName)
-                    stateId?.let {
-                        set.add(it)
-                    }
-                }
-                stateAction.addState(set, action)
-            }
-        }
-        stateAction.setState(keyboardView.stateSet) // TODO: Redundant
-        return stateAction
-    }
-
-    fun importJSON(jsonStr: String) {
-
-        var jsonObj: JSONObject?
-        var keyConfigArray: JSONArray?
-        val newKeyConfig: ArrayList<ButtonConfig> = arrayListOf()
-
-        try {
-            jsonObj = JSONObject(jsonStr)
-            keyConfigArray = jsonObj.getJSONArray("keyConfig")
-        } catch (e: JSONException) {
-            Log.e("JSON Parser", "Error parsing data " + e.toString());
-            return
-        }
-
-        for (keyIndex in 0 until keyConfigArray.length() ) {
-            val keyJObj = keyConfigArray.getJSONObject(keyIndex)
-            Log.d("JSON2", keyJObj.toString())
-
-            val btnConf = ButtonConfig(keyIndex.toString())
-
-            val x: Double? = keyJObj.optDouble("x", 0.0)
-            val y: Double? = keyJObj.optDouble("y", 0.0)
-            val width: Double? = try { keyJObj.getDouble("width") } catch (e: JSONException) { null }
-            val height: Double? = try { keyJObj.getDouble("height") } catch (e: JSONException) { null }
-            val roll: Double? = try { keyJObj.getDouble("roll") } catch (e: JSONException) { null }
-            val type: String? = try { keyJObj.getString("type") } catch (e: JSONException) { null }
-
-            var onPressAction = parseActionArray(keyJObj.optJSONArray("onPressAction"))
-            onPressAction = onPressAction ?: parseActionObj(keyJObj.optJSONObject("onPressAction"))
-
-            var onTouchDownAction = parseActionObj(keyJObj.optJSONObject("onTouchDownAction"))
-            var onTouchUpAction = parseActionObj(keyJObj.optJSONObject("onTouchUpAction"))
-
-            val isAccented: Boolean? = try { keyJObj.getBoolean("isAccented") } catch (e: JSONException) { null }
-            val isAltColor: Boolean? = try { keyJObj.getBoolean("isAltColor") } catch (e: JSONException) { null }
-
-            x?.let{ btnConf.x = it.toFloat() }
-            y?.let{ btnConf.y = it.toFloat() }
-            width?.let{ btnConf.width = it.toFloat() }
-            height?.let{ btnConf.height = it.toFloat() }
-            roll?.let{ btnConf.roll = it.toFloat() }
-            type?.let{ btnConf.type = it }
-            onPressAction?.let{ btnConf.onPressAction = it }
-            onTouchDownAction?.let{ btnConf.onTouchDownAction = it}
-            onTouchUpAction?.let{ btnConf.onTouchUpAction = it}
-
-            isAccented?.let{ btnConf.isAccented = it }
-            isAltColor?.let{ btnConf.isAltColor = it }
-
-            val onSwipeJSONArray: JSONArray? = try { keyJObj.getJSONArray("onSwipeActions") } catch (e: JSONException) { null }
-            if (onSwipeJSONArray != null) {
-                val divisions = onSwipeJSONArray.length()
-                btnConf.divisions = divisions
-
-                val newSwipeActions: ArrayList<KeyboardAction> = arrayListOf()
-                for (swipeArrayIndex in 0 until divisions ) {
-                    var action = parseActionArray(onSwipeJSONArray.optJSONArray(swipeArrayIndex))
-                    action = action ?: parseActionObj(onSwipeJSONArray.optJSONObject(swipeArrayIndex))
-
-                    try {
-                        newSwipeActions.add(action)
-                    } catch (e: Exception) {
-                        Log.e("ButtonConfig ArrayList", "Error " + e.toString());
-                    }
-                }
-                btnConf.onSwipeActions = newSwipeActions
-            }
-            newKeyConfig.add(btnConf)
-        }
-
-        keyConfig = newKeyConfig
     }
 
     fun makeKeys() {

@@ -42,18 +42,20 @@ class BindingsParser(val kbLayout: KeyboardLayout, val parser: XmlPullParser) {
     fun parseAction(): KeyboardAction? {
         when (parser.name) {
             "CapInput" -> {
+                val stateAction = KeyboardStateAction()
+
+                val lowerCaseAction = KeyboardAction(ActionType.INPUT)
+                stateAction.defaultAction = parseActionAttributes(lowerCaseAction)
+
+                val upperCaseAction = KeyboardAction(ActionType.INPUT)
+
                 parser.next()
                 val text = parser.text
                 return if (text == null) {
                     KeyboardAction(ActionType.NOOP)
                 } else {
-                    val stateAction = KeyboardStateAction()
 
-                    val lowerCaseAction = KeyboardAction(ActionType.INPUT)
                     lowerCaseAction.text = text.toLowerCase()
-                    stateAction.defaultAction = parseActionAttributes(lowerCaseAction)
-
-                    val upperCaseAction = KeyboardAction(ActionType.INPUT)
                     upperCaseAction.text = text.toUpperCase()
 
                     val capsStateSet = mutableSetOf<KeyboardModifierState>()
@@ -65,45 +67,64 @@ class BindingsParser(val kbLayout: KeyboardLayout, val parser: XmlPullParser) {
                 }
             }
             "Input" -> {
+                val action = KeyboardAction(ActionType.INPUT)
+                parseActionAttributes(action)
+
                 val text = parser.nextText()
                 return if (text == null) {
                     KeyboardAction(ActionType.NOOP)
                 } else {
-                    val action = KeyboardAction(ActionType.INPUT)
                     action.text = text
-                    parseActionAttributes(action)
+                    action
                 }
             }
             "Action" -> {
+                val dummyAction = KeyboardAction(ActionType.NOOP)
+                parseActionAttributes(dummyAction)
                 val text = parser.nextText()
                 return if (text == null) {
                     KeyboardAction(ActionType.NOOP)
                 } else {
                     val actionId = ActionType.getByName(text) ?: ActionType.NOOP
-                    parseActionAttributes(KeyboardAction(actionId))
+                    val action = KeyboardAction(actionId)
+                    action.icon = dummyAction.icon
+                    action.isHidden = dummyAction.isHidden
+                    action.scale = dummyAction.scale
+                    action.altColor = dummyAction.altColor
+                    action
                 }
             }
             "KeyCode" -> {
+                val action = KeyboardAction(ActionType.INPUT)
+                parseActionAttributes(action)
+
                 val text = parser.nextText()
                 return if (text == null) {
                     KeyboardAction(ActionType.NOOP)
                 } else {
-                    val action = KeyboardAction(ActionType.INPUT)
                     if (text.startsWith('@')) {
                         val keycodeName = text.substring(1)
                         action.keyCode = KeyCodes[keycodeName]
                     } else {
                         action.keyCode = text.toIntOrNull()
                     }
-                    parseActionAttributes(action)
+                    action
                 }
             }
             "Symbol" -> {
                 val action = KeyboardAction(ActionType.INPUT)
-                action.altColor = true
-                return parseActionAttributes(action)
+                parseActionAttributes(action)
+                val text = parser.nextText()
+                return if (text == null) {
+                    KeyboardAction(ActionType.NOOP)
+                } else {
+                    action.text = text
+                    action.altColor = true
+                    action
+                }
             }
             "Continue" -> return KeyboardAction(ActionType.CONTINUE)
+            "Pass" -> return KeyboardAction(ActionType.PASS)
             "None" -> return KeyboardAction(ActionType.NOOP)
             else -> return null
         }

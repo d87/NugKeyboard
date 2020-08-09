@@ -107,6 +107,11 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
             ActionType.CYCLE_LAYOUT -> {
                 keyboardView!!.cycleLayout()
             }
+            ActionType.TOGGLE_NUMERIC -> {
+                keyboardView ?: return
+                keyboardView!!.activeLayout ?: return
+                keyboardView!!.activeLayout!!.bindings!!.ToggleLayer("NumericLayer")
+            }
             else -> {
 
             }

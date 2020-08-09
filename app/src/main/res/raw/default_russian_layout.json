@@ -7,7 +7,7 @@
             "x": 0,
             "y": 0,
             "width": 250,
-            "height": 250,
+                "height": 250,
             "onPressAction": [
                 { "condition": "NUMPAD", "action":"INPUT:&1" },
                 { "condition": "CAPS", "action":"INPUT:&Л" },

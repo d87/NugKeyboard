@@ -40,10 +40,9 @@ class ButtonLayoutParser(val parser: XmlPullParser) {
                 "height" -> key.height = value.toFloat()
                 "x" -> key.x = value.toFloat()
                 "y" -> key.y = value.toFloat()
-                "roll" -> key.roll = value.toFloat()
                 "primary" -> key.isAccented = value.toBoolean()
                 "altColor" -> key.isAltColor = value.toBoolean()
-                // "hideRadials" -> key.
+                //"hideRadials" -> key.
             }
         }
 

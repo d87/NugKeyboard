@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BindingsLayer name="NumericLayer">
+    <Bindings name="1x1">
+        <OnPress>
+            <Input>1</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="1x2">
+        <OnPress>
+            <Input>2</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="1x3">
+        <OnPress>
+            <Input>3</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="1x4">
+        <OnPress>
+            <Input>0</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x1">
+        <OnPress>
+            <Input>4</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x2">
+        <OnPress>
+            <Input>5</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x3">
+        <OnPress>
+            <Input>6</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="2x4">
+        <OnPress>
+            <Pass/>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x1">
+        <OnPress>
+            <Input>7</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x2">
+        <OnPress>
+            <Input>8</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x3">
+        <OnPress>
+            <Input>9</Input>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="3x4">
+        <OnPress>
+            <Pass/>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="4x1">
+        <OnPress>
+            <Pass/>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="SPACE">
+        <OnPress>
+            <Pass/>
+        </OnPress>
+        <OnSwipe roll="-45">
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="4x3">
+        <OnPress>
+            <Pass/>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+    <Bindings name="4x4">
+        <OnPress>
+            <Pass/>
+        </OnPress>
+        <OnSwipe roll="-22.5">
+            <Pass/>
+        </OnSwipe>
+    </Bindings>
+</BindingsLayer>

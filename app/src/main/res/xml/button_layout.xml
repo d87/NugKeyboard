@@ -3,21 +3,20 @@
     <Button id="1x1" x="0" y="0" width="250" height="250"/>
     <Button id="1x2" x="250" y="0" width="250" height="250"/>
     <Button id="1x3" x="500" y="0" width="250" height="250"/>
-    <Button id="1x4" x="500" y="0" width="250" height="250"/>
+    <Button id="1x4" x="750" y="0" width="250" height="250"/>
 
     <Button id="2x1" x="0" y="250" width="250" height="250"/>
     <Button id="2x2" x="250" y="250" width="250" height="250"/>
     <Button id="2x3" x="500" y="250" width="250" height="250"/>
-    <Button id="2x4" x="500" y="250" width="250" height="250"/>
+    <Button id="2x4" x="750" y="250" width="250" height="250"/>
 
     <Button id="3x1" x="0" y="500" width="250" height="250"/>
     <Button id="3x2" x="250" y="500" width="250" height="250"/>
     <Button id="3x3" x="500" y="500" width="250" height="250"/>
-    <Button id="3x4" x="500" y="500" width="250" height="250" hideRadials="true"/>
+    <Button id="3x4" x="750" y="500" width="250" height="250" hideRadials="true"/>
 
-    <Button id="4x1" x="0" y="750" width="130" height="180" hideRadials="true" primary="true" altColor="true" />
-    <Button id="SPA" x="130" y="750" width="520" height="180" hideRadials="true" primary="true"                 />
-    <Button id="4x3" x="650" y="750" width="150" height="180" hideRadials="true" primary="true" altColor="true" />
-    <Button id="4x4" x="800" y="750" width="200" height="180" hideRadials="true" primary="true"                 />
+    <Button id="SPACE" x="0" y="750" width="640" height="180" hideRadials="true" primary="true"                 />
+    <Button id="4x3" x="640" y="750" width="180" height="180" hideRadials="true" primary="true" altColor="true" />
+    <Button id="4x4" x="820" y="750" width="180" height="180" hideRadials="true" primary="true"                 />
 
 </ButtonLayout>
