@@ -198,10 +198,7 @@ class NugKeyboardView : View {
             textAlign = Paint.Align.LEFT
         }
 
-        redPaint.setColor(Color.GRAY)
-        redPaint.style = Paint.Style.STROKE
-        redPaint.isAntiAlias = true
-
+        val backgroundPaint = Paint()
         backgroundPaint.setColor(Color.BLACK)
         backgroundPaint.style = Paint.Style.FILL_AND_STROKE
 
@@ -210,12 +207,6 @@ class NugKeyboardView : View {
     }
 
     private fun invalidateTextPaintAndMeasurements() {
-        textPaint?.let {
-            it.textSize = exampleDimension
-            it.color = exampleColor
-            textWidth = it.measureText(exampleString)
-            textHeight = it.fontMetrics.bottom
-        }
     }
 
     fun getSuggestedLayoutSize(): Pair<Int, Int> {
@@ -292,7 +283,7 @@ class NugKeyboardView : View {
         val keyWidth = (contentWidth / 4).toFloat()
         val keyHeight = (contentHeight / 4).toFloat()
 
-        canvas.drawPaint(backgroundPaint)
+        // canvas.drawPaint(backgroundPaint)
 
         activeLayout?.let {
             for (key: SwipeButton in it.keys) {
@@ -405,14 +396,15 @@ class NugKeyboardView : View {
         val key = getKeyFromCoords(x, y)
         key ?: return
 
-        var action: KeyboardAction?
-        if (swipeTracker.isSwiping()) {
+
+        val minSwipeLength = 30*resources.displayMetrics.density
+        val action: KeyboardAction? = if (swipeTracker.isSwiping(minSwipeLength)) {
             val angle = swipeTracker.getSwipeAngle()
             //Log.d("SWIPE_ANGLE", angle.toString() )
-            action = key.getActionByAngle(angle)
+            key.getActionByAngle(angle)
         } else {
             //Log.d( "KEYPRESS", pointerID.toString())
-            action = key.getMainAction()
+            key.getMainAction()
         }
         key.highlightFadeOut()
         executeAction(action)
@@ -424,7 +416,6 @@ class NugKeyboardView : View {
         val numSwipeTrackers = _swipeTrackers.size
         if (pointerID == numSwipeTrackers) {
             val newTracker = SwipeTracker()
-            newTracker.minSwipeLength = 40*resources.displayMetrics.density
             _swipeTrackers.add(newTracker)
         }
         val swipeTracker = _swipeTrackers[pointerID]
@@ -432,7 +423,7 @@ class NugKeyboardView : View {
         when (motionEventType) {
             MotionEvent.ACTION_DOWN -> {
                 swipeTracker.start(me, pointerID)
-                var (x,y) = swipeTracker.getOrigin()
+                val (x,y) = swipeTracker.getOrigin()
                 val key = getKeyFromCoords(x, y)
                 key?.let{
                     it.highlightFadeIn()

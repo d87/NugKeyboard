@@ -11,17 +11,17 @@ import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
+//data class PointerData(val x: Float = 0f, val y: Float = 0f, val time: Long = 0) {}
+
 class SwipeTracker {
     internal val mPastX = FloatArray(NUM_PAST)
     internal val mPastY = FloatArray(NUM_PAST)
     internal val mPastTime = LongArray(NUM_PAST)
+    // val history: MutableList<PointerData> = mutableListOf()
     internal var distanceTraveled = 0f
 
     val trailPath = Path() // Where swipe movements aggregate
     var hasTrail = false   // Quick indicator if trail has any points
-
-
-    var minSwipeLength: Float = 50f // in pixels, but should by set in dips
 
     var _msgLongPress: Message? = null
 
@@ -66,7 +66,7 @@ class SwipeTracker {
         return angle.toFloat()
     }
 
-    fun isSwiping(): Boolean {
+    fun isSwiping(minSwipeLength: Float = 30f): Boolean {
         if (distanceTraveled > minSwipeLength) return true
         return false
     }
