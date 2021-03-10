@@ -13,6 +13,7 @@ enum class ActionType {
     CAPS_TOGGLE,
     DELETE_CHAR,
     DELETE_WORD,
+    INPUT_METHOD_DIALOG,
     TOGGLE_NUMERIC,
     CYCLE_LAYOUT;
     companion object {

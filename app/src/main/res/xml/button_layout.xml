@@ -15,8 +15,9 @@
     <Button id="3x3" x="500" y="500" width="250" height="250"/>
     <Button id="3x4" x="750" y="500" width="250" height="250" hideRadials="true"/>
 
-    <Button id="SPACE" x="0" y="750" width="640" height="180" hideRadials="true" primary="true"                 />
-    <Button id="4x3" x="640" y="750" width="180" height="180" hideRadials="true" primary="true" altColor="true" />
-    <Button id="4x4" x="820" y="750" width="180" height="180" hideRadials="true" primary="true"                 />
+    <Button id="SHIFT" x="0" y="750" width="250" height="180" hideRadials="true" primary="true"                 />
+    <Button id="SPACE" x="250" y="750" width="500" height="180" hideRadials="true" primary="true"                 />
+    <!-- <Button id="4x3" x="500" y="750" width="180" height="180" hideRadials="true" primary="true" altColor="true" /> -->
+    <Button id="RETURN" x="750" y="750" width="250" height="180" hideRadials="true" primary="true"                 />
 
 </ButtonLayout>

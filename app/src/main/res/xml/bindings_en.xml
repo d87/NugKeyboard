@@ -47,7 +47,7 @@
     </Bindings>
     <Bindings name="1x4">
         <OnPress>
-            <CapInput>h</CapInput>
+            <None/>
         </OnPress>
         <OnSwipe roll="-22.5">
             <None/>
@@ -182,12 +182,14 @@
             <None/>
         </OnSwipe>
     </Bindings>
-    <Bindings name="4x1">
+    <Bindings name="SHIFT">
         <OnPress>
             <Action icon="CAPS_UP">CAPS_TOGGLE</Action>
         </OnPress>
-        <OnSwipe roll="-22.5">
+        <OnSwipe roll="-45">
+            <Action icon="CAPS_UP">CAPS_UP</Action>
             <None/>
+            <Action icon="CAPS_DOWN">CAPS_DOWN</Action>
             <None/>
         </OnSwipe>
     </Bindings>
@@ -196,22 +198,13 @@
             <KeyCode icon="SPACE">@KEYCODE_SPACE</KeyCode>
         </OnPress>
         <OnSwipe roll="-45">
-            <None/>
+            <Action>INPUT_METHOD_DIALOG</Action>
             <KeyCode>@KEYCODE_DPAD_RIGHT</KeyCode>
             <None/>
             <KeyCode>@KEYCODE_DPAD_LEFT</KeyCode>
         </OnSwipe>
     </Bindings>
-    <Bindings name="4x3">
-        <OnPress>
-            <KeyCode icon="BACKSPACE">@KEYCODE_BACKSPACE</KeyCode>
-        </OnPress>
-        <OnSwipe roll="-22.5">
-            <None/>
-            <None/>
-        </OnSwipe>
-    </Bindings>
-    <Bindings name="4x4">
+    <Bindings name="RETURN">
         <OnPress>
             <KeyCode icon="RETURN">@KEYCODE_ENTER</KeyCode>
         </OnPress>

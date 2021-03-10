@@ -15,6 +15,7 @@
         android:paddingTop="20dp"
         android:paddingRight="20dp"
         android:paddingBottom="20dp"
+        style="@style/KeyboardViewStyle"
         app:exampleColor="#33b5e5"
         app:exampleDimension="24sp"
         app:exampleDrawable="#673AB7"

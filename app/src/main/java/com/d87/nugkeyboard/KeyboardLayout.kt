@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.Log
+import android.view.Window
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
 import org.json.JSONArray
@@ -154,6 +155,23 @@ class KeyboardLayout(keyboardView: NugKeyboardView, val buttonLayoutResourceId: 
         theme.accentButtonColor = Color.parseColor("#272727")
         theme.accentButtonColorAlt = Color.parseColor("#1d1d1d")
         theme.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
+        /*
+        theme.backgroundColor = Color.parseColor("#000000")
+
+        theme.headKeyPrimaryTextColor = Color.parseColor("#878788")
+        theme.radialKeyPrimaryTextColor = Color.parseColor("#9e252b")
+        theme.radialKeySecondaryTextColor = Color.parseColor("#638dfe")
+
+        theme.normalButtonColor = Color.parseColor("#151515")
+        theme.normalButtonColorAlt = Color.parseColor("#0d0d0d")
+        theme.normalButtonColorHighlight = Color.parseColor("#d35c92")
+
+        theme.trailColorHighlight = Color.parseColor("#d37cb2")
+
+        theme.accentButtonColor = Color.parseColor("#272727")
+        theme.accentButtonColorAlt = Color.parseColor("#1d1d1d")
+        theme.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
+        */
     }
 
     val primaryTextPaint: TextPaint = TextPaint().apply {

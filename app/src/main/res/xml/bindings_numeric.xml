@@ -26,7 +26,7 @@
             <Pass/>
             <Pass/>
             <Pass/>
-            <Pass/>
+            <Symbol>@</Symbol>
             <Pass/>
         </OnSwipe>
     </Bindings>
@@ -36,18 +36,18 @@
         </OnPress>
         <OnSwipe roll="-22.5">
             <Pass/>
+            <Symbol>"</Symbol>
+            <Symbol>-</Symbol>
             <Pass/>
             <Pass/>
-            <Pass/>
-            <Pass/>
-            <Pass/>
+            <Symbol>+</Symbol>
             <Pass/>
             <Pass/>
         </OnSwipe>
     </Bindings>
     <Bindings name="1x4">
         <OnPress>
-            <Input>0</Input>
+            <Pass/>
         </OnPress>
         <OnSwipe roll="-22.5">
             <Pass/>
@@ -68,11 +68,11 @@
             <Pass/>
             <Pass/>
             <Pass/>
+            <Symbol>\</Symbol>
             <Pass/>
-            <Pass/>
-            <Pass/>
-            <Pass/>
-            <Pass/>
+            <Symbol>[</Symbol>
+            <Symbol>&lt;</Symbol>
+            <Symbol>{</Symbol>
         </OnSwipe>
     </Bindings>
     <Bindings name="2x2">
@@ -96,11 +96,11 @@
         </OnPress>
         <OnSwipe roll="-22.5">
             <Pass/>
+            <Symbol>}</Symbol>
+            <Symbol>&gt;</Symbol>
+            <Symbol>]</Symbol>
             <Pass/>
-            <Pass/>
-            <Pass/>
-            <Pass/>
-            <Pass/>
+            <Symbol>/</Symbol>
             <Pass/>
             <Pass/>
         </OnSwipe>
@@ -155,14 +155,14 @@
             <Input>9</Input>
         </OnPress>
         <OnSwipe roll="-22.5">
+            <Symbol>&amp;</Symbol>
             <Pass/>
             <Pass/>
             <Pass/>
             <Pass/>
             <Pass/>
-            <Pass/>
-            <Pass/>
-            <Pass/>
+            <Symbol>#</Symbol>
+            <Symbol>%</Symbol>
         </OnSwipe>
     </Bindings>
     <Bindings name="3x4">
@@ -180,7 +180,7 @@
             <Pass/>
         </OnSwipe>
     </Bindings>
-    <Bindings name="4x1">
+    <Bindings name="SHIFT">
         <OnPress>
             <Pass/>
         </OnPress>
@@ -190,21 +190,13 @@
     </Bindings>
     <Bindings name="SPACE">
         <OnPress>
-            <Pass/>
+            <Input>0</Input>
         </OnPress>
         <OnSwipe roll="-45">
             <Pass/>
         </OnSwipe>
     </Bindings>
-    <Bindings name="4x3">
-        <OnPress>
-            <Pass/>
-        </OnPress>
-        <OnSwipe roll="-22.5">
-            <Pass/>
-        </OnSwipe>
-    </Bindings>
-    <Bindings name="4x4">
+    <Bindings name="RETURN">
         <OnPress>
             <Pass/>
         </OnPress>

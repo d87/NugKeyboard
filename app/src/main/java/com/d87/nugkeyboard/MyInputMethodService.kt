@@ -1,9 +1,14 @@
 package com.d87.nugkeyboard
 
 //import android.inputmethodservice;
+import android.content.Context
+import android.graphics.Color
 import android.inputmethodservice.InputMethodService
+import android.os.Build
 import android.view.View
 import android.view.KeyEvent
+import android.view.WindowManager.LayoutParams.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 
 class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardActionListener {
@@ -14,9 +19,29 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
     private var caps = false
     private var capsLocked = false
 
+    fun showSoftKeyboard(view: View) {
+        //if (view.requestFocus()) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+            //imm.showInputMethodPicker()
+        //}
+    }
+
+    fun showInputMethodDialog(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showInputMethodPicker()
+    }
+
     override fun onCreateInputView(): View {
         val layout = layoutInflater.inflate(R.layout.sample_nug_keyboard_view, null) as FrameLayout
         val kv: NugKeyboardView = layout.findViewById(R.id.KeyboardView)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // if API > 29
+            kv.isForceDarkAllowed = false
+        }
+        this.window.window?.navigationBarColor = Color.BLACK
+
+        //this.window.window?.setSoftInputMode(SOFT_INPUT_STATE_VISIBLE)
 
         kv.resizeForLayout() // Can't set view dimensions during its initialization, so calling it here
 
@@ -112,6 +137,11 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
                 keyboardView!!.activeLayout ?: return
                 keyboardView!!.activeLayout!!.bindings!!.ToggleLayer("NumericLayer")
             }
+            ActionType.INPUT_METHOD_DIALOG -> {
+                keyboardView ?: return
+                showInputMethodDialog(keyboardView!!)
+            }
+
             else -> {
 
             }
