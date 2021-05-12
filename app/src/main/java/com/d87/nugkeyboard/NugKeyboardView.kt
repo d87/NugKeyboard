@@ -4,17 +4,18 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.drawable.Drawable
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Handler
 import android.os.Message
+import android.os.SystemClock.currentThreadTimeMillis
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.updateLayoutParams
+import kotlin.collections.ArrayList
 
 
 class NugKeyboardView : View {
@@ -283,16 +284,16 @@ class NugKeyboardView : View {
         val keyWidth = (contentWidth / 4).toFloat()
         val keyHeight = (contentHeight / 4).toFloat()
 
-        // canvas.drawPaint(backgroundPaint)
-
         activeLayout?.let {
+            canvas.drawPaint(it.theme.backgroundPaint)
+
             for (key: SwipeButton in it.keys) {
                 key.draw(canvas)
             }
 
             for (tracker in _swipeTrackers){
                 if (tracker.hasTrail)
-                    tracker.drawTrail(canvas, it.highlightSwipeTrailPaint)
+                    tracker.drawTrail(canvas, it.theme.highlightSwipeTrailPaint)
             }
         }
     }
@@ -303,7 +304,7 @@ class NugKeyboardView : View {
         val actionMasked = me.actionMasked
 
         var pointerID = 0
-
+        
         // If you have more than 1 active pointer, then ACTION_POINTER_DOWN/UP events are coming in
         // instead of a normal ACTION_DOWN/UP, these events carry pointerIndex inside of them
         // That's why actionMasked is used instead of normal action, otherwise ACTION_POINTER_DOWN
@@ -351,10 +352,13 @@ class NugKeyboardView : View {
             when (msg.what) {
                 KEY_REPEAT, KEY_REPEAT_DELAY -> {
                     val pointerID = msg.arg1 as Int
+                    val numRepeats = msg.arg2 as Int
                     val swipeTracker = msg.obj
 
-                    val krmsg = _uiHandler.obtainMessage(KEY_REPEAT, pointerID, 0, swipeTracker)
-                    _uiHandler.sendMessageDelayed(krmsg, KEY_REPEAT_TIMEOUT)
+                    val NEXT_TIMEOUT = if (numRepeats > 2) KEY_REPEAT_TIMEOUT else KEY_REPEAT_TIMEOUT*3
+
+                    val krmsg = _uiHandler.obtainMessage(KEY_REPEAT, pointerID, numRepeats+1, swipeTracker)
+                    _uiHandler.sendMessageDelayed(krmsg, NEXT_TIMEOUT)
 
                     // Kinda important that action follows the message,
                     // because for example layout switch wipes the message queue
@@ -362,6 +366,8 @@ class NugKeyboardView : View {
                 }
                 LONG_PRESS -> {
                     Log.d("LONG_PRESS", msg.arg1.toString())
+                    val pointerID = msg.arg1 as Int
+                    runPointerAction(pointerID, true)
                 }
             }
         }
@@ -390,24 +396,36 @@ class NugKeyboardView : View {
         return getKeyFromCoords(x, y)
     }
 
-    fun runPointerAction(pointerID: Int) {
+    fun getPointerTracker(pointerID: Int): SwipeTracker {
+        return _swipeTrackers[pointerID]
+    }
+
+    fun getKeyFromTracker(swipeTracker: SwipeTracker): SwipeButton?  {
+        val (x,y) = swipeTracker.getOrigin()
+        return getKeyFromCoords(x, y)
+    }
+
+    fun runPointerAction(pointerID: Int, longPressTimeout: Boolean = false, ignoreRepeating: Boolean = false) {
         val swipeTracker = _swipeTrackers[pointerID]
         val (x,y) = swipeTracker.getOrigin()
         val key = getKeyFromCoords(x, y)
         key ?: return
-
 
         val minSwipeLength = 30*resources.displayMetrics.density
         val action: KeyboardAction? = if (swipeTracker.isSwiping(minSwipeLength)) {
             val angle = swipeTracker.getSwipeAngle()
             //Log.d("SWIPE_ANGLE", angle.toString() )
             key.getActionByAngle(angle)
+        } else if (longPressTimeout) {
+            key.getLongPressAction() ?: key.getMainAction() // return long press action or normal is missing
         } else {
-            //Log.d( "KEYPRESS", pointerID.toString())
             key.getMainAction()
         }
         key.highlightFadeOut()
+        if (ignoreRepeating && swipeTracker.actionCounter > 0)
+            return
         executeAction(action)
+        swipeTracker.actionCounter++
     }
 
 
@@ -453,8 +471,9 @@ class NugKeyboardView : View {
 
                     if (key.bindings!!.enableKeyRepeat) {
                         // runPointerAction(pointerID)
-                        val msg = _uiHandler.obtainMessage(KEY_REPEAT_DELAY, pointerID, 0, swipeTracker)
-                        _uiHandler.sendMessageDelayed(msg, KEY_REPEAT_DELAY_TIMEOUT)
+                        val numRepeats = 0;
+                        val msg = _uiHandler.obtainMessage(KEY_REPEAT_DELAY, pointerID, numRepeats, swipeTracker)
+                        _uiHandler.sendMessageDelayed(msg, KEY_REPEAT_INITIAL_TIMEOUT)
                     } else {
                         // Start LONG_PRESS countdown, swipeTracker here is passsed as "obj" to message
                         // to later identify this message for this pointer id
@@ -477,7 +496,7 @@ class NugKeyboardView : View {
                 _uiHandler.removeMessages(KEY_REPEAT_DELAY, swipeTracker)
                 _uiHandler.removeMessages(KEY_REPEAT, swipeTracker)
                 // TODO: Skip after key-repeating
-                runPointerAction(pointerID) // Executes current swipe or press action
+                runPointerAction(pointerID,false,true) // Executes current swipe or press action
                 //val key = getKeyForPointer(pointerID)
                 //key?.let{ it.highlightFadeOut() }
                 swipeTracker.clear()
@@ -493,6 +512,7 @@ class NugKeyboardView : View {
         const val KEY_REPEAT = 14
         const val LONG_PRESS_TIMEOUT = 1500L
         const val KEY_REPEAT_DELAY_TIMEOUT = 250L
+        const val KEY_REPEAT_INITIAL_TIMEOUT = 200L
         const val KEY_REPEAT_TIMEOUT = 40L
     }
 

@@ -46,6 +46,15 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         return layout.bindings!!.getMainAction(config.id)
     }
 
+    fun getLongPressAction(): KeyboardAction? {
+        val binds =  layout.bindings!!.getActiveBindingsForButton(config.id)
+        binds ?: return null
+        val action = binds.getLongPressAction()
+        if (action.type != ActionType.NOOP)
+            return action
+        return null
+    }
+
     fun getActionByAngle(angle: Float): KeyboardAction? {
         return layout.bindings!!.getActionByAngle(config.id, angle)
     }
@@ -107,18 +116,18 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
         this.centerY = y + height/2
     }
 
-    var normalColor: Paint = layout.normalButtonPaint
-    var highlightColor: Paint = layout.highlightPaint
+    var normalColor: Paint = layout.theme.normalButtonPaint
+    var highlightColor: Paint = layout.theme.highlightPaint
 
     fun applyTheme(){
         val isAccented = if (config.isAccented) 1 else 0
         val isAltColor = if (config.isAccented) 2 else 0
         val c = isAccented + isAltColor
         normalColor = when (c) {
-            1 -> layout.accentButtonPaint
-            3 -> layout.accentAltButtonPaint
-            2 -> layout.normalAltButtonPaint
-            else -> layout.normalButtonPaint
+            1 -> layout.theme.accentButtonPaint
+            3 -> layout.theme.accentAltButtonPaint
+            2 -> layout.theme.normalAltButtonPaint
+            else -> layout.theme.normalButtonPaint
         }
     }
     init {
@@ -127,10 +136,10 @@ open class SwipeButton(layout: KeyboardLayout, config: ButtonConfig) {
 
     open fun draw(canvas: Canvas) {
         //val textWidth = primaryTextPaint.measureText(text)
-        val primaryTextPaint = layout.primaryTextPaint
-        val secondaryTextPaint = layout.secondaryTextPaint
-        val tertiaryTextPaint = layout.tertiaryTextPaint
-        val highlightPaint = layout.highlightPaint
+        val primaryTextPaint = layout.theme.primaryTextPaint
+        val secondaryTextPaint = layout.theme.secondaryTextPaint
+        val tertiaryTextPaint = layout.theme.tertiaryTextPaint
+        val highlightPaint = layout.theme.highlightPaint
         val density = layout.keyboardView.resources.displayMetrics.density
         val padding = (1*density).toInt()
         val roundingRadius = 7*density

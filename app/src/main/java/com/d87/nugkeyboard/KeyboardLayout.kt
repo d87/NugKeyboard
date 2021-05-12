@@ -1,21 +1,13 @@
 package com.d87.nugkeyboard
 
-import org.json.JSONObject
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
-import android.util.Log
-import android.view.Window
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
-import org.json.JSONArray
-import org.json.JSONException
-import org.xmlpull.v1.XmlPullParser
-import java.io.InputStream
-import java.util.concurrent.Callable
 
 data class ButtonConfig(val id: String) {
     // These are not absolute values but relative to keyboard dimensions
@@ -134,92 +126,47 @@ class KeyboardLayout(keyboardView: NugKeyboardView, val buttonLayoutResourceId: 
     var viewHeight: Float? = null;
     var viewWidth: Float? = null;
 
-    var theme: KeyboardTheme = KeyboardTheme()
+    //var themeColors = KeyboardThemeColors()
+    var theme: KeyboardTheme = KeyboardTheme(run {
+        val darkColors = KeyboardThemeColors()
+        darkColors.backgroundColor = Color.parseColor("#000000")
+
+        darkColors.headKeyPrimaryTextColor = Color.parseColor("#878788")
+        darkColors.radialKeyPrimaryTextColor = Color.parseColor("#9e252b")
+        darkColors.radialKeySecondaryTextColor = Color.parseColor("#638dfe")
+
+        darkColors.normalButtonColor = Color.parseColor("#151515")
+        darkColors.normalButtonColorAlt = Color.parseColor("#0d0d0d")
+        darkColors.normalButtonColorHighlight = Color.parseColor("#d35c92")
+
+        darkColors.trailColorHighlight = Color.parseColor("#d37cb2")
+
+        darkColors.accentButtonColor = Color.parseColor("#272727")
+        darkColors.accentButtonColorAlt = Color.parseColor("#1d1d1d")
+        darkColors.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
+
+
+        val lightColors = KeyboardThemeColors()
+        lightColors.backgroundColor = Color.parseColor("#9d9fa1")
+
+        lightColors.headKeyPrimaryTextColor = Color.parseColor("#707070")
+        lightColors.radialKeyPrimaryTextColor = Color.parseColor("#bd7593")
+        lightColors.radialKeySecondaryTextColor = Color.parseColor("#650066")
+
+        lightColors.normalButtonColor = Color.parseColor("#eceff1")
+        lightColors.normalButtonColorAlt = Color.parseColor("#e1e4e5")
+        lightColors.normalButtonColorHighlight = Color.parseColor("#f0f0f0")
+
+        lightColors.trailColorHighlight = Color.parseColor("#d37cb2")
+
+        lightColors.accentButtonColor = Color.parseColor("#d4d8d9")
+        lightColors.accentButtonColorAlt = Color.parseColor("#d4d8d9")
+        lightColors.accentButtonColorHighlight = Color.parseColor("#f6fec8")
+
+        lightColors
+    }, keyboardView.resources.displayMetrics.density)
     var keyConfig: ArrayList<ButtonConfig> = arrayListOf()
     var keys: ArrayList<SwipeButton> = arrayListOf()
-
-
-    init {
-        theme.backgroundColor = Color.parseColor("#000000")
-
-        theme.headKeyPrimaryTextColor = Color.parseColor("#878788")
-        theme.radialKeyPrimaryTextColor = Color.parseColor("#9e252b")
-        theme.radialKeySecondaryTextColor = Color.parseColor("#638dfe")
-
-        theme.normalButtonColor = Color.parseColor("#151515")
-        theme.normalButtonColorAlt = Color.parseColor("#0d0d0d")
-        theme.normalButtonColorHighlight = Color.parseColor("#d35c92")
-
-        theme.trailColorHighlight = Color.parseColor("#d37cb2")
-
-        theme.accentButtonColor = Color.parseColor("#272727")
-        theme.accentButtonColorAlt = Color.parseColor("#1d1d1d")
-        theme.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
-        /*
-        theme.backgroundColor = Color.parseColor("#000000")
-
-        theme.headKeyPrimaryTextColor = Color.parseColor("#878788")
-        theme.radialKeyPrimaryTextColor = Color.parseColor("#9e252b")
-        theme.radialKeySecondaryTextColor = Color.parseColor("#638dfe")
-
-        theme.normalButtonColor = Color.parseColor("#151515")
-        theme.normalButtonColorAlt = Color.parseColor("#0d0d0d")
-        theme.normalButtonColorHighlight = Color.parseColor("#d35c92")
-
-        theme.trailColorHighlight = Color.parseColor("#d37cb2")
-
-        theme.accentButtonColor = Color.parseColor("#272727")
-        theme.accentButtonColorAlt = Color.parseColor("#1d1d1d")
-        theme.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
-        */
-    }
-
-    val primaryTextPaint: TextPaint = TextPaint().apply {
-        typeface = Typeface.DEFAULT_BOLD
-        flags = Paint.ANTI_ALIAS_FLAG
-        textAlign = Paint.Align.CENTER
-        color = theme.headKeyPrimaryTextColor
-        textSize = 36f*keyboardView.resources.displayMetrics.density
-    }
-    val secondaryTextPaint: TextPaint = TextPaint().apply {
-        typeface = Typeface.DEFAULT_BOLD
-        flags = Paint.ANTI_ALIAS_FLAG
-        textAlign = Paint.Align.CENTER
-        color = theme.radialKeyPrimaryTextColor
-        textSize = 24f*keyboardView.resources.displayMetrics.density
-    }
-    val tertiaryTextPaint: TextPaint = TextPaint().apply {
-        typeface = Typeface.DEFAULT_BOLD
-        flags = Paint.ANTI_ALIAS_FLAG
-        textAlign = Paint.Align.CENTER
-        color = theme.radialKeySecondaryTextColor
-        textSize = 24f*keyboardView.resources.displayMetrics.density
-    }
-    val highlightPaint: Paint = Paint().apply{
-        style = Paint.Style.FILL
-        color = theme.normalButtonColorHighlight
-    }
-    val highlightSwipeTrailPaint: Paint = Paint().apply{
-        style = Paint.Style.STROKE
-        strokeWidth = 15f
-        color = theme.trailColorHighlight
-    }
-    val normalButtonPaint: Paint = Paint().apply{
-        style = Paint.Style.FILL
-        color = theme.normalButtonColor
-    }
-    val accentButtonPaint: Paint = Paint().apply{
-        style = Paint.Style.FILL
-        color = theme.accentButtonColor
-    }
-    val normalAltButtonPaint: Paint = Paint().apply{
-        style = Paint.Style.FILL
-        color = theme.normalButtonColorAlt
-    }
-    val accentAltButtonPaint: Paint = Paint().apply{
-        style = Paint.Style.FILL
-        color = theme.accentButtonColorAlt
-    }
 
     fun resize(width: Float, height: Float, displeyDensity: Float) {
         viewHeight = height
@@ -241,7 +188,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView, val buttonLayoutResourceId: 
         drawable ?: return null
         var wrappedDrawable = drawable.mutate();
         wrappedDrawable = DrawableCompat.wrap(wrappedDrawable);
-        DrawableCompat.setTint(wrappedDrawable, theme.radialKeyPrimaryTextColor)
+        DrawableCompat.setTint(wrappedDrawable, theme.colors.radialKeyPrimaryTextColor)
         DrawableCompat.setTintMode(wrappedDrawable, PorterDuff.Mode.SRC_IN)
         return wrappedDrawable
     }

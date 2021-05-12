@@ -2,9 +2,11 @@ package com.d87.nugkeyboard
 
 //import android.inputmethodservice;
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.KeyEvent
 import android.view.WindowManager.LayoutParams.*
@@ -35,6 +37,14 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
     override fun onCreateInputView(): View {
         val layout = layoutInflater.inflate(R.layout.sample_nug_keyboard_view, null) as FrameLayout
         val kv: NugKeyboardView = layout.findViewById(R.id.KeyboardView)
+
+        val isDarkMode = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            else -> false
+        }
+        //Log.d("NIGHT_MODE", isDarkMode.toString())
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { // if API > 29
             kv.isForceDarkAllowed = false

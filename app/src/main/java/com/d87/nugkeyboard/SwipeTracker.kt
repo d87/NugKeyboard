@@ -17,6 +17,7 @@ class SwipeTracker {
     internal val mPastX = FloatArray(NUM_PAST)
     internal val mPastY = FloatArray(NUM_PAST)
     internal val mPastTime = LongArray(NUM_PAST)
+    internal var mStartTime: Long = 0L
     // val history: MutableList<PointerData> = mutableListOf()
     internal var distanceTraveled = 0f
 
@@ -24,6 +25,7 @@ class SwipeTracker {
     var hasTrail = false   // Quick indicator if trail has any points
 
     var _msgLongPress: Message? = null
+    var actionCounter: Int = 0 // how many times action was fired from current gesture
 
     private var originX = 0f
     private var originY = 0f
@@ -40,6 +42,8 @@ class SwipeTracker {
         mPastTime.fill(0)
         distanceTraveled = 0f
         currentLogIndex = 0
+        actionCounter = 0
+        mStartTime = 0L
         trailPath.reset()
         hasTrail = false
     }
@@ -48,6 +52,7 @@ class SwipeTracker {
         val pointerIndex = ev.findPointerIndex(pointerID)
         this.clear()
 
+        mStartTime = System.currentTimeMillis()
         originX = ev.getX(pointerIndex)
         originY = ev.getY(pointerIndex)
         val eventTime = ev.eventTime
@@ -110,6 +115,10 @@ class SwipeTracker {
         addPoint(x, y, time)
         trailPath.lineTo(x, y)
         hasTrail = true
+    }
+
+    fun getSwipeTime(): Long {
+        return System.currentTimeMillis() - mStartTime
     }
 
     private fun addPoint(x: Float, y: Float, time: Long) {

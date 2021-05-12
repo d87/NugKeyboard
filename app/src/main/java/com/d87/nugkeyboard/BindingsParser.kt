@@ -10,6 +10,7 @@ class BindingsParser(val kbLayout: KeyboardLayout, val parser: XmlPullParser) {
 
     val ONPRESS = 1
     val ONSWIPE = 2
+    val ONLONGPRESS = 3
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun skip(parser: XmlPullParser) {
@@ -171,6 +172,7 @@ class BindingsParser(val kbLayout: KeyboardLayout, val parser: XmlPullParser) {
                         action?.let {
                             when (bindCat) {
                                 ONPRESS -> bindings.onPressAction = action
+                                ONLONGPRESS -> bindings.onLongPressAction = action
                                 ONSWIPE -> {
                                     bindings.onSwipeActions.add(action)
                                     divisions++
@@ -182,6 +184,17 @@ class BindingsParser(val kbLayout: KeyboardLayout, val parser: XmlPullParser) {
                 }
             }
         }
+    }
+
+    fun parseBindingsAttributes(bindings: BindingsConfig): BindingsConfig {
+        for (i in 0 until parser.attributeCount) {
+            val name = parser.getAttributeName(i)
+            val value = parser.getAttributeValue(i)
+            when (name) {
+                "keyRepeat" -> bindings.enableKeyRepeat = value.toBoolean()
+            }
+        }
+        return bindings
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
@@ -196,12 +209,16 @@ class BindingsParser(val kbLayout: KeyboardLayout, val parser: XmlPullParser) {
         }
 
         val bindings = BindingsConfig()
+        parseBindingsAttributes(bindings)
 
         while (!(parser.eventType == XmlPullParser.END_TAG && parser.depth <= startDepth)) {
             if (parser.next() == XmlPullParser.START_TAG) {
                 when (parser.name) {
                     "OnPress" -> {
                         parseActions(ONPRESS, bindings)
+                    }
+                    "OnLongPress" -> {
+                        parseActions(ONLONGPRESS, bindings)
                     }
                     "OnSwipe" -> {
                         val roll = parser.getAttributeValue(null, "roll").toFloatOrNull()

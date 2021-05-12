@@ -197,8 +197,11 @@
         <OnPress>
             <KeyCode icon="SPACE">@KEYCODE_SPACE</KeyCode>
         </OnPress>
-        <OnSwipe roll="-45">
+        <OnLongPress>
             <Action>INPUT_METHOD_DIALOG</Action>
+        </OnLongPress>
+        <OnSwipe roll="-45">
+            <None/>
             <KeyCode>@KEYCODE_DPAD_RIGHT</KeyCode>
             <None/>
             <KeyCode>@KEYCODE_DPAD_LEFT</KeyCode>

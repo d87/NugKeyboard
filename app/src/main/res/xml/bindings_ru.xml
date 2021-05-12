@@ -100,11 +100,11 @@
             <CapInput>а</CapInput>
         </OnPress>
         <OnSwipe roll="-22.5">
-            <None/>
+            <Action icon="CAPS_UP">CAPS_UP</Action>
             <CapInput>у</CapInput>
             <None/>
             <None/>
-            <None/>
+            <Action icon="CAPS_DOWN">CAPS_DOWN</Action>
             <CapInput>б</CapInput>
             <CapInput>л</CapInput>
             <CapInput>ж</CapInput>
@@ -114,8 +114,11 @@
         <OnPress>
             <Action>TOGGLE_NUMERIC</Action>
         </OnPress>
+        <OnLongPress>
+            <Action>INPUT_METHOD_DIALOG</Action>
+        </OnLongPress>
         <OnSwipe roll="-22.5">
-            <CapInput>э</CapInput>
+            <None/>
             <CapInput>ё</CapInput>
             <Action>CYCLE_LAYOUT</Action>
             <None/>
@@ -171,20 +174,15 @@
             <None/>
         </OnSwipe>
     </Bindings>
-    <Bindings name="3x4">
+    <Bindings name="3x4" keyRepeat="true">
         <OnPress>
             <KeyCode icon="BACKSPACE">@KEYCODE_BACKSPACE</KeyCode>
         </OnPress>
         <OnSwipe roll="-22.5">
             <Action icon="CAPS_UP">CAPS_UP</Action>
-            <None/>
-            <None/>
-            <None/>
-            <None/>
+            <KeyCode>@KEYCODE_DPAD_RIGHT</KeyCode>
             <Action icon="CAPS_DOWN">CAPS_DOWN</Action>
-            <None/>
-            <None/>
-            <None/>
+            <KeyCode>@KEYCODE_DPAD_LEFT</KeyCode>
         </OnSwipe>
     </Bindings>
     <Bindings name="SHIFT">
@@ -202,8 +200,11 @@
         <OnPress>
             <KeyCode icon="SPACE">@KEYCODE_SPACE</KeyCode>
         </OnPress>
-        <OnSwipe roll="-45">
+        <OnLongPress>
             <Action>INPUT_METHOD_DIALOG</Action>
+        </OnLongPress>
+        <OnSwipe roll="-45">
+            <None/>
             <KeyCode>@KEYCODE_DPAD_RIGHT</KeyCode>
             <None/>
             <KeyCode>@KEYCODE_DPAD_LEFT</KeyCode>

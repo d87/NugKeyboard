@@ -142,7 +142,7 @@
         <OnSwipe roll="-22.5">
             <Pass/>
             <Pass/>
-            <Pass/>
+            <Symbol>:</Symbol>
             <Pass/>
             <Pass/>
             <Pass/>
