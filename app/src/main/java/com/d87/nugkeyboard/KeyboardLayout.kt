@@ -6,8 +6,9 @@ import android.graphics.PorterDuff
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
+import com.d87.nugkeyboard.R
 
 data class ButtonConfig(val id: String) {
     // These are not absolute values but relative to keyboard dimensions
@@ -151,7 +152,7 @@ class KeyboardLayout(keyboardView: NugKeyboardView, val buttonLayoutResourceId: 
 
         lightColors.headKeyPrimaryTextColor = Color.parseColor("#707070")
         lightColors.radialKeyPrimaryTextColor = Color.parseColor("#bd7593")
-        lightColors.radialKeySecondaryTextColor = Color.parseColor("#650066")
+        lightColors.radialKeySecondaryTextColor = Color.parseColor("#b97fbd")
 
         lightColors.normalButtonColor = Color.parseColor("#eceff1")
         lightColors.normalButtonColorAlt = Color.parseColor("#e1e4e5")

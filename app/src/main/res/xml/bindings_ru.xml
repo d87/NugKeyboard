@@ -57,11 +57,11 @@
         <OnSwipe roll="-22.5">
             <None/>
             <None/>
-            <CapInput>ъ</CapInput>
             <None/>
             <None/>
-            <CapInput>ь</CapInput>
-            <CapInput>ю</CapInput>
+            <None/>
+            <None/>
+            <None/>
             <None/>
         </OnSwipe>
     </Bindings>
@@ -119,7 +119,7 @@
         </OnLongPress>
         <OnSwipe roll="-22.5">
             <None/>
-            <CapInput>ё</CapInput>
+            <None/>
             <Action>CYCLE_LAYOUT</Action>
             <None/>
             <None/>

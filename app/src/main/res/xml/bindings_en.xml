@@ -37,7 +37,7 @@
         <OnSwipe roll="-22.5">
             <None/>
             <None/>
-            <None/>
+            <Symbol>'</Symbol>
             <None/>
             <None/>
             <CapInput>x</CapInput>
@@ -52,7 +52,7 @@
         <OnSwipe roll="-22.5">
             <None/>
             <None/>
-            <CapInput>k</CapInput>
+            <None/>
             <None/>
             <None/>
             <None/>
@@ -67,7 +67,7 @@
         <OnSwipe roll="-22.5">
             <None/>
             <None/>
-            <CapInput>k</CapInput>
+            <None/>
             <None/>
             <None/>
             <None/>
@@ -102,7 +102,7 @@
             <None/>
             <None/>
             <CapInput>m</CapInput>
-            <None/>
+            <CapInput>k</CapInput>
         </OnSwipe>
     </Bindings>
     <Bindings name="2x4">
@@ -166,20 +166,15 @@
             <CapInput>f</CapInput>
         </OnSwipe>
     </Bindings>
-    <Bindings name="3x4">
+    <Bindings name="3x4" keyRepeat="true">
         <OnPress>
             <KeyCode icon="BACKSPACE">@KEYCODE_BACKSPACE</KeyCode>
         </OnPress>
         <OnSwipe roll="-22.5">
             <Action icon="CAPS_UP">CAPS_UP</Action>
-            <None/>
-            <None/>
-            <None/>
-            <None/>
+            <KeyCode>@KEYCODE_DPAD_RIGHT</KeyCode>
             <Action icon="CAPS_DOWN">CAPS_DOWN</Action>
-            <None/>
-            <None/>
-            <None/>
+            <KeyCode>@KEYCODE_DPAD_LEFT</KeyCode>
         </OnSwipe>
     </Bindings>
     <Bindings name="SHIFT">

@@ -12,6 +12,7 @@ import android.view.KeyEvent
 import android.view.WindowManager.LayoutParams.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
+import com.d87.nugkeyboard.R
 
 class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardActionListener {
 
@@ -59,6 +60,15 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
 
         keyboardView = kv
 
+        val inputConnection = currentInputConnection
+        if (inputConnection != null) {
+            val sequenceBefore = inputConnection.getTextBeforeCursor(2, 0)
+            if (sequenceBefore != null && sequenceBefore.isEmpty() && !capsLocked) {
+                caps = true
+                keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
+            }
+        }
+
         //kv.exampleString = "asd"
         /*val kv = layoutInflater.inflate(R.layout.keyboard_view, null) as KeyboardView
 
@@ -83,6 +93,28 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         val inputConnection = currentInputConnection
         inputConnection ?: return
 
+        if (primaryCode == KeyEvent.KEYCODE_SPACE) {
+            val sequenceBefore = inputConnection.getTextBeforeCursor(1, 0)
+            if ( sequenceBefore == "." && !capsLocked) {
+                caps = true
+                keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
+            }
+        }
+
+        if (primaryCode == KeyEvent.KEYCODE_DEL) {
+            val sequenceBefore = inputConnection.getTextBeforeCursor(1, 0)
+            sequenceBefore?.let{
+                if ( it.length < 1 && !capsLocked) {
+                    caps = true
+                    keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
+                }
+                if ( it == "." && !capsLocked) {
+                    caps = false
+                    keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
+                }
+            }
+        }
+
         val eventDown = KeyEvent(
             KeyEvent.ACTION_DOWN,
             primaryCode
@@ -93,14 +125,6 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         )
         inputConnection.sendKeyEvent(eventDown)
         inputConnection.sendKeyEvent(eventUp)
-
-        if (primaryCode == KeyEvent.KEYCODE_SPACE) {
-            val sequenceBefore = inputConnection.getTextBeforeCursor(2, 0)
-            if ( sequenceBefore == ". " && !capsLocked) {
-                caps = true
-                keyboardView!!.setState(KeyboardModifierState.CAPS, caps)
-            }
-        }
     }
 
     override fun onText(charSequence: CharSequence) {

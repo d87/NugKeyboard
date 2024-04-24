@@ -15,6 +15,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.updateLayoutParams
+import com.d87.nugkeyboard.R
 import kotlin.collections.ArrayList
 
 
