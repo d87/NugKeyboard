@@ -123,6 +123,7 @@ class NugKeyboardView : View {
         Pair("DefaultEnglish", KeyboardLayout(this, R.xml.button_layout, R.xml.bindings_en, R.xml.bindings_numeric)),
         Pair("DefaultRussian", KeyboardLayout(this, R.xml.button_layout, R.xml.bindings_ru, R.xml.bindings_numeric))
     )
+
     init {
         val layoutName = layoutList[activeLayoutIndex]
         var layout = layoutMapByName[layoutName]
@@ -157,8 +158,9 @@ class NugKeyboardView : View {
         if ( activeLayoutIndex < 0 ) { activeLayoutIndex = layoutList.size-1 }
 
         val layoutName = layoutList[activeLayoutIndex]
-        var layout = layoutMapByName[layoutName]
+        val layout = layoutMapByName[layoutName]
         activeLayout = layout
+        activeLayout!!.bindings!!.ResetTempLayers()
 
         resizeForLayout()
         onLayoutChanged()

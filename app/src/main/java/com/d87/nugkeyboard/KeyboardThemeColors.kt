@@ -1,11 +1,13 @@
 package com.d87.nugkeyboard
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.text.TextPaint
 
 class KeyboardThemeColors {
+
     var backgroundColor = Color.BLACK
 
     var headKeyPrimaryTextColor = Color.BLACK
@@ -24,6 +26,8 @@ class KeyboardThemeColors {
 }
 
 class KeyboardTheme(var colors: KeyboardThemeColors, var displayDensity: Float = 1.0f) {
+    //https://stackoverflow.com/questions/69065334/how-to-use-new-material-you-colors-announced-for-android-12
+
     val backgroundPaint: TextPaint = TextPaint().apply {
         typeface = Typeface.DEFAULT_BOLD
         flags = Paint.ANTI_ALIAS_FLAG

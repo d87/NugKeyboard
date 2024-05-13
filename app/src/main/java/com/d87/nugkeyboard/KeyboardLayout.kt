@@ -1,14 +1,9 @@
 package com.d87.nugkeyboard
 
-import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.PorterDuff
-import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.text.TextPaint
-import androidx.core.content.ContextCompat.getDrawable
 import androidx.core.graphics.drawable.DrawableCompat
-import com.d87.nugkeyboard.R
+import androidx.core.content.ContextCompat.getDrawable
 
 data class ButtonConfig(val id: String) {
     // These are not absolute values but relative to keyboard dimensions
@@ -43,6 +38,13 @@ class BindingsStack(rootLayer: BindingsLayer) {
                 layer.isActive = !layer.isActive
                 return
             }
+        }
+    }
+    fun ResetTempLayers() {
+        for (layerIndex in layers.indices-1) {
+            // 0 - highest layer
+            // last - base layer
+            layers[layerIndex].isActive = false
         }
     }
 
@@ -128,44 +130,13 @@ class KeyboardLayout(keyboardView: NugKeyboardView, val buttonLayoutResourceId: 
     var viewWidth: Float? = null;
 
     //var themeColors = KeyboardThemeColors()
-    var theme: KeyboardTheme = KeyboardTheme(run {
-        val darkColors = KeyboardThemeColors()
-        darkColors.backgroundColor = Color.parseColor("#000000")
 
-        darkColors.headKeyPrimaryTextColor = Color.parseColor("#878788")
-        darkColors.radialKeyPrimaryTextColor = Color.parseColor("#9e252b")
-        darkColors.radialKeySecondaryTextColor = Color.parseColor("#638dfe")
-
-        darkColors.normalButtonColor = Color.parseColor("#151515")
-        darkColors.normalButtonColorAlt = Color.parseColor("#0d0d0d")
-        darkColors.normalButtonColorHighlight = Color.parseColor("#d35c92")
-
-        darkColors.trailColorHighlight = Color.parseColor("#d37cb2")
-
-        darkColors.accentButtonColor = Color.parseColor("#272727")
-        darkColors.accentButtonColorAlt = Color.parseColor("#1d1d1d")
-        darkColors.accentButtonColorHighlight = Color.parseColor("#4c4c4c")
-
-
-        val lightColors = KeyboardThemeColors()
-        lightColors.backgroundColor = Color.parseColor("#9d9fa1")
-
-        lightColors.headKeyPrimaryTextColor = Color.parseColor("#707070")
-        lightColors.radialKeyPrimaryTextColor = Color.parseColor("#bd7593")
-        lightColors.radialKeySecondaryTextColor = Color.parseColor("#b97fbd")
-
-        lightColors.normalButtonColor = Color.parseColor("#eceff1")
-        lightColors.normalButtonColorAlt = Color.parseColor("#e1e4e5")
-        lightColors.normalButtonColorHighlight = Color.parseColor("#f0f0f0")
-
-        lightColors.trailColorHighlight = Color.parseColor("#d37cb2")
-
-        lightColors.accentButtonColor = Color.parseColor("#d4d8d9")
-        lightColors.accentButtonColorAlt = Color.parseColor("#d4d8d9")
-        lightColors.accentButtonColorHighlight = Color.parseColor("#f6fec8")
-
-        lightColors
-    }, keyboardView.resources.displayMetrics.density)
+    //val t1 = keyboardView.resources.newTheme()
+    //t1.applyStyle()
+    // https://developer.android.com/codelabs/jetpack-compose-theming#3
+    //App
+    val colors = getKeyboardColors(keyboardView.context,shouldUseDarkTheme = true, isDynamicColor = true)
+    var theme: KeyboardTheme = KeyboardTheme(colors, keyboardView.resources.displayMetrics.density)
     var keyConfig: ArrayList<ButtonConfig> = arrayListOf()
     var keys: ArrayList<SwipeButton> = arrayListOf()
 

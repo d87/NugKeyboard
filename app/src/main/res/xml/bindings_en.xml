@@ -114,8 +114,7 @@
             <None/>
             <Action>CYCLE_LAYOUT</Action>
             <None/>
-            <None/>
-            <None/>
+            <Action>HIDE_KEYBOARD</Action>
             <None/>
             <Action>CYCLE_LAYOUT</Action>
             <None/>

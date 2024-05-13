@@ -15,6 +15,7 @@ enum class ActionType {
     DELETE_WORD,
     INPUT_METHOD_DIALOG,
     TOGGLE_NUMERIC,
+    HIDE_KEYBOARD,
     CYCLE_LAYOUT;
     companion object {
         private val map = values().associateBy({ it.name }, { it })

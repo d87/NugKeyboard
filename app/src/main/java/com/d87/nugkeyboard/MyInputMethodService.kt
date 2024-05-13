@@ -35,6 +35,12 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
         imm.showInputMethodPicker()
     }
 
+    fun hide(view: View) {
+        //this.window.window?.setSoftInputMode(SOFT_INPUT_STATE_HIDDEN)
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0);
+    }
+
     override fun onCreateInputView(): View {
         val layout = layoutInflater.inflate(R.layout.sample_nug_keyboard_view, null) as FrameLayout
         val kv: NugKeyboardView = layout.findViewById(R.id.KeyboardView)
@@ -51,8 +57,6 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
             kv.isForceDarkAllowed = false
         }
         this.window.window?.navigationBarColor = Color.BLACK
-
-        //this.window.window?.setSoftInputMode(SOFT_INPUT_STATE_VISIBLE)
 
         kv.resizeForLayout() // Can't set view dimensions during its initialization, so calling it here
 
@@ -165,6 +169,9 @@ class MyInputMethodService : InputMethodService(), NugKeyboardView.OnKeyboardAct
             }
             ActionType.CYCLE_LAYOUT -> {
                 keyboardView!!.cycleLayout()
+            }
+            ActionType.HIDE_KEYBOARD -> {
+                hide(keyboardView!!)
             }
             ActionType.TOGGLE_NUMERIC -> {
                 keyboardView ?: return
